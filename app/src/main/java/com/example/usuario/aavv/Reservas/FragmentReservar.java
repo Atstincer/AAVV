@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -22,6 +23,8 @@ import com.example.usuario.aavv.TTOO.TTOO;
 import com.example.usuario.aavv.TTOO.TTOOBDHandler;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
+
+import java.text.ParseException;
 
 /**
  * Created by usuario on 18/07/2023.
@@ -174,7 +177,7 @@ public class FragmentReservar extends Fragment {
         SQLiteDatabase db = admin.getWritableDatabase();
         ContentValues values = ReservaBDHandler.getContentValues(nuevaReserva);
         db.insert(ReservaBDHandler.TABLE_NAME,null,values);
-        limpiarCampos();
+        getReadyForNextTE();
         Toast.makeText(getContext(),"Registrado correctamente",Toast.LENGTH_SHORT).show();
     }
 
@@ -193,6 +196,28 @@ public class FragmentReservar extends Fragment {
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
+    }
+
+    private void getReadyForNextTE(){
+        String teAnterior = etNumeroTE.getText().toString();
+        limpiarCampos();
+        try {
+            int newTE = Integer.parseInt(teAnterior) + 1;
+            String newTEString = String.valueOf(newTE);
+            int difTamano = teAnterior.length() - newTEString.length();
+            if(difTamano>0){
+                for(int i=0;i<difTamano;i++){
+                    newTEString = "0"+newTEString;
+                }
+            }
+            etNumeroTE.setText(newTEString);
+            actvNombreExcursion.requestFocus();
+            //InputMethodManager imm = (InputMethodManager)getContext().getSystemService(getContext().INPUT_METHOD_SERVICE);
+            //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }catch (Exception e){
+            //do nothing
+            etNumeroTE.requestFocus();
+        }
     }
 
     private void limpiarCampos(){

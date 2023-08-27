@@ -10,13 +10,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.usuario.aavv.Ajustes.FragmentAjustes;
+import com.example.usuario.aavv.Reservas.FragmentLiquidacion;
 import com.example.usuario.aavv.Reservas.FragmentReservar;
-import com.example.usuario.aavv.Reservas.FragmentReservas;
+import com.example.usuario.aavv.Reservas.FragmentReservasSaliendoElDia;
+import com.example.usuario.aavv.Reservas.FragmentVentaTTOO;
 import com.example.usuario.aavv.TTOO.FragmentTouroperadores;
 import com.example.usuario.aavv.Util.MisConstantes;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack, FragmentReservas.MyCallBack {
+        implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
+        FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack {
 
     private MisConstantes.Estado estadoFragmentReservar;
 
@@ -81,8 +85,17 @@ public class MainActivity extends AppCompatActivity
                         break;
                 }
                 break;
-            case FragmentReservas.TAG:
+            case FragmentReservasSaliendoElDia.TAG:
                 title = "Reservas";
+                break;
+            case FragmentLiquidacion.TAG:
+                title = "Ventas del día";
+                break;
+            case FragmentVentaTTOO.TAG:
+                title = "Ventas por agencias";
+                break;
+            case FragmentAjustes.TAG:
+                title = "Ajustes";
                 break;
         }
         setTitle(title);
@@ -130,12 +143,24 @@ public class MainActivity extends AppCompatActivity
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservar(),FragmentReservar.TAG)
                         .addToBackStack(null).commit();
                 break;
-            case R.id.nav_reservas_todas:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservas(),FragmentReservas.TAG)
+            case R.id.nav_liquidacion:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentLiquidacion(),FragmentLiquidacion.TAG)
+                        .addToBackStack(null).commit();
+                break;
+            case R.id.nav_excursiones_dia:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservasSaliendoElDia(), FragmentReservasSaliendoElDia.TAG)
+                        .addToBackStack(null).commit();
+                break;
+            case R.id.nav_venta_agencias:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentVentaTTOO(),FragmentVentaTTOO.TAG)
                         .addToBackStack(null).commit();
                 break;
             case R.id.nav_agencias:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentTouroperadores(), FragmentTouroperadores.TAG)
+                        .addToBackStack(null).commit();
+                break;
+            case R.id.nav_ajustes:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentAjustes(), FragmentAjustes.TAG)
                         .addToBackStack(null).commit();
                 break;
         }

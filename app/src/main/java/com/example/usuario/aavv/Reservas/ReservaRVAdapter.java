@@ -1,5 +1,7 @@
 package com.example.usuario.aavv.Reservas;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.usuario.aavv.R;
 
+import java.security.PrivilegedAction;
 import java.util.List;
 
 /**
@@ -18,16 +21,20 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
 
     private List<Reserva> reservaList;
     private MyCallBack myCallBack;
+    private Context context;
+    private Modo modo;
 
-    ReservaRVAdapter(List<Reserva> reservaList, MyCallBack myCallBack) {
+    ReservaRVAdapter(Context ctx,List<Reserva> reservaList, Modo modo,MyCallBack myCallBack) {
+        context = ctx;
         this.reservaList = reservaList;
+        this.modo = modo;
         this.myCallBack = myCallBack;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_reserva,parent,false);
-        return new ViewHolder(v,myCallBack);
+        return new ViewHolder(context,v,modo,myCallBack);
     }
 
     @Override
@@ -40,12 +47,22 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
         return reservaList.size();
     }
 
+    void setReservaList(List<Reserva> lista){
+        reservaList = lista;
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs;
+        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio;
+        private Modo modo;
 
-        ViewHolder(View itemView, final MyCallBack myCallBack) {
+        private Context ctx;
+
+        ViewHolder(Context ctx,View itemView, Modo modo, final MyCallBack myCallBack) {
             super(itemView);
+            this.ctx = ctx;
+            this.modo = modo;
             tvTE = (TextView)itemView.findViewById(R.id.tv_te_cv);
             tvFechaEjecucion = (TextView)itemView.findViewById(R.id.tv_fecha_ejecucion_cv);
             tvExcursion = (TextView)itemView.findViewById(R.id.tv_nombre_excursion_cv);
@@ -53,6 +70,9 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
             tvHab = (TextView)itemView.findViewById(R.id.tv_hab_cv);
             tvCantPax = (TextView)itemView.findViewById(R.id.tv_cant_pax_cv);
             tvObs = (TextView)itemView.findViewById(R.id.tv_obs_cv);
+            tvIdioma = (TextView)itemView.findViewById(R.id.tv_idioma_cv);
+            tvPrecio = (TextView)itemView.findViewById(R.id.tv_precio_cv);
+
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
@@ -62,23 +82,39 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
         }
 
         void bindHolder(int position){
-            String te = "TE "+reservaList.get(position).getNoTE();
+            String te = "TE "+ reservaList.get(position).getNoTE();
             tvTE.setText(te);
             tvFechaEjecucion.setText(reservaList.get(position).getFechaEjecucion());
             tvExcursion.setText(reservaList.get(position).getExcursion());
             tvHotel.setText(reservaList.get(position).getHotel());
             tvHab.setText(reservaList.get(position).getNoHab());
-            tvCantPax.setText(getCantPaxs(position));
-            if(reservaList.get(position).getObservaciones().equals("")){
+            String cantPax = "pax: " + reservaList.get(position).getCantPaxs(false);
+            tvCantPax.setText(cantPax);
+            tvIdioma.setText(reservaList.get(position).getIdioma());
+            //tvCantPax.setText(getCantPaxs(position));
+
+            if(modo == Modo.LIQUIDACION){
+                //oculta observaciones, muestra precio, en rojo si 0
                 tvObs.setVisibility(View.GONE);
-            }else {
-                tvObs.setVisibility(View.VISIBLE);
-                tvObs.setText(reservaList.get(position).getObservaciones());
+                tvPrecio.setText(String.valueOf(reservaList.get(position).getPrecio()));
+                if(reservaList.get(position).getPrecio()==0){
+                    tvPrecio.setTextColor(ContextCompat.getColor(ctx,R.color.atencion));
+                }
+                tvPrecio.setVisibility(View.VISIBLE);
+            }else if(modo == Modo.GENERAL){
+                //oculta precio, si observaciones si dice algo
+                tvPrecio.setVisibility(View.GONE);
+                if(reservaList.get(position).getObservaciones().equals("")){
+                    tvObs.setVisibility(View.GONE);
+                }else{
+                    tvObs.setText(reservaList.get(position).getObservaciones());
+                    tvObs.setVisibility(View.VISIBLE);
+                }
             }
         }
 
-        private String getCantPaxs(int position){
-            String cantPaxs = "pax: "+reservaList.get(position).getAdultos();
+        /*private String getCantPaxs(int position){
+            String cantPaxs = "pax: "+ reservaList.get(position).getAdultos();
             if(reservaList.get(position).getMenores()!=0){
                 cantPaxs += "+" + reservaList.get(position).getMenores();
             }
@@ -86,10 +122,15 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
                 cantPaxs += "+" + reservaList.get(position).getInfantes() + " free";
             }
             return cantPaxs;
-        }
+        }*/
     }
 
     interface MyCallBack{
         void itemClicked(int position);
+    }
+
+    enum Modo{
+        GENERAL,
+        LIQUIDACION
     }
 }

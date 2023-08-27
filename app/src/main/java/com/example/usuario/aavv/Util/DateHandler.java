@@ -5,7 +5,10 @@ import android.content.Context;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by usuario on 28/07/2023.
@@ -51,9 +54,21 @@ public class DateHandler {
         return cad;
     }
 
+    public static boolean areDatesInOrder(String firstDate,String secondDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date date1 = sdf.parse(firstDate);
+            Date date2 = sdf.parse(secondDate);
+            return date1.before(date2);
+        }catch (Exception e){
+            System.out.println("Exception capturada parseando fechas: "+e.getMessage());
+        }
+        return false;
+    }
+
     public static void showDatePicker(Context ctx, final TextView textView, final DatePickerCallBack callBack) {
         String tv_str = "";
-        if(textView.getText().toString().length()<10){
+        if(textView.getText().toString().equals("")||textView.getText().toString().length()<10){
             tv_str = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR);
         }else {
             tv_str = textView.getText().toString();

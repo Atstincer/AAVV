@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MargenesMyApp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Información del vendedor" />
+
+    <LinearLayout
+        android:id="@+id/layout_editar_nombre_vendedor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_nombre_vendedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:hint="Nombre" />
+
+        <Button
+            android:id="@+id/btn_nombre_vendedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:text="Ok" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_nombre_vendedor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Nombre vendedor" />
+
+
+    <LinearLayout
+        android:id="@+id/layout_editar_telefono_vendedor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_telefono_vendedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:hint="Teléfono" />
+
+        <Button
+            android:id="@+id/btn_telefono_vendedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:text="Ok" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_telefono_vendedor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Teléfono vendedor" />
+
+
+    <LinearLayout
+        android:id="@+id/layout_editar_agencia_vendedor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_agencia_vendedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:hint="Agencia" />
+
+        <Button
+            android:id="@+id/btn_agencia_vendedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:text="Ok" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_agencia_vendedor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Agencia" />
+
+</LinearLayout>

@@ -3,21 +3,30 @@
 
     <group android:checkableBehavior="single">
 
-        <item android:title="Reservas">
-            <menu>
-                <item
-                    android:id="@+id/nav_reservar"
-                    android:title="Reservar" />
-                <item
-                    android:id="@+id/nav_reservas_todas"
-                    android:title="Todas"/>
-            </menu>
+        <item
+            android:id="@+id/nav_reservar"
+            android:title="Reservar" />
 
-        </item>
+        <item
+            android:id="@+id/nav_liquidacion"
+            android:title="Liquidación"/>
+
+        <item
+            android:id="@+id/nav_excursiones_dia"
+            android:title="Excursiones por día"/>
+
+        <item
+            android:id="@+id/nav_venta_agencias"
+            android:title="Venta por agencias"/>
 
         <item
             android:id="@+id/nav_agencias"
             android:title="Agencias" />
+
+        <item
+            android:id="@+id/nav_ajustes"
+            android:title="Ajustes" />
+
     </group>
 
     <item android:title="Communicate">

@@ -15,7 +15,7 @@ import java.util.List;
  * Created by usuario on 30/07/2023.
  */
 
-public class ReservaBDHandler {
+class ReservaBDHandler {
 
     static String TABLE_NAME = "Reservas";
     private static String CAMPO_NUMERO_TE = "TE";
@@ -24,8 +24,8 @@ public class ReservaBDHandler {
     private static String CAMPO_NUMERO_HAB = "hab";
     private static String CAMPO_CLIENTE = "cliente";
     private static String CAMPO_HOTEL = "hotel";
-    private static String CAMPO_FECHA_CONFECCION = "fechaConfeccion";
-    private static String CAMPO_FECHA_EJECUCION = "fechaEjecucion";
+    static String CAMPO_FECHA_CONFECCION = "fechaConfeccion";
+    static String CAMPO_FECHA_EJECUCION = "fechaEjecucion";
     private static String CAMPO_ADULTOS = "adultos";
     private static String CAMPO_MENORES = "menores";
     private static String CAMPO_INFANTES = "infantes";
@@ -81,6 +81,33 @@ public class ReservaBDHandler {
         if(cursor.moveToFirst()){
             do {
                 reservasList.add(ReservaBDHandler.getReserva(cursor));
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return reservasList;
+    }
+
+
+    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta){
+        String query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=?";
+        return getReservaFromDB(ctx,query,new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta)});
+    }
+
+    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, String agencia){
+        String query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=?";
+        return getReservaFromDB(ctx,query,new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia});
+    }
+
+    static List<Reserva> getReservaFromDB(Context ctx, String query, String[] arg){
+        List<Reserva> reservasList = new ArrayList<>();
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query,arg);
+        if(cursor.moveToFirst()){
+            do {
+                reservasList.add(getReserva(cursor));
             }while (cursor.moveToNext());
         }
         cursor.close();

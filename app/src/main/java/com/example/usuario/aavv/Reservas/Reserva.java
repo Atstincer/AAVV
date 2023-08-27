@@ -16,6 +16,42 @@ class Reserva {
     Reserva() {
     }
 
+    //no extended 2+2+1 free
+    //extended 2 adultos + 2 menores + 1 menor free
+    String getCantPaxs(boolean extendido){
+        String cantPaxs = String.valueOf(getAdultos());
+        if(extendido){
+            if(getAdultos()==1){
+                cantPaxs += " adulto";
+            }else {
+                cantPaxs += " adultos";
+            }
+        }
+        if(getMenores()!=0){
+            if(extendido){
+                if(getMenores()==1){
+                    cantPaxs += " + " + getMenores() + " menor";
+                }else {
+                    cantPaxs += " + " + getMenores() + " menores";
+                }
+            }else {
+                cantPaxs += "+" + getMenores();
+            }
+        }
+        if(getInfantes()!=0){
+            if(extendido){
+                if(getInfantes()==1){
+                    cantPaxs += " + " + getInfantes() + " menor free";
+                }else {
+                    cantPaxs += " + " + getInfantes() + " menores free";
+                }
+            }else {
+                cantPaxs += "+" + getInfantes() + " free";
+            }
+        }
+        return cantPaxs;
+    }
+
     public long getId() {
         return id;
     }
@@ -140,6 +176,20 @@ class Reserva {
         @Override
         public int compare(Reserva reserva1, Reserva reserva2) {
             return reserva1.getNoTE().toLowerCase().compareTo(reserva2.getNoTE().toLowerCase());
+        }
+    };
+
+    static Comparator<Reserva> ordenarPorExc = new Comparator<Reserva>() {
+        @Override
+        public int compare(Reserva reserva1, Reserva reserva2) {
+            return reserva1.getExcursion().toLowerCase().compareTo(reserva2.getExcursion().toLowerCase());
+        }
+    };
+
+    static Comparator<Reserva> ordenarPorHotel = new Comparator<Reserva>() {
+        @Override
+        public int compare(Reserva reserva1, Reserva reserva2) {
+            return reserva1.getHotel().toLowerCase().compareTo(reserva2.getHotel().toLowerCase());
         }
     };
 
