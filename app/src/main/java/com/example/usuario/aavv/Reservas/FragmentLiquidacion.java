@@ -1,11 +1,18 @@
 package com.example.usuario.aavv.Reservas;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,11 +23,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
+import com.example.usuario.aavv.MainActivity;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyEmail;
+import com.example.usuario.aavv.Util.MyExcel;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,7 +44,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     public static final String TAG = "FragmentLiquidacion";
 
-    private TextView tvFechaConfeccion,tvTotalUSD;
+    private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+
+    private TextView tvFechaConfeccion, tvInfo;
     private RecyclerView rvReservas;
     private ReservaRVAdapter adapter;
 
@@ -59,7 +72,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void bindComponents(View view){
         tvFechaConfeccion = (TextView) view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
-        tvTotalUSD = (TextView) view.findViewById(R.id.tv_total_usd_fliquidacion);
+        tvInfo = (TextView) view.findViewById(R.id.tv_info_venta);
         rvReservas = (RecyclerView) view.findViewById(R.id.rv_reservas_fliquidacion);
     }
 
@@ -67,7 +80,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         myCallBack.udUI(FragmentLiquidacion.TAG);
         tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
         udReservaList();
-        getTotalUSD();
+        udTvInfo();
         adapter = new ReservaRVAdapter(getContext(),reservaList, ReservaRVAdapter.Modo.LIQUIDACION,this);
         rvReservas.setAdapter(adapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -87,16 +100,28 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void udUI(){
         udReservaList();
-        getTotalUSD();
+        udTvInfo();
         adapter.setReservaList(reservaList);
     }
 
-    private void getTotalUSD(){
+    private void udTvInfo(){
+        String text = "";
+        if(!reservaList.isEmpty()) {
+            text = "Totales: " + getTotales();
+        } else {
+            text = "No hay información para mmostrar";
+        }
+        tvInfo.setText(text);
+    }
+
+    private String getTotales(){
         double total = 0;
+        int cantPax = 0;
         for(Reserva reserva:reservaList){
             total = total + reserva.getPrecio();
+            cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
         }
-        tvTotalUSD.setText(String.valueOf(total));
+        return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
     }
 
     private void udReservaList(){
@@ -147,6 +172,61 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},"Venta del día "+tvFechaConfeccion.getText().toString(),getCuerpoMail()));
     }
 
+    private void generarExcelReporteDeVenta(){
+        if(reservaList.size()<1){return;}
+        try {
+            //File rutaSD = Environment.getExternalStorageDirectory();
+            File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
+            if(!rutaSD.exists()){rutaSD.mkdir();}
+            rutaSD = new File(rutaSD.getAbsolutePath()+"/Reportes de venta");
+            if(!rutaSD.exists()){rutaSD.mkdir();}
+            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+tvFechaConfeccion.getText().toString().substring(6));
+            if(!rutaSD.exists()){rutaSD.mkdir();}
+            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+mesesDelAno[Integer.parseInt(tvFechaConfeccion.getText().toString().substring(3,5))-1]);
+            if(!rutaSD.exists()){rutaSD.mkdir();}
+
+            //File rutaSD = Environment.getExternalFilesDir(null);
+            File file = new File(rutaSD.getAbsolutePath(), tvFechaConfeccion.getText().toString().replace("/","") + ".xls");
+            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservaList)){
+                Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            //System.out.println("Mensaje error: " + e.getMessage());
+            Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void checkForPermissions() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE);
+        } else {
+            // Permission is already granted, call the function that does what you need
+            generarExcelReporteDeVenta();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!....call the function that does what you need
+                    generarExcelReporteDeVenta();
+                } else {
+                    Log.e(TAG, "Write permissions has to be granted to ATMS, otherwise it cannot operate properly.\n Exiting the program...\n");
+                }
+                break;
+            }
+            // other 'case' lines to check for other permissions this app might request.
+        }
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if(menu!=null){menu.clear();}
@@ -164,16 +244,20 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                     Toast.makeText(getContext(), "No hay reservas para enviar", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.menu_item_excel_reporte_venta:
+                checkForPermissions();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void itemClicked(int position) {
-        //do nothing for now
+        myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
     }
 
     public interface MyCallBack{
         void udUI(String tag);
+        void setUpFragmentReservar(long id);
     }
 }

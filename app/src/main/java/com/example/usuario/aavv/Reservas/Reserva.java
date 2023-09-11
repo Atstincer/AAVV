@@ -6,11 +6,15 @@ import java.util.Comparator;
  * Created by usuario on 30/07/2023.
  */
 
-class Reserva {
+public class Reserva {
+
+    public static final int ESTADO_ACTIVO = 0;
+    public static final int ESTADO_CANCELADO = 1;
+    public static final int ESTADO_DEVUELTO = 2;
 
     private long id;
     private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, idioma, Observaciones;
-    private int adultos, menores, infantes;
+    private int adultos, menores, infantes, acompanante, estado;
     private double precio;
 
     Reserva() {
@@ -116,11 +120,11 @@ class Reserva {
         this.precio = precio;
     }
 
-    String getNoTE() {
+    public String getNoTE() {
         return noTE;
     }
 
-    String getExcursion() {
+    public String getExcursion() {
         return excursion;
     }
 
@@ -128,7 +132,7 @@ class Reserva {
         return agencia;
     }
 
-    String getNoHab() {
+    public String getNoHab() {
         return noHab;
     }
 
@@ -136,40 +140,56 @@ class Reserva {
         return cliente;
     }
 
-    String getHotel() {
+    public String getHotel() {
         return hotel;
     }
 
-    String getFechaConfeccion() {
+    public String getFechaConfeccion() {
         return fechaConfeccion;
     }
 
-    String getFechaEjecucion() {
+    public String getFechaEjecucion() {
         return fechaEjecucion;
     }
 
-    String getIdioma() {
+    public String getIdioma() {
         return idioma;
     }
 
-    String getObservaciones() {
+    public String getObservaciones() {
         return Observaciones;
     }
 
-    int getAdultos() {
+    public int getAdultos() {
         return adultos;
     }
 
-    int getMenores() {
+    public int getMenores() {
         return menores;
     }
 
-    int getInfantes() {
+    public int getInfantes() {
         return infantes;
     }
 
-    double getPrecio() {
+    public double getPrecio() {
         return precio;
+    }
+
+    int getAcompanantes() {
+        return acompanante;
+    }
+
+    void setAcompanante(int acompanante) {
+        this.acompanante = acompanante;
+    }
+
+    int getEstado() {
+        return estado;
+    }
+
+    void setEstado(int estado) {
+        this.estado = estado;
     }
 
     static Comparator<Reserva> ordenarPorTE = new Comparator<Reserva>() {

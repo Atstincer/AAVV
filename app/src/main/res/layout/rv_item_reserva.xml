@@ -96,26 +96,26 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tv_obs_cv"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Observaciones" />
 
             <TextView
                 android:id="@+id/tv_precio_cv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:textColor="@android:color/holo_green_dark"
-                android:text="Precio" />
+                android:text="Precio"
+                android:textColor="@android:color/holo_green_dark" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
     </LinearLayout>

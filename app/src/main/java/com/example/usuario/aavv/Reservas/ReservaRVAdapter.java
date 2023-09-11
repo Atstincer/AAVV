@@ -92,37 +92,30 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
             tvCantPax.setText(cantPax);
             tvIdioma.setText(reservaList.get(position).getIdioma());
             //tvCantPax.setText(getCantPaxs(position));
+            tvObs.setText(reservaList.get(position).getObservaciones());
+            tvPrecio.setText(String.valueOf(reservaList.get(position).getPrecio()));
+            if(reservaList.get(position).getPrecio()==0){
+                tvPrecio.setTextColor(ContextCompat.getColor(ctx,R.color.atencion));
+            }
 
-            if(modo == Modo.LIQUIDACION){
-                //oculta observaciones, muestra precio, en rojo si 0
-                tvObs.setVisibility(View.GONE);
-                tvPrecio.setText(String.valueOf(reservaList.get(position).getPrecio()));
-                if(reservaList.get(position).getPrecio()==0){
-                    tvPrecio.setTextColor(ContextCompat.getColor(ctx,R.color.atencion));
-                }
-                tvPrecio.setVisibility(View.VISIBLE);
-            }else if(modo == Modo.GENERAL){
+            if(modo == Modo.GENERAL){
                 //oculta precio, si observaciones si dice algo
                 tvPrecio.setVisibility(View.GONE);
-                if(reservaList.get(position).getObservaciones().equals("")){
-                    tvObs.setVisibility(View.GONE);
-                }else{
-                    tvObs.setText(reservaList.get(position).getObservaciones());
-                    tvObs.setVisibility(View.VISIBLE);
-                }
+                showObsIfExist();
+            }else if(modo == Modo.EXC_SALIENDO_EL_DIA){
+                tvFechaEjecucion.setVisibility(View.GONE);
+                tvPrecio.setVisibility(View.GONE);
+                showObsIfExist();
+            }else if(modo == Modo.POR_AGENCIA){
+                tvObs.setText("");
             }
         }
 
-        /*private String getCantPaxs(int position){
-            String cantPaxs = "pax: "+ reservaList.get(position).getAdultos();
-            if(reservaList.get(position).getMenores()!=0){
-                cantPaxs += "+" + reservaList.get(position).getMenores();
+        private void showObsIfExist(){
+            if(tvObs.getText().toString().equals("")){
+                tvObs.setVisibility(View.GONE);
             }
-            if(reservaList.get(position).getInfantes()!=0){
-                cantPaxs += "+" + reservaList.get(position).getInfantes() + " free";
-            }
-            return cantPaxs;
-        }*/
+        }
     }
 
     interface MyCallBack{
@@ -131,6 +124,8 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
 
     enum Modo{
         GENERAL,
-        LIQUIDACION
+        LIQUIDACION,
+        POR_AGENCIA,
+        EXC_SALIENDO_EL_DIA
     }
 }

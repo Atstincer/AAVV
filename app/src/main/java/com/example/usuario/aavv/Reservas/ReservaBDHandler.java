@@ -29,8 +29,10 @@ class ReservaBDHandler {
     private static String CAMPO_ADULTOS = "adultos";
     private static String CAMPO_MENORES = "menores";
     private static String CAMPO_INFANTES = "infantes";
+    private static String CAMPO_ACOMPANANTES = "acompanantes";
     private static String CAMPO_IDIOMA = "idioma";
     private static String CAMPO_PRECIO = "precio";
+    static String CAMPO_ESTADO = "estado";
     private static String CAMPO_OBSERVACIONES = "observaciones";
 
 
@@ -43,6 +45,7 @@ class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_ADULTOS,reserva.getAdultos());
         values.put(ReservaBDHandler.CAMPO_MENORES,reserva.getMenores());
         values.put(ReservaBDHandler.CAMPO_INFANTES,reserva.getInfantes());
+        values.put(ReservaBDHandler.CAMPO_ACOMPANANTES,reserva.getAcompanantes());
         values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());
         values.put(ReservaBDHandler.CAMPO_HOTEL,reserva.getHotel());
@@ -69,7 +72,9 @@ class ReservaBDHandler {
         reserva.setAdultos(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_ADULTOS)));
         reserva.setMenores(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_MENORES)));
         reserva.setInfantes(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_INFANTES)));
+        reserva.setAcompanante(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_ACOMPANANTES)));
         reserva.setPrecio(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_PRECIO))));
+        reserva.setEstado(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_ESTADO)));
         return reserva;
     }
 
@@ -88,16 +93,34 @@ class ReservaBDHandler {
     }
 
 
-    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta){
-        String query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
-                ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=?";
-        return getReservaFromDB(ctx,query,new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta)});
+    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, boolean soloActivas){
+        String query = "";
+        String [] args;
+        if(soloActivas){
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?";
+            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),String.valueOf(Reserva.ESTADO_ACTIVO)};
+        }else {
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=?";
+            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta)};
+        }
+        return getReservaFromDB(ctx,query,args);
     }
 
-    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, String agencia){
-        String query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
-                ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=?";
-        return getReservaFromDB(ctx,query,new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia});
+    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, String agencia, boolean soloActivas){
+        String query = "";
+        String [] args;
+        if(soloActivas){
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?";
+            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia,String.valueOf(Reserva.ESTADO_ACTIVO)};
+        }else {
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=?";
+            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia};
+        }
+        return getReservaFromDB(ctx,query,args);
     }
 
     static List<Reserva> getReservaFromDB(Context ctx, String query, String[] arg){

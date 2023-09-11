@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
         FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack {
 
+    public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE = 0;
+
     private MisConstantes.Estado estadoFragmentReservar;
 
     @Override
@@ -50,7 +52,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservar(),FragmentReservar.TAG).addToBackStack(null).commit();
     }
 
     @Override
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity
                 title = "Reservas";
                 break;
             case FragmentLiquidacion.TAG:
-                title = "Ventas del día";
+                title = "Liquidaciones";
                 break;
             case FragmentVentaTTOO.TAG:
                 title = "Ventas por agencias";
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 

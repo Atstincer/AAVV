@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -24,7 +26,6 @@ import com.example.usuario.aavv.TTOO.TTOOBDHandler;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 
-import java.text.ParseException;
 
 /**
  * Created by usuario on 18/07/2023.
@@ -36,8 +37,8 @@ public class FragmentReservar extends Fragment {
 
     private long idSelectedReserva;
 
-    private TextView tvFechaConfeccion, tvFechaEjecucion;
-    private EditText etNumeroTE, etNombreCliente, etAdultos, etMenores, etInfantes, etNoHab, etPrecio, etObservaciones;
+    private TextView tvFechaConfeccion, tvFechaEjecucion, tvEstado;
+    private EditText etNumeroTE, etNombreCliente, etAdultos, etMenores, etInfantes, etAcompanante, etNoHab, etPrecio, etObservaciones;
     private AutoCompleteTextView actvNombreExcursion, actvAgencia, actvIdioma, actvHotel;
     private Button btn;
 
@@ -46,6 +47,7 @@ public class FragmentReservar extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.fragment_reservar,container,false);
         bindComponents(v);
         if(getArguments()!=null){
@@ -66,10 +68,12 @@ public class FragmentReservar extends Fragment {
         tvFechaConfeccion = (TextView)v.findViewById(R.id.tv_fecha_confeccion);
         tvFechaEjecucion = (TextView)v.findViewById(R.id.tv_fecha_ejecucion);
         etNumeroTE = (EditText)v.findViewById(R.id.et_ticket);
+        tvEstado = (TextView)v.findViewById(R.id.tv_estado);
         etNombreCliente = (EditText)v.findViewById(R.id.et_nombre_cliente);
         etAdultos = (EditText)v.findViewById(R.id.et_adultos);
         etMenores = (EditText)v.findViewById(R.id.et_menores);
         etInfantes = (EditText)v.findViewById(R.id.et_infantes);
+        etAcompanante = (EditText)v.findViewById(R.id.et_acompanante);
         etNoHab = (EditText)v.findViewById(R.id.et_hab);
         etPrecio = (EditText)v.findViewById(R.id.et_precio);
         etObservaciones = (EditText)v.findViewById(R.id.et_observaciones);
@@ -98,7 +102,7 @@ public class FragmentReservar extends Fragment {
                 DateHandler.showDatePicker(getContext(), tvFechaEjecucion, new DateHandler.DatePickerCallBack() {
                     @Override
                     public void dateSelected() {
-                        //do nothing
+                        actvAgencia.requestFocus();
                     }
                 });
             }
@@ -106,7 +110,7 @@ public class FragmentReservar extends Fragment {
 
         String[] excursiones = {"Catamarán JC","Aventura marina","Nado con delfines","Nado con delfines Plus","Pesca de altura 1bote 4hrs","Pesca especializada " +
                 "1bote 4hrs","Santa Clara-Remedios","Tres ciudades","Dos ciudades coloniales","Aventura en la montaña","Santa María adentro","Buceo 2 inmersiones" +
-                "","Catamarán MJ exclusivo","Jeep safari"};
+                "", "Buceo 1 inmersión","Catamarán MJ exclusivo","Jeep safari"};
         ArrayAdapter<String> adapterExcursiones = new ArrayAdapter<String>(getContext(),R.layout.my_simple_dropdown_item_1line,excursiones);
         actvNombreExcursion.setThreshold(1);
         actvNombreExcursion.setAdapter(adapterExcursiones);
@@ -121,7 +125,7 @@ public class FragmentReservar extends Fragment {
         actvIdioma.setAdapter(adapterIdiomas);
 
         String[] hoteles = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
-                "","Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};
+                "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};
         ArrayAdapter<String> adapterHoteles = new ArrayAdapter<String>(getContext(),R.layout.my_simple_dropdown_item_1line,hoteles);
         actvHotel.setThreshold(1);
         actvHotel.setAdapter(adapterHoteles);
@@ -157,6 +161,7 @@ public class FragmentReservar extends Fragment {
 
     private void setUpNuevoMode(){
         tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        tvEstado.setText("");
         btn.setText("Registrar");
     }
 
@@ -185,10 +190,12 @@ public class FragmentReservar extends Fragment {
         tvFechaConfeccion.setText(reserva.getFechaConfeccion());
         tvFechaEjecucion.setText(reserva.getFechaEjecucion());
         etNumeroTE.setText(reserva.getNoTE());
+        showEstado(reserva.getEstado());
         etNombreCliente.setText(reserva.getCliente());
         etAdultos.setText(String.valueOf(reserva.getAdultos()));
         etMenores.setText(String.valueOf(reserva.getMenores()));
         etInfantes.setText(String.valueOf(reserva.getInfantes()));
+        etAcompanante.setText(String.valueOf(reserva.getAcompanantes()));
         etNoHab.setText(reserva.getNoHab());
         etPrecio.setText(String.valueOf(reserva.getPrecio()));
         etObservaciones.setText(reserva.getObservaciones());
@@ -196,6 +203,21 @@ public class FragmentReservar extends Fragment {
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
+    }
+
+    private void showEstado(int estado){
+        switch (estado){
+            case Reserva.ESTADO_ACTIVO:
+                tvEstado.setText("");
+                break;
+            case Reserva.ESTADO_CANCELADO:
+                tvEstado.setText("CANCELADO");
+                break;
+            case Reserva.ESTADO_DEVUELTO:
+                tvEstado.setText("DEVUELTO");
+                break;
+        }
+        getActivity().invalidateOptionsMenu();
     }
 
     private void getReadyForNextTE(){
@@ -227,6 +249,7 @@ public class FragmentReservar extends Fragment {
         etAdultos.setText("");
         etMenores.setText("");
         etInfantes.setText("");
+        etAcompanante.setText("");
         tvFechaEjecucion.setText("Fecha");
         actvAgencia.setText("");
         actvHotel.setText("");
@@ -242,7 +265,11 @@ public class FragmentReservar extends Fragment {
         reserva.setNoTE(etNumeroTE.getText().toString());
         reserva.setExcursion(actvNombreExcursion.getText().toString());
         reserva.setCliente(etNombreCliente.getText().toString());
-        reserva.setAdultos(Integer.parseInt(etAdultos.getText().toString()));
+        if(!etAdultos.getText().toString().equals("")) {
+            reserva.setAdultos(Integer.parseInt(etAdultos.getText().toString()));
+        }else {
+            reserva.setAdultos(0);
+        }
         if(!etMenores.getText().toString().equals("")) {
             reserva.setMenores(Integer.parseInt(etMenores.getText().toString()));
         }else {
@@ -252,6 +279,11 @@ public class FragmentReservar extends Fragment {
             reserva.setInfantes(Integer.parseInt(etInfantes.getText().toString()));
         }else {
             reserva.setInfantes(0);
+        }
+        if(!etAcompanante.getText().toString().equals("")) {
+            reserva.setAcompanante(Integer.parseInt(etAcompanante.getText().toString()));
+        }else {
+            reserva.setAcompanante(0);
         }
         reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
         reserva.setAgencia(actvAgencia.getText().toString());
@@ -328,6 +360,88 @@ public class FragmentReservar extends Fragment {
             Toast.makeText(getContext(),falta,Toast.LENGTH_SHORT).show();
         }
         return true;
+    }
+
+    private void setActivo(){
+        setEstado(Reserva.ESTADO_ACTIVO);
+        showEstado(Reserva.ESTADO_ACTIVO);
+    }
+
+    private void setCancelado(){
+        setEstado(Reserva.ESTADO_CANCELADO);
+        showEstado(Reserva.ESTADO_CANCELADO);
+    }
+
+    private void setDevuelto(){
+        setEstado(Reserva.ESTADO_DEVUELTO);
+        showEstado(Reserva.ESTADO_DEVUELTO);
+    }
+
+    private void setEstado(int estado){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ReservaBDHandler.CAMPO_ESTADO,estado);
+        db.update(ReservaBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(idSelectedReserva)});
+        String mensaje = "";
+        switch (estado){
+            case Reserva.ESTADO_ACTIVO:
+                mensaje = "Activada";
+                break;
+            case Reserva.ESTADO_CANCELADO:
+                mensaje = "Cancelado";
+                break;
+            case Reserva.ESTADO_DEVUELTO:
+                mensaje = "Devuelto";
+                break;
+        }
+        Toast.makeText(getContext(),mensaje,Toast.LENGTH_SHORT).show();
+    }
+
+    private void eliminarReserva(){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getWritableDatabase();
+        db.delete(ReservaBDHandler.TABLE_NAME,"id=?",new String[]{String.valueOf(idSelectedReserva)});
+        Toast.makeText(getContext(),"Eliminado correctamente",Toast.LENGTH_SHORT).show();
+        getActivity().onBackPressed();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(menu!=null){menu.clear();}
+        if(myCallBack.getEstado()== MisConstantes.Estado.EDITAR){
+            switch (ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getEstado()){
+                case Reserva.ESTADO_ACTIVO:
+                    inflater.inflate(R.menu.menu_frag_reservar_activo,menu);
+                    break;
+                case Reserva.ESTADO_CANCELADO:
+                    inflater.inflate(R.menu.menu_frag_reservar_cancelado,menu);
+                    break;
+                case Reserva.ESTADO_DEVUELTO:
+                    inflater.inflate(R.menu.menu_frag_reservar_devuelto,menu);
+                    break;
+            }
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_set_activo:
+                setActivo();
+                break;
+            case R.id.menu_item_set_cancelado:
+                setCancelado();
+                break;
+            case R.id.menu_item_set_devuelto:
+                setDevuelto();
+                break;
+            case R.id.menu_item_eliminar_reserva:
+                eliminarReserva();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public interface MyCallBack{

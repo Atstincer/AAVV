@@ -79,7 +79,7 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
 
         //reservasList = ReservaBDHandler.getAllReservasFromDB(getContext());
         udReservasList();
-        adapter = new ReservaRVAdapter(getContext(),reservasList, ReservaRVAdapter.Modo.GENERAL,this);
+        adapter = new ReservaRVAdapter(getContext(),reservasList, ReservaRVAdapter.Modo.EXC_SALIENDO_EL_DIA,this);
         rvReservas.setAdapter(adapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
     }
