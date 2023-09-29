@@ -3,40 +3,48 @@
     style="@style/MargenesMyApp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/layout_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Excursiones saliendo el.." />
+                android:text="Ventas del día.." />
 
             <TextView
-                android:id="@+id/tv_fecha_ejecucion_freservas"
+                android:id="@+id/tv_fecha_confeccion_fliquidacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
-                android:text="fecha" />
+                android:text="fecha confeccion" />
 
         </LinearLayout>
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_info_venta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Total 0.00 usd" />
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_reservas"
+        android:id="@+id/rv_reservas_fliquidacion"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

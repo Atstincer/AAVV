@@ -19,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +31,9 @@ import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyEmail;
 import com.example.usuario.aavv.Util.MyExcel;
+import com.example.usuario.aavv.Util.Util;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
 
+    private LinearLayout layoutInfo;
     private TextView tvFechaConfeccion, tvInfo;
     private RecyclerView rvReservas;
     private ReservaRVAdapter adapter;
@@ -71,6 +74,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private void bindComponents(View view){
+        layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
         tvFechaConfeccion = (TextView) view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
         tvInfo = (TextView) view.findViewById(R.id.tv_info_venta);
         rvReservas = (RecyclerView) view.findViewById(R.id.rv_reservas_fliquidacion);
@@ -96,6 +100,14 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 });
             }
         });
+
+        layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Util.copyToClipBoard(getContext(),"Venta del "+tvFechaConfeccion.getText().toString()+"\n"+tvInfo.getText().toString());
+                return true;
+            }
+        });
     }
 
     private void udUI(){
@@ -109,7 +121,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         if(!reservaList.isEmpty()) {
             text = "Totales: " + getTotales();
         } else {
-            text = "No hay información para mmostrar";
+            text = "No hay información para mostrar";
         }
         tvInfo.setText(text);
     }
@@ -125,7 +137,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private void udReservaList(){
-        reservaList = ReservaBDHandler.getReservaFromDB(getContext(),
+        reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
                 "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=?",
                 new String[]{DateHandler.formatDateToStoreInDB(tvFechaConfeccion.getText().toString())});
         Collections.sort(reservaList,Reserva.ordenarPorTE);
@@ -147,23 +159,10 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 !MySharedPreferences.getTelefonoVendedor(getContext()).equals("")) {
             cuerpo += "\n";
         }
-        cuerpo += "Venta del día: "+tvFechaConfeccion.getText().toString()+"\n\n";
-
+        cuerpo += "Venta del día: "+tvFechaConfeccion.getText().toString();
 
         for (Reserva reserva:reservaList){
-            cuerpo += "TE: " + reserva.getNoTE() + "\n" +
-                    "Excursion: " + reserva.getExcursion() + "\n" +
-                    "Fecha: " + reserva.getFechaEjecucion() + "\n" +
-                    "Cantidad de pax: " + reserva.getCantPaxs(true) + "\n" +
-                    "Hotel: " + reserva.getHotel() + "\n" +
-                    "Habitación: " + reserva.getNoHab() + "\n";
-            if(!reserva.getIdioma().equals("")){
-                cuerpo += "Idioma: " + reserva.getIdioma() + "\n";
-            }
-            if(!reserva.getObservaciones().equals("")){
-                cuerpo += "Observaciones: " + reserva.getObservaciones() + "\n";
-            }
-            cuerpo += "\n";
+            cuerpo += "\n\n" + Reserva.toString(reserva);
         }
         return cuerpo;
     }
@@ -188,7 +187,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             //File rutaSD = Environment.getExternalFilesDir(null);
             File file = new File(rutaSD.getAbsolutePath(), tvFechaConfeccion.getText().toString().replace("/","") + ".xls");
             if(MyExcel.generarExcelReporteVenta(getContext(),file,reservaList)){
-                Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
+                myCallBack.showSnackBar("Excel generado correctamente: "+file);
             }
         } catch (Exception e) {
             //System.out.println("Mensaje error: " + e.getMessage());
@@ -259,5 +259,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(long id);
+        void showSnackBar(String mensaje);
     }
 }

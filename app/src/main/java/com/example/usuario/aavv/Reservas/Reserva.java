@@ -20,6 +20,22 @@ public class Reserva {
     Reserva() {
     }
 
+    public static String toString(Reserva reserva){
+        String text = "TE: " + reserva.getNoTE() + "\n" +
+                "Excursion: " + reserva.getExcursion() + "\n" +
+                "Fecha: " + reserva.getFechaEjecucion() + "\n" +
+                "Cantidad de pax: " + reserva.getCantPaxs(true) + "\n" +
+                "Hotel: " + reserva.getHotel() + "\n" +
+                "Habitación: " + reserva.getNoHab();
+        if(!reserva.getIdioma().equals("")){
+            text += "\nIdioma: " + reserva.getIdioma();
+        }
+        if(!reserva.getObservaciones().equals("")){
+            text += "\nObservaciones: " + reserva.getObservaciones();
+        }
+        return text;
+    }
+
     //no extended 2+2+1 free
     //extended 2 adultos + 2 menores + 1 menor free
     String getCantPaxs(boolean extendido){

@@ -22,16 +22,15 @@
             android:id="@+id/et_nombre_vendedor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_weight="1"
             android:hint="Nombre" />
 
         <Button
             android:id="@+id/btn_nombre_vendedor"
-            android:layout_width="0dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:layout_weight="1"
             android:text="Ok" />
 
     </LinearLayout>
@@ -59,16 +58,15 @@
             android:id="@+id/et_telefono_vendedor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_weight="1"
             android:hint="Teléfono" />
 
         <Button
             android:id="@+id/btn_telefono_vendedor"
-            android:layout_width="0dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:layout_weight="1"
             android:text="Ok" />
 
     </LinearLayout>
@@ -96,16 +94,15 @@
             android:id="@+id/et_agencia_vendedor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_weight="1"
             android:hint="Agencia" />
 
         <Button
             android:id="@+id/btn_agencia_vendedor"
-            android:layout_width="0dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:layout_weight="1"
             android:text="Ok" />
 
     </LinearLayout>

@@ -40,6 +40,8 @@ public class MyExcel {
     private static CellStyle centerStyle;
     private static CellStyle wrappedStyle;
     private static CellStyle borderThickStyle;
+    private static CellStyle precioStyle;
+    private static CellStyle totalStyle;
 
 
     public static boolean generarExcelReporteVentaPorAgencia(File file, List<Reserva> listaReservas, String agencia, String desde, String hasta, double total) {
@@ -127,6 +129,18 @@ public class MyExcel {
 
         borderThickStyle = workbook.createCellStyle();
         setBorderStyle(borderThickStyle,CellStyle.BORDER_THICK);
+
+        precioStyle = workbook.createCellStyle();
+        precioStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        precioStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00"));
+        setBorderStyle(precioStyle,CellStyle.BORDER_THICK);
+
+        totalStyle = workbook.createCellStyle();
+        totalStyle.setFillForegroundColor(HSSFColor.AQUA.index);
+        totalStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        totalStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        totalStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00"));
+        setBorderStyle(totalStyle,CellStyle.BORDER_THICK);
     }
 
     private static void setBorderStyle(CellStyle cellStyle, short borderStyle){
@@ -302,7 +316,7 @@ public class MyExcel {
 
                     cell = rowData.createCell(5);//Idioma
                     cell.setCellValue(listaReservas.get(i).getIdioma());
-                    cell.setCellStyle(borderThickStyle);
+                    cell.setCellStyle(centerStyle);
 
                     cell = rowData.createCell(6);//Hotel
                     cell.setCellValue(listaReservas.get(i).getHotel());
@@ -353,7 +367,7 @@ public class MyExcel {
 
                     cell = rowData.createCell(5);//Importe
                     cell.setCellValue(listaReservas.get(i).getPrecio());
-                    cell.setCellStyle(centerStyle);
+                    cell.setCellStyle(precioStyle);
 
                     ROW_INDEX ++;
                 }
@@ -380,7 +394,7 @@ public class MyExcel {
         }
         cell = rowData.createCell(5);
         cell.setCellValue(total);
-        cell.setCellStyle(headerCellStyle);
+        cell.setCellStyle(totalStyle);
     }
 
     private static boolean storeExcelInStorage(File file) {

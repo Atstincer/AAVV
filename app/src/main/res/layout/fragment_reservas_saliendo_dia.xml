@@ -25,33 +25,32 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ventas del día.." />
+                    android:text="Excursiones saliendo el.." />
 
                 <TextView
-                    android:id="@+id/tv_fecha_confeccion_fliquidacion"
+                    android:id="@+id/tv_fecha_ejecucion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:text="fecha confeccion" />
+                    android:text="fecha" />
 
             </LinearLayout>
 
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/tv_info_venta"
+            android:id="@+id/tv_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Total 0.00 usd" />
+            android:layout_marginTop="15dp"/>
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_reservas_fliquidacion"
+        android:id="@+id/rv_reservas"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="10dp" />
 
 </LinearLayout>

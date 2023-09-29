@@ -105,7 +105,7 @@ class ReservaBDHandler {
                     ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=?";
             args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta)};
         }
-        return getReservaFromDB(ctx,query,args);
+        return getReservasFromDB(ctx,query,args);
     }
 
     static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, String agencia, boolean soloActivas){
@@ -120,10 +120,10 @@ class ReservaBDHandler {
                     ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=?";
             args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia};
         }
-        return getReservaFromDB(ctx,query,args);
+        return getReservasFromDB(ctx,query,args);
     }
 
-    static List<Reserva> getReservaFromDB(Context ctx, String query, String[] arg){
+    static List<Reserva> getReservasFromDB(Context ctx, String query, String[] arg){
         List<Reserva> reservasList = new ArrayList<>();
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getReadableDatabase();

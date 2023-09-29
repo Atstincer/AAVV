@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyExcel;
+import com.example.usuario.aavv.Util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class FragmentVentaTTOO extends Fragment {
     public static final String TAG = "FragmentVentaTTOO";
     private final String TODAS = "Todas";
 
+    private LinearLayout layoutInfo;
     private AppCompatSpinner spinnerAgencias;
     private TextView tvFechaDesde, tvFechaHasta, tvInfoVenta;
     private RecyclerView rvReservas;
@@ -74,6 +77,7 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private void bindComponents(View view){
+        layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
         spinnerAgencias = (AppCompatSpinner)view.findViewById(R.id.sp_agencias);
         tvFechaDesde = (TextView)view.findViewById(R.id.tv_fecha_desde);
         tvFechaHasta = (TextView)view.findViewById(R.id.tv_fecha_hasta);
@@ -90,6 +94,16 @@ public class FragmentVentaTTOO extends Fragment {
         if(tvFechaHasta.getText().toString().equals("fecha")) {
             tvFechaHasta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
         }
+        layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                String texto = "Agencia: "+spinnerAgencias.getSelectedItem().toString()+"\n" +
+                        "Desde: "+tvFechaDesde.getText().toString()+"\n" +
+                        "Hasta: "+tvFechaHasta.getText().toString()+"\n\n" + tvInfoVenta.getText().toString();
+                Util.copyToClipBoard(getContext(),texto);
+                return true;
+            }
+        });
         tvFechaDesde.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -137,13 +151,15 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private void showInfo(){
-        if(!DateHandler.areDatesInOrder(tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString())){
-            listaAgencias.clear();
-            listaReservas.clear();
-            udTVInfo();
-            setUpSpinner();
-            Toast.makeText(getContext(),"Las fechas no son correctas",Toast.LENGTH_SHORT).show();
-            return;
+        if(!tvFechaDesde.getText().toString().equals(tvFechaHasta.getText().toString())){
+            if(!DateHandler.areDatesInOrder(tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString())){
+                listaAgencias.clear();
+                listaReservas.clear();
+                udTVInfo();
+                setUpSpinner();
+                Toast.makeText(getContext(),"Las fechas no son correctas",Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         String selected = "";
         if(listaReservas.size()!=0){

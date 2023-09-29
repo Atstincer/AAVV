@@ -1,5 +1,7 @@
 package com.example.usuario.aavv.Reservas;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,11 +14,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
+import com.example.usuario.aavv.Util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,8 +37,9 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
 
     public static final String TAG = "FragmentReservasSaliendoElDia";
 
+    private LinearLayout layoutInfo;
     private RecyclerView rvReservas;
-    private TextView tvFechaEjecucion;
+    private TextView tvFechaEjecucion, tvInfo;
 
     private List<Reserva> reservasList;
     private ReservaRVAdapter adapter;
@@ -44,11 +50,15 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View v = inflater.inflate(R.layout.fragment_reservas,container,false);
-        bindComponents(v);
+        return inflater.inflate(R.layout.fragment_reservas_saliendo_dia,container,false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bindComponents(view);
         myCallBack.udUI(FragmentReservasSaliendoElDia.TAG);
         setItUp();
-        return v;
     }
 
     @Override
@@ -58,37 +68,58 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     private void bindComponents(View v){
+        layoutInfo = (LinearLayout)v.findViewById(R.id.layout_info);
         rvReservas = (RecyclerView)v.findViewById(R.id.rv_reservas);
-        tvFechaEjecucion = (TextView)v.findViewById(R.id.tv_fecha_ejecucion_freservas);
+        tvFechaEjecucion = (TextView)v.findViewById(R.id.tv_fecha_ejecucion);
+        tvInfo = (TextView)v.findViewById(R.id.tv_info);
     }
 
     private void setItUp(){
-        tvFechaEjecucion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        if(tvFechaEjecucion.getText().toString().equals("fecha")) {
+            tvFechaEjecucion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        }
         tvFechaEjecucion.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 DateHandler.showDatePicker(getContext(), tvFechaEjecucion, new DateHandler.DatePickerCallBack() {
                     @Override
                     public void dateSelected() {
-                        udReservasList();
-                        adapter.setReservaList(reservasList);
+                        udFragment();
                     }
                 });
             }
         });
 
+        layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                String texto = "Reservas saliendo el día " + tvFechaEjecucion.getText().toString() + "\n\n" + tvInfo.getText().toString();
+                Util.copyToClipBoard(getContext(),texto);
+                return false;
+            }
+        });
+
         //reservasList = ReservaBDHandler.getAllReservasFromDB(getContext());
         udReservasList();
+        udTvInfo();
         adapter = new ReservaRVAdapter(getContext(),reservasList, ReservaRVAdapter.Modo.EXC_SALIENDO_EL_DIA,this);
         rvReservas.setAdapter(adapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
+    private void udFragment(){
+        udReservasList();
+        udTvInfo();
+        adapter.setReservaList(reservasList);
+    }
 
     private void udReservasList(){
-        reservasList = ReservaBDHandler.getReservaFromDB(getContext(),
-                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"=?",
-                new String[]{DateHandler.formatDateToStoreInDB(tvFechaEjecucion.getText().toString())});
+        reservasList = ReservaBDHandler.getReservasFromDB(getContext(),
+                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
+                new String[]{DateHandler.formatDateToStoreInDB(tvFechaEjecucion.getText().toString()),String.valueOf(Reserva.ESTADO_ACTIVO)});
+        if(reservasList.isEmpty()){
+            return;
+        }
         Collections.sort(reservasList,Reserva.ordenarPorTE);
         //Collections.sort(reservasList,Reserva.ordenarPorExc);
         Map<String,List<Reserva>> mapReservas = new HashMap<String, List<Reserva>>();
@@ -107,14 +138,57 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
         }
     }
 
-    private void enviarMail(){
+    private void udTvInfo(){
+        if(reservasList.isEmpty()){
+            tvInfo.setText("No hay resultados para mostrar");
+            return;
+        }
+        String texto = "";
+        List<String> excursiones = new ArrayList<>();
 
+        //llenando lista excursiones
+        for(Reserva reserva:reservasList){
+            if(!excursiones.contains(reserva.getExcursion())){
+                excursiones.add(reserva.getExcursion());
+            }
+        }
+
+        boolean primeraExc = true;
+
+        //creando mensaje
+        for(String excursion:excursiones){
+            int totalPaxExc = 0;
+            String infoExc = "";
+            for(Reserva reserva:reservasList){
+                if(reserva.getExcursion().equals(excursion)){
+                    int cantPax = reserva.getAdultos()+reserva.getMenores()+reserva.getInfantes();
+                    totalPaxExc += cantPax;
+                    infoExc += "\n" + reserva.getNoTE() + " " + reserva.getHotel() + " " + reserva.getNoHab();
+                    if(cantPax!=0){
+                        infoExc += " " + cantPax + " pax";
+                    }
+                    if(reserva.getAcompanantes()!=0){
+                        infoExc += " " + reserva.getAcompanantes() + " acompañante";
+                    }
+                }
+            }
+            if(primeraExc){
+                texto += excursion + " (" + totalPaxExc + ")" + infoExc;
+                primeraExc = false;
+            }else {
+                texto += "\n\n" + excursion + " (" + totalPaxExc + ")" + infoExc;
+            }
+        }
+        tvInfo.setText(texto);
+    }
+
+    private void enviarMail(){
+        // TODO: 14/09/2023 funcion enviar x mail excursiones saliendo el dia...
     }
 
 
     @Override
     public void itemClicked(int position) {
-        //Toast.makeText(getContext(),"Item clicked: "+position,Toast.LENGTH_SHORT).show();
         myCallBack.setUpFragmentReservar(reservasList.get(position).getId());
     }
 

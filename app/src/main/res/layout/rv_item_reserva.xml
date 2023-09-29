@@ -28,6 +28,13 @@
                 android:text="TE037225" />
 
             <TextView
+                android:id="@+id/tv_estado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/holo_red_dark" />
+
+            <TextView
                 android:id="@+id/tv_fecha_ejecucion_cv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

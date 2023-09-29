@@ -1,6 +1,7 @@
 package com.example.usuario.aavv.Reservas;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.usuario.aavv.R;
+import com.example.usuario.aavv.Util.Util;
 
 import java.security.PrivilegedAction;
 import java.util.List;
@@ -54,16 +56,17 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio;
+        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio, tvEstado;
         private Modo modo;
 
         private Context ctx;
 
-        ViewHolder(Context ctx,View itemView, Modo modo, final MyCallBack myCallBack) {
+        ViewHolder(final Context ctx, View itemView, Modo modo, final MyCallBack myCallBack) {
             super(itemView);
             this.ctx = ctx;
             this.modo = modo;
             tvTE = (TextView)itemView.findViewById(R.id.tv_te_cv);
+            tvEstado = (TextView)itemView.findViewById(R.id.tv_estado);
             tvFechaEjecucion = (TextView)itemView.findViewById(R.id.tv_fecha_ejecucion_cv);
             tvExcursion = (TextView)itemView.findViewById(R.id.tv_nombre_excursion_cv);
             tvHotel = (TextView)itemView.findViewById(R.id.tv_hotel_cv);
@@ -79,11 +82,26 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
                     myCallBack.itemClicked(getAdapterPosition());
                 }
             });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    Util.copyToClipBoard(ctx,Reserva.toString(reservaList.get(getAdapterPosition())));
+                    return true;
+                }
+            });
         }
 
         void bindHolder(int position){
             String te = "TE "+ reservaList.get(position).getNoTE();
             tvTE.setText(te);
+            if(reservaList.get(position).getEstado()!=Reserva.ESTADO_ACTIVO){
+                if(reservaList.get(position).getEstado()==Reserva.ESTADO_CANCELADO){
+                    tvEstado.setText("CANCELADO");
+                }else if(reservaList.get(position).getEstado()==Reserva.ESTADO_DEVUELTO){
+                    tvEstado.setText("DEVUELTO");
+                }
+            }
             tvFechaEjecucion.setText(reservaList.get(position).getFechaEjecucion());
             tvExcursion.setText(reservaList.get(position).getExcursion());
             tvHotel.setText(reservaList.get(position).getHotel());

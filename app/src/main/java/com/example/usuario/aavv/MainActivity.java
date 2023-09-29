@@ -1,14 +1,18 @@
 package com.example.usuario.aavv;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.usuario.aavv.Ajustes.FragmentAjustes;
 import com.example.usuario.aavv.Reservas.FragmentLiquidacion;
@@ -26,12 +30,16 @@ public class MainActivity extends AppCompatActivity
 
     private MisConstantes.Estado estadoFragmentReservar;
 
+    private CoordinatorLayout coordinatorLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.coordinator_layout);
 
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -53,6 +61,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
     }
+
+
 
     @Override
     public MisConstantes.Estado getEstado() {
@@ -100,6 +110,21 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
         setTitle(title);
+    }
+
+    @Override
+    public void showSnackBar(String mensaje) {
+        final Snackbar snackbar = Snackbar.make(coordinatorLayout,mensaje,Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
+        AppCompatTextView textView = (AppCompatTextView) snackBarView.getChildAt(0);
+        textView.setMaxLines(5);
+        snackbar.setAction("Ok", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackbar.dismiss();
+            }
+        });
+        snackbar.show();
     }
 
     @Override

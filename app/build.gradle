@@ -29,4 +29,25 @@ dependencies {
     //    testCompile 'junit:junit:4.12'
     compile 'com.android.support:cardview-v7:25.0.1'
     compile files('libs/poi-3.7.jar')
+
+    //compile 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    //compile 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    // group: 'androidx.lifecycle', name: 'lifecycle-extensions', version: '2.0.0-alpha1'
+
+    //compile 'androidx.lifecycle:lifecycle-viewmodel:2.0.0-alpha1'
+
+
+    //compile "org.jetbrains.kotlin:kotlin-stdlib:1.8.10"
+    //compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+
+    //def lifecycle_version = "2.5.1"
+
+    // ViewModel
+    //compile "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    // LiveData
+    //compile "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    // Lifecycles only (without ViewModel or LiveData)
+    //compile "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+
+
 }
