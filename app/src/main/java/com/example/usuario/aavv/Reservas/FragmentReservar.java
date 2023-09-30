@@ -20,11 +20,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
+import com.example.usuario.aavv.Hoteles.Hotel;
+import com.example.usuario.aavv.Hoteles.HotelBDHandler;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.TTOO.TTOO;
 import com.example.usuario.aavv.TTOO.TTOOBDHandler;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
+
+import java.util.List;
 
 
 /**
@@ -124,9 +128,10 @@ public class FragmentReservar extends Fragment {
         actvIdioma.setThreshold(1);
         actvIdioma.setAdapter(adapterIdiomas);
 
-        String[] hoteles = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
-                "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};
-        ArrayAdapter<String> adapterHoteles = new ArrayAdapter<String>(getContext(),R.layout.my_simple_dropdown_item_1line,hoteles);
+        /*String[] hoteles = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
+                "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};*/
+        List<Hotel> hoteles = HotelBDHandler.getAllHotelesfromDB(getContext());
+        ArrayAdapter<Hotel> adapterHoteles = new ArrayAdapter<Hotel>(getContext(),R.layout.my_simple_dropdown_item_1line,hoteles);
         actvHotel.setThreshold(1);
         actvHotel.setAdapter(adapterHoteles);
 

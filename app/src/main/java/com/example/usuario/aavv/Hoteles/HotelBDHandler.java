@@ -1,10 +1,11 @@
-package com.example.usuario.aavv.TTOO;
+package com.example.usuario.aavv.Hoteles;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
+import com.example.usuario.aavv.TTOO.TTOO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,40 +14,40 @@ import java.util.List;
  * Created by usuario on 23/07/2023.
  */
 
-public class TTOOBDHandler {
+public class HotelBDHandler {
 
-    static String TABLE_NAME = "Touroperadores";
+    static String TABLE_NAME = "Hoteles";
     static String CAMPO_NOMBRE = "nombre";
 
-    static TTOO getTTOO(Cursor cursor){
-        TTOO ttoo = new TTOO();
-        ttoo.setId(cursor.getLong(0));
-        ttoo.setNombre(cursor.getString(cursor.getColumnIndex(TTOOBDHandler.CAMPO_NOMBRE)));
-        return ttoo;
+    static Hotel getHotel(Cursor cursor){
+        Hotel hotel = new Hotel();
+        hotel.setId(cursor.getLong(0));
+        hotel.setNombre(cursor.getString(cursor.getColumnIndex(HotelBDHandler.CAMPO_NOMBRE)));
+        return hotel;
     }
 
-    public static List<TTOO> getAllTTOOfromDB(Context ctx){
-        List<TTOO> ttooList = new ArrayList<>();
+    public static List<Hotel> getAllHotelesfromDB(Context ctx){
+        List<Hotel> hotelesList = new ArrayList<>();
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase bd = admin.getReadableDatabase();
-        Cursor cursor = bd.rawQuery("Select * from "+TTOOBDHandler.TABLE_NAME,null);
+        Cursor cursor = bd.rawQuery("Select * from "+ HotelBDHandler.TABLE_NAME,null);
         if(cursor.moveToFirst()){
             do{
-                ttooList.add(getTTOO(cursor));
+                hotelesList.add(getHotel(cursor));
             }while (cursor.moveToNext());
         }
         cursor.close();
-        return ttooList;
+        return hotelesList;
     }
 
-    static TTOO getTTOOfromDB(Context ctx,long id){
+    static Hotel getHotelfromDB(Context ctx,long id){
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase bd = admin.getReadableDatabase();
-        Cursor cursor = bd.rawQuery("Select * from "+TTOOBDHandler.TABLE_NAME+" where id=?",new String[]{String.valueOf(id)});
+        Cursor cursor = bd.rawQuery("Select * from "+ HotelBDHandler.TABLE_NAME+" where id=?",new String[]{String.valueOf(id)});
         if(cursor.moveToFirst()){
-            return getTTOO(cursor);
+            return getHotel(cursor);
         }
         cursor.close();
-        return new TTOO();
+        return new Hotel();
     }
 }

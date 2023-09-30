@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.usuario.aavv.Ajustes.FragmentAjustes;
+import com.example.usuario.aavv.Hoteles.FragmentHoteles;
 import com.example.usuario.aavv.Reservas.FragmentLiquidacion;
 import com.example.usuario.aavv.Reservas.FragmentReservar;
 import com.example.usuario.aavv.Reservas.FragmentReservasSaliendoElDia;
@@ -24,7 +25,8 @@ import com.example.usuario.aavv.Util.MisConstantes;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
-        FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack {
+        FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack,
+        FragmentHoteles.MyCallBack{
 
     public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE = 0;
 
@@ -105,6 +107,9 @@ public class MainActivity extends AppCompatActivity
             case FragmentVentaTTOO.TAG:
                 title = "Ventas por agencias";
                 break;
+            case FragmentHoteles.TAG:
+                title = "Hoteles";
+                break;
             case FragmentAjustes.TAG:
                 title = "Ajustes";
                 break;
@@ -183,6 +188,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_agencias:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentTouroperadores(), FragmentTouroperadores.TAG)
+                        .addToBackStack(null).commit();
+                break;
+            case R.id.nav_hoteles:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentHoteles(), FragmentHoteles.TAG)
                         .addToBackStack(null).commit();
                 break;
             case R.id.nav_ajustes:

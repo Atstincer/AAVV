@@ -24,6 +24,10 @@
             android:title="Agencias" />
 
         <item
+            android:id="@+id/nav_hoteles"
+            android:title="Hoteles" />
+
+        <item
             android:id="@+id/nav_ajustes"
             android:title="Ajustes" />
 
