@@ -162,8 +162,10 @@ public class FragmentVentaTTOO extends Fragment {
             }
         }
         String selected = "";
-        if(listaReservas.size()!=0){
-            selected = spinnerAgencias.getSelectedItem().toString();
+        if(listaReservas.size()>0){
+            if(spinnerAgencias.getSelectedItem()!=null) {
+                selected = spinnerAgencias.getSelectedItem().toString();
+            }
         }
         udListaAgencias();
         setUpSpinner();
@@ -211,6 +213,11 @@ public class FragmentVentaTTOO extends Fragment {
 
     private void udReservasRV(){
         listaReservas.clear();
+        if(listaAgencias.isEmpty()){
+            rvAdapter.setReservaList(listaReservas);
+            //udTVInfo();
+            return;
+        }
         String selected = spinnerAgencias.getSelectedItem().toString();
         if(selected.equals(TODAS)){
             listaReservas = ReservaBDHandler.getReservasFromDB(getContext(),tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString(),true);

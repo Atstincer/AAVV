@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.usuario.aavv.Ajustes.FragmentAjustes;
+import com.example.usuario.aavv.Excursiones.FragmentExcursion;
+import com.example.usuario.aavv.Excursiones.FragmentExcursiones;
 import com.example.usuario.aavv.Hoteles.FragmentHoteles;
 import com.example.usuario.aavv.Reservas.FragmentLiquidacion;
 import com.example.usuario.aavv.Reservas.FragmentReservar;
@@ -26,7 +28,7 @@ import com.example.usuario.aavv.Util.MisConstantes;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
         FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack,
-        FragmentHoteles.MyCallBack{
+        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack{
 
     public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE = 0;
 
@@ -82,6 +84,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void setUpNewFragmentExcursion() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentExcursion(),FragmentExcursion.TAG).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void setUpFragmentExcursion(long id) {
+        FragmentExcursion fragment = new FragmentExcursion();
+        Bundle bundle = new Bundle();
+        bundle.putLong("id",id);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment,FragmentExcursion.TAG).addToBackStack(null).commit();
+    }
+
+    @Override
     public void udUI(String tag) {
         String title = "";
         switch (tag){
@@ -109,6 +125,12 @@ public class MainActivity extends AppCompatActivity
                 break;
             case FragmentHoteles.TAG:
                 title = "Hoteles";
+                break;
+            case FragmentExcursiones.TAG:
+                title = "Excursiones";
+                break;
+            case FragmentExcursion.TAG:
+                title = "Excursion";
                 break;
             case FragmentAjustes.TAG:
                 title = "Ajustes";
@@ -192,6 +214,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_hoteles:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentHoteles(), FragmentHoteles.TAG)
+                        .addToBackStack(null).commit();
+                break;
+            case R.id.nav_excursiones:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentExcursiones(), FragmentExcursiones.TAG)
                         .addToBackStack(null).commit();
                 break;
             case R.id.nav_ajustes:

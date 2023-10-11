@@ -6,12 +6,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
+import com.example.usuario.aavv.Excursiones.Excursion;
+import com.example.usuario.aavv.Excursiones.ExcursionBDHandler;
 import com.example.usuario.aavv.Hoteles.Hotel;
 import com.example.usuario.aavv.Hoteles.HotelBDHandler;
 import com.example.usuario.aavv.R;
@@ -40,6 +45,7 @@ public class FragmentReservar extends Fragment {
     public static final String TAG = "FragmentReservar";
 
     private long idSelectedReserva;
+    private List<Excursion> excursionesList;
 
     private TextView tvFechaConfeccion, tvFechaEjecucion, tvEstado;
     private EditText etNumeroTE, etNombreCliente, etAdultos, etMenores, etInfantes, etAcompanante, etNoHab, etPrecio, etObservaciones;
@@ -112,12 +118,24 @@ public class FragmentReservar extends Fragment {
             }
         });
 
-        String[] excursiones = {"Catamarán JC","Aventura marina","Nado con delfines","Nado con delfines Plus","Pesca de altura 1bote 4hrs","Pesca especializada " +
+        String[] excursionesPordefecto = {"Catamarán JC","Aventura marina","Nado con delfines","Nado con delfines Plus","Pesca de altura 1bote 4hrs","Pesca especializada " +
                 "1bote 4hrs","Santa Clara-Remedios","Tres ciudades","Dos ciudades coloniales","Aventura en la montaña","Santa María adentro","Buceo 2 inmersiones" +
                 "", "Buceo 1 inmersión","Catamarán MJ exclusivo","Jeep safari"};
-        ArrayAdapter<String> adapterExcursiones = new ArrayAdapter<String>(getContext(),R.layout.my_simple_dropdown_item_1line,excursiones);
+        excursionesList = ExcursionBDHandler.getAllExcursionesfromDB(getContext());
+
+        //ArrayAdapter adapterExcursiones = new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursiones);
         actvNombreExcursion.setThreshold(1);
-        actvNombreExcursion.setAdapter(adapterExcursiones);
+        if(!excursionesList.isEmpty()) {
+            actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursionesList));
+        }else {
+            actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursionesPordefecto));
+        }
+        actvNombreExcursion.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                predictPrice();
+            }
+        });
 
         ArrayAdapter<TTOO> adapterTTOO = new ArrayAdapter<TTOO>(getContext(),R.layout.my_simple_dropdown_item_1line, TTOOBDHandler.getAllTTOOfromDB(getContext()));
         actvAgencia.setThreshold(1);
@@ -128,12 +146,20 @@ public class FragmentReservar extends Fragment {
         actvIdioma.setThreshold(1);
         actvIdioma.setAdapter(adapterIdiomas);
 
-        /*String[] hoteles = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
-                "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};*/
+        String[] hotelesPorDefecto = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
+                "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};
         List<Hotel> hoteles = HotelBDHandler.getAllHotelesfromDB(getContext());
-        ArrayAdapter<Hotel> adapterHoteles = new ArrayAdapter<Hotel>(getContext(),R.layout.my_simple_dropdown_item_1line,hoteles);
+
         actvHotel.setThreshold(1);
-        actvHotel.setAdapter(adapterHoteles);
+        if(!hoteles.isEmpty()){
+            actvHotel.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,hoteles));
+        }else {
+            actvHotel.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,hotelesPorDefecto));
+        }
+
+        setOnTextChangedListener(etAdultos);
+        setOnTextChangedListener(etMenores);
+        setOnTextChangedListener(etAcompanante);
 
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -195,16 +221,24 @@ public class FragmentReservar extends Fragment {
         tvFechaConfeccion.setText(reserva.getFechaConfeccion());
         tvFechaEjecucion.setText(reserva.getFechaEjecucion());
         etNumeroTE.setText(reserva.getNoTE());
+        actvNombreExcursion.setText(reserva.getExcursion());
         showEstado(reserva.getEstado());
         etNombreCliente.setText(reserva.getCliente());
-        etAdultos.setText(String.valueOf(reserva.getAdultos()));
-        etMenores.setText(String.valueOf(reserva.getMenores()));
-        etInfantes.setText(String.valueOf(reserva.getInfantes()));
-        etAcompanante.setText(String.valueOf(reserva.getAcompanantes()));
+        if(reserva.getAdultos()!=0) {
+            etAdultos.setText(String.valueOf(reserva.getAdultos()));
+        }
+        if(reserva.getMenores()!=0) {
+            etMenores.setText(String.valueOf(reserva.getMenores()));
+        }
+        if(reserva.getInfantes()!=0) {
+            etInfantes.setText(String.valueOf(reserva.getInfantes()));
+        }
+        if(reserva.getAcompanantes()!=0) {
+            etAcompanante.setText(String.valueOf(reserva.getAcompanantes()));
+        }
         etNoHab.setText(reserva.getNoHab());
         etPrecio.setText(String.valueOf(reserva.getPrecio()));
         etObservaciones.setText(reserva.getObservaciones());
-        actvNombreExcursion.setText(reserva.getExcursion());
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
@@ -245,6 +279,73 @@ public class FragmentReservar extends Fragment {
             //do nothing
             etNumeroTE.requestFocus();
         }
+    }
+    
+    private void predictPrice(Excursion excursion){
+        if(excursion == null){return;}
+        float precioTotal = 0;
+        int adultos = 0;
+        int menores = 0;
+        int acompanantes = 0;
+        if(!etAdultos.getText().toString().equals("")){
+            adultos += Integer.parseInt(etAdultos.getText().toString());
+        }
+        if(!etMenores.getText().toString().equals("")){
+            menores += Integer.parseInt(etMenores.getText().toString());
+        }
+        if(!etAcompanante.getText().toString().equals("")){
+            acompanantes += Integer.parseInt(etAcompanante.getText().toString());
+        }
+        precioTotal += acompanantes*excursion.getPrecioAcomp();
+        switch (excursion.getTipoPrecio()){
+            case Excursion.PRECIO_X_PAX:
+                precioTotal += adultos*excursion.getPrecioAd() + (menores*excursion.getPrecioMenor());
+                break;
+            case Excursion.PRECIO_X_RANGO:
+                if(excursion.getRangoHasta()<=1){return;}
+                if(adultos>0){
+                    precioTotal += excursion.getPrecioRango();
+                }
+                if(adultos-excursion.getRangoHasta()>0){
+                    precioTotal += (adultos-excursion.getRangoHasta())*excursion.getPrecioAd();
+                    precioTotal += menores*excursion.getPrecioMenor();
+                }else {
+                    if((adultos+menores)-excursion.getRangoHasta()>0){
+                        precioTotal += ((adultos+menores)-excursion.getRangoHasta())*excursion.getPrecioMenor();
+                    }
+                }
+                break;
+        }
+        etPrecio.setText(String.valueOf(precioTotal));
+    }
+
+    private void predictPrice(){
+        String excursionSelected = actvNombreExcursion.getText().toString();
+        for(Excursion excursion:excursionesList){
+            if(excursion.getNombre().equals(excursionSelected)){
+                predictPrice(excursion);
+                return;
+            }
+        }
+    }
+
+    private void setOnTextChangedListener(EditText et){
+        et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                predictPrice();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     private void limpiarCampos(){
@@ -327,8 +428,9 @@ public class FragmentReservar extends Fragment {
 
         //obligatorio
         if(etAdultos.getText().toString().equals("")){
-            Toast.makeText(getContext(),"Falta al menos 1 adulto",Toast.LENGTH_SHORT).show();
-            return false;
+            //Toast.makeText(getContext(),"Falta al menos 1 adulto",Toast.LENGTH_SHORT).show();
+            //return false;
+            falta += "\n- tiene 0 clientes adultos";
         }
 
         //obligatorio
