@@ -101,6 +101,8 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
                 }else if(reservaList.get(position).getEstado()==Reserva.ESTADO_DEVUELTO){
                     tvEstado.setText("DEVUELTO");
                 }
+            }else {
+                tvEstado.setText("");
             }
             tvFechaEjecucion.setText(reservaList.get(position).getFechaEjecucion());
             tvExcursion.setText(reservaList.get(position).getExcursion());

@@ -130,8 +130,10 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         double total = 0;
         int cantPax = 0;
         for(Reserva reserva:reservaList){
-            total = total + reserva.getPrecio();
-            cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO) {
+                total = total + reserva.getPrecio();
+                cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+            }
         }
         return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
     }

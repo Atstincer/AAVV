@@ -1,7 +1,9 @@
 package com.example.usuario.aavv.Reservas;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -505,6 +507,25 @@ public class FragmentReservar extends Fragment {
         Toast.makeText(getContext(),mensaje,Toast.LENGTH_SHORT).show();
     }
 
+    private void confirmarEliminar(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Seguro que desea eliminar esta reserva?");
+        builder.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                eliminarReserva();
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //do nothing
+            }
+        });
+        AlertDialog confirmationDialog = builder.create();
+        confirmationDialog.show();
+    }
+
     private void eliminarReserva(){
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
@@ -545,7 +566,7 @@ public class FragmentReservar extends Fragment {
                 setDevuelto();
                 break;
             case R.id.menu_item_eliminar_reserva:
-                eliminarReserva();
+                confirmarEliminar();
                 break;
         }
         return super.onOptionsItemSelected(item);
