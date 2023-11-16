@@ -1,19 +1,36 @@
 package com.example.usuario.aavv.Ajustes;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
+import com.example.usuario.aavv.MainActivity;
 import com.example.usuario.aavv.R;
+import com.example.usuario.aavv.Reservas.Reserva;
+import com.example.usuario.aavv.Reservas.ReservaBDHandler;
+import com.example.usuario.aavv.Util.DateHandler;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.List;
 
 /**
  * Created by usuario on 9/08/2023.
@@ -34,6 +51,7 @@ public class FragmentAjustes extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ajustes,container,false);
+        setHasOptionsMenu(true);
         bindComponents(view);
         setItUp();
         return view;
@@ -141,8 +159,98 @@ public class FragmentAjustes extends Fragment {
         }
     }
 
+    private void exportarBD(){
+        //File carpeta = new File(Environment.getExternalStorageDirectory() + "/ExportarSQLiteCSV");
+
+        File carpeta = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
+        if(!carpeta.exists()){carpeta.mkdir();}
+        carpeta = new File(carpeta.getAbsolutePath()+"/Salva BD");
+        if(!carpeta.exists()){carpeta.mkdir();}
+
+        String archivoAgenda = carpeta.toString() + "/" + "AAVV.csv";
+
+        try {
+            FileWriter fileWriter = new FileWriter(archivoAgenda);
+
+            List<Reserva> listaReservas = ReservaBDHandler.getAllReservasFromDB(getContext());
+
+            if(listaReservas.isEmpty()){return;}
+
+            for(Reserva reserva:listaReservas){
+                fileWriter.append(String.valueOf(reserva.getId()));
+                fileWriter.append(",");
+                fileWriter.append(reserva.getNoTE());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getExcursion());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getAgencia());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getNoHab());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getCliente());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getHotel());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getFechaConfeccion());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getFechaEjecucion());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getIdioma());
+                fileWriter.append(",");
+                String observaciones = reserva.getObservaciones().replace("\n","-").replace(","," ");
+                fileWriter.append(observaciones);
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getAdultos()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getMenores()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getInfantes()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getAcompanantes()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getPrecio()));
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getEstado()));
+                fileWriter.append("\n");
+            }
+
+            fileWriter.close();
+            //Toast.makeText(MainActivity.this, "SE CREO EL ARCHIVO CSV EXITOSAMENTE", Toast.LENGTH_LONG).show();
+            myCallBack.showSnackBar("Salva creada correctamente: "+archivoAgenda);
+        } catch (Exception e) {
+            Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void checkForPermissions() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(menu!=null){menu.clear();}
+        inflater.inflate(R.menu.menu_frag_ajustes,menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_exportar_bd:
+                checkForPermissions();
+                exportarBD();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public interface MyCallBack{
         void udUI(String tag);
+        void showSnackBar(String mensaje);
     }
 
 }

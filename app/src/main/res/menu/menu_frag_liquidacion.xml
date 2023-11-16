@@ -10,4 +10,7 @@
     <item android:id="@+id/menu_item_excel_reporte_venta"
         android:title="Excel reporte de venta" />
 
+    <item android:id="@+id/menu_item_copiar"
+        android:title="Copiar info" />
+
 </menu>

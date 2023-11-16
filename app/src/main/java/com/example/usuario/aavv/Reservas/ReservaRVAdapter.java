@@ -86,7 +86,7 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    Util.copyToClipBoard(ctx,Reserva.toString(reservaList.get(getAdapterPosition())));
+                    Util.copyToClipBoard(ctx,Reserva.toString(reservaList.get(getAdapterPosition()),Reserva.INFO_REPORTE_VENTA));
                     return true;
                 }
             });

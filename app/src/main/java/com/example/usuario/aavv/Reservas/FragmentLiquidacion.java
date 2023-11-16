@@ -130,7 +130,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         double total = 0;
         int cantPax = 0;
         for(Reserva reserva:reservaList){
-            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO) {
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO || reserva.getEstado()==Reserva.ESTADO_DEVUELTO) {
                 total = total + reserva.getPrecio();
                 cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
             }
@@ -145,26 +145,36 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         Collections.sort(reservaList,Reserva.ordenarPorTE);
     }
 
-    private String getCuerpoMail(){
-        String cuerpo = "";
+    private String getInfoVendedor(){
+        String texto = "";
         if(!MySharedPreferences.getAgenciaVendedor(getContext()).equals("")){
-            cuerpo += "Agencia: "+MySharedPreferences.getAgenciaVendedor(getContext())+"\n";
+            texto += "Agencia: "+MySharedPreferences.getAgenciaVendedor(getContext());
         }
         if(!MySharedPreferences.getNombreVendedor(getContext()).equals("")){
-            cuerpo += "Vendedor: "+MySharedPreferences.getNombreVendedor(getContext())+"\n";
+            if(!texto.equals("")) {
+                texto += "\n";
+            }
+            texto += "Vendedor: " + MySharedPreferences.getNombreVendedor(getContext());
         }
         if(!MySharedPreferences.getTelefonoVendedor(getContext()).equals("")){
-            cuerpo += "Contacto: "+MySharedPreferences.getTelefonoVendedor(getContext())+"\n";
+            if(!texto.equals("")) {
+                texto += "\n";
+            }
+            texto += "Contacto: "+MySharedPreferences.getTelefonoVendedor(getContext());
         }
+        return texto;
+    }
 
-        if(!MySharedPreferences.getNombreVendedor(getContext()).equals("")||!MySharedPreferences.getAgenciaVendedor(getContext()).equals("")||
-                !MySharedPreferences.getTelefonoVendedor(getContext()).equals("")) {
-            cuerpo += "\n";
+    private String getCuerpoMail(){
+        String cuerpo = "";
+        cuerpo += getInfoVendedor();
+
+        if(!cuerpo.equals("")) {
+            cuerpo += "\n\n";
         }
         cuerpo += "Venta del día: "+tvFechaConfeccion.getText().toString();
-
         for (Reserva reserva:reservaList){
-            cuerpo += "\n\n" + Reserva.toString(reserva);
+            cuerpo += "\n\n" + Reserva.toString(reserva,Reserva.INFO_REPORTE_VENTA);
         }
         return cuerpo;
     }
@@ -196,6 +206,16 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             //System.out.println("Mensaje error: " + e.getMessage());
             Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void copiarInfo(){
+        String texto = "Venta del día: "+tvFechaConfeccion.getText().toString();
+        texto += "\n\n" + tvInfo.getText().toString();
+        for (Reserva reserva:reservaList){
+            texto += "\n\n" + Reserva.toString(reserva,Reserva.INFO_LIQUIDACION);
+        }
+        Util.copyToClipBoard(getContext(),texto);
+        Toast.makeText(getContext(),"Info copiada",Toast.LENGTH_SHORT).show();
     }
 
     private void checkForPermissions() {
@@ -248,6 +268,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 break;
             case R.id.menu_item_excel_reporte_venta:
                 checkForPermissions();
+                break;
+            case R.id.menu_item_copiar:
+                copiarInfo();
                 break;
         }
         return super.onOptionsItemSelected(item);

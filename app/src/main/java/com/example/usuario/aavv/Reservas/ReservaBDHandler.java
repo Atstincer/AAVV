@@ -15,7 +15,7 @@ import java.util.List;
  * Created by usuario on 30/07/2023.
  */
 
-class ReservaBDHandler {
+public class ReservaBDHandler {
 
     static String TABLE_NAME = "Reservas";
     private static String CAMPO_NUMERO_TE = "TE";
@@ -78,7 +78,7 @@ class ReservaBDHandler {
         return reserva;
     }
 
-    static List<Reserva> getAllReservasFromDB(Context ctx){
+    public static List<Reserva> getAllReservasFromDB(Context ctx){
         List<Reserva> reservasList = new ArrayList<>();
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getReadableDatabase();

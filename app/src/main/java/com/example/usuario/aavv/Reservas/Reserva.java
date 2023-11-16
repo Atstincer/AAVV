@@ -8,9 +8,12 @@ import java.util.Comparator;
 
 public class Reserva {
 
-    public static final int ESTADO_ACTIVO = 0;
-    public static final int ESTADO_CANCELADO = 1;
-    public static final int ESTADO_DEVUELTO = 2;
+    static final int ESTADO_ACTIVO = 0;
+    static final int ESTADO_CANCELADO = 1;
+    static final int ESTADO_DEVUELTO = 2;
+
+    static final int INFO_REPORTE_VENTA = 3;
+    static final int INFO_LIQUIDACION = 4;
 
     private long id;
     private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, idioma, Observaciones;
@@ -20,18 +23,24 @@ public class Reserva {
     Reserva() {
     }
 
-    public static String toString(Reserva reserva){
+    public static String toString(Reserva reserva, int formato){
         String text = "TE: " + reserva.getNoTE() + "\n" +
                 "Excursion: " + reserva.getExcursion() + "\n" +
                 "Fecha: " + reserva.getFechaEjecucion() + "\n" +
                 "Cantidad de pax: " + reserva.getCantPaxs(true) + "\n" +
                 "Hotel: " + reserva.getHotel() + "\n" +
                 "Habitación: " + reserva.getNoHab();
-        if(!reserva.getIdioma().equals("")){
-            text += "\nIdioma: " + reserva.getIdioma();
-        }
-        if(!reserva.getObservaciones().equals("")){
-            text += "\nObservaciones: " + reserva.getObservaciones();
+        if(formato == INFO_REPORTE_VENTA) {
+            if (!reserva.getIdioma().equals("")) {
+                text += "\nIdioma: " + reserva.getIdioma();
+            }
+            if (!reserva.getObservaciones().equals("")) {
+                text += "\nObservaciones: " + reserva.getObservaciones();
+            }
+        } else if(formato == INFO_LIQUIDACION){
+            text += "\nCliente: " + reserva.getCliente();
+            text += "\nAgencia: " + reserva.getAgencia();
+            text += "\nImporte: " + reserva.getPrecio() + " usd";
         }
         return text;
     }
@@ -144,7 +153,7 @@ public class Reserva {
         return excursion;
     }
 
-    String getAgencia() {
+    public String getAgencia() {
         return agencia;
     }
 
@@ -152,7 +161,7 @@ public class Reserva {
         return noHab;
     }
 
-    String getCliente() {
+    public String getCliente() {
         return cliente;
     }
 
@@ -192,7 +201,7 @@ public class Reserva {
         return precio;
     }
 
-    int getAcompanantes() {
+    public int getAcompanantes() {
         return acompanante;
     }
 
@@ -200,7 +209,7 @@ public class Reserva {
         this.acompanante = acompanante;
     }
 
-    int getEstado() {
+    public int getEstado() {
         return estado;
     }
 
