@@ -5,4 +5,8 @@
         android:id="@+id/menu_item_exportar_bd"
         android:title="Exportar BD"/>
 
+    <item
+        android:id="@+id/menu_item_importar_bd"
+        android:title="Importar BD"/>
+
 </menu>

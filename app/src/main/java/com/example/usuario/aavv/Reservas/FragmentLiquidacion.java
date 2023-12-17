@@ -34,6 +34,7 @@ import com.example.usuario.aavv.Util.MyExcel;
 import com.example.usuario.aavv.Util.Util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -198,7 +199,13 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
             //File rutaSD = Environment.getExternalFilesDir(null);
             File file = new File(rutaSD.getAbsolutePath(), tvFechaConfeccion.getText().toString().replace("/","") + ".xls");
-            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservaList)){
+            List<Reserva> reservasReportar = new ArrayList<>();
+            for(Reserva reserva:reservaList){
+                if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO){
+                    reservasReportar.add(reserva);
+                }
+            }
+            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar)){
                 //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
                 myCallBack.showSnackBar("Excel generado correctamente: "+file);
             }
@@ -212,7 +219,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         String texto = "Venta del día: "+tvFechaConfeccion.getText().toString();
         texto += "\n\n" + tvInfo.getText().toString();
         for (Reserva reserva:reservaList){
-            texto += "\n\n" + Reserva.toString(reserva,Reserva.INFO_LIQUIDACION);
+            if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO) {
+                texto += "\n\n" + Reserva.toString(reserva, Reserva.INFO_LIQUIDACION);
+            }
         }
         Util.copyToClipBoard(getContext(),texto);
         Toast.makeText(getContext(),"Info copiada",Toast.LENGTH_SHORT).show();

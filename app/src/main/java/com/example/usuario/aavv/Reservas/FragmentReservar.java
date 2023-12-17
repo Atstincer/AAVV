@@ -136,17 +136,30 @@ public class FragmentReservar extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 predictPrice();
+                etNombreCliente.requestFocus();
             }
         });
 
         ArrayAdapter<TTOO> adapterTTOO = new ArrayAdapter<TTOO>(getContext(),R.layout.my_simple_dropdown_item_1line, TTOOBDHandler.getAllTTOOfromDB(getContext()));
         actvAgencia.setThreshold(1);
         actvAgencia.setAdapter(adapterTTOO);
+        actvAgencia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                actvHotel.requestFocus();
+            }
+        });
 
         String [] idiomas = {"Español","Inglés","Frances","Aleman","Italiano","Ruso"};
         ArrayAdapter<String> adapterIdiomas = new ArrayAdapter<String>(getContext(),R.layout.my_simple_dropdown_item_1line,idiomas);
         actvIdioma.setThreshold(1);
         actvIdioma.setAdapter(adapterIdiomas);
+        actvIdioma.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                etObservaciones.requestFocus();
+            }
+        });
 
         String[] hotelesPorDefecto = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
                 "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};
@@ -158,6 +171,12 @@ public class FragmentReservar extends Fragment {
         }else {
             actvHotel.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,hotelesPorDefecto));
         }
+        actvHotel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                etNoHab.requestFocus();
+            }
+        });
 
         setOnTextChangedListener(etAdultos);
         setOnTextChangedListener(etMenores);

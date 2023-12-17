@@ -181,7 +181,7 @@ public class FragmentAjustes extends Fragment {
                 fileWriter.append(",");
                 fileWriter.append(reserva.getNoTE());
                 fileWriter.append(",");
-                fileWriter.append(reserva.getExcursion());
+                fileWriter.append(formatStringToExport(reserva.getExcursion()));
                 fileWriter.append(",");
                 fileWriter.append(reserva.getAgencia());
                 fileWriter.append(",");
@@ -197,7 +197,7 @@ public class FragmentAjustes extends Fragment {
                 fileWriter.append(",");
                 fileWriter.append(reserva.getIdioma());
                 fileWriter.append(",");
-                String observaciones = reserva.getObservaciones().replace("\n","-").replace(","," ");
+                String observaciones = formatStringToExport(reserva.getObservaciones());
                 fileWriter.append(observaciones);
                 fileWriter.append(",");
                 fileWriter.append(String.valueOf(reserva.getAdultos()));
@@ -222,6 +222,15 @@ public class FragmentAjustes extends Fragment {
         }
     }
 
+    private void importarBD(){
+        //// TODO: 19/11/2023  
+    }
+
+    private String formatStringToExport(String texto){
+        String formatedTexto = texto.replace(",","#").replace("\n","/");
+        return formatedTexto;
+    }
+
     private void checkForPermissions() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
@@ -243,6 +252,9 @@ public class FragmentAjustes extends Fragment {
             case R.id.menu_item_exportar_bd:
                 checkForPermissions();
                 exportarBD();
+                break;
+            case R.id.menu_item_importar_bd:
+                importarBD();
                 break;
         }
         return super.onOptionsItemSelected(item);
