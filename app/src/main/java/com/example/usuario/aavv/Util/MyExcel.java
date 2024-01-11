@@ -51,6 +51,11 @@ public class MyExcel {
             return false;
         }
 
+        Modelo modelo = Modelo.REPORTE_VENTA_AGENCIA;
+        if(agencia.toLowerCase().trim().contains("meeting point")){
+            modelo = Modelo.REPORTE_VENTA_MEETING_POINT;
+        }
+
         ROW_INDEX = 0;
 
         // Creating a New HSSF Workbook (.xls format)
@@ -62,13 +67,18 @@ public class MyExcel {
         String sheetName = desde.replace("/","") + " - " + hasta.replace("/","");
 
         createNewSheet(sheetName);
-        configureColumnWidth(Modelo.REPORTE_VENTA_AGENCIA);
+        configureColumnWidth(modelo);
 
         showGeneralInfo(agencia,desde,hasta);
-        setHeaderRow(Modelo.REPORTE_VENTA_AGENCIA);
-        fillDataIntoExcel(listaReservas,Modelo.REPORTE_VENTA_AGENCIA);
-        addBlankRows(6,2,borderThickStyle);
-        addRowTotal(total);
+        setHeaderRow(modelo);
+        fillDataIntoExcel(listaReservas,modelo);
+
+        int columns = 6;
+        if(modelo == Modelo.REPORTE_VENTA_MEETING_POINT){
+            columns = 16;
+        }
+        addBlankRows(columns, 2, borderThickStyle);
+        addRowTotal(columns,total,modelo);
 
         return storeExcelInStorage(file);
     }
@@ -251,6 +261,71 @@ public class MyExcel {
                 cell.setCellValue("IMPORTE(USD)");
                 cell.setCellStyle(headerCellStyle);
                 break;
+            case REPORTE_VENTA_MEETING_POINT:
+                cell = headerRow.createCell(0);
+                cell.setCellValue("No Tikect");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(1);
+                cell.setCellValue("Referencia");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(2);
+                cell.setCellValue("Excursión");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(3);
+                cell.setCellValue("Prestatario");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(4);
+                cell.setCellValue("Idioma");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(5);
+                cell.setCellValue("Fecha Excursion");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(6);
+                cell.setCellValue("Fecha Venta");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(7);
+                cell.setCellValue("Turoperador");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(8);
+                cell.setCellValue("Hotel");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(9);
+                cell.setCellValue("Habitacion");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(10);
+                cell.setCellValue("Adultos");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(11);
+                cell.setCellValue("Niños");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(12);
+                cell.setCellValue("Nombre Cliente");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(13);
+                cell.setCellValue("Importe USD");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(14);
+                cell.setCellValue("Estado");
+                cell.setCellStyle(headerCellStyle);
+
+                cell = headerRow.createCell(15);
+                cell.setCellValue("Imp Devolucion");
+                cell.setCellStyle(headerCellStyle);
+                break;
         }
 
 
@@ -281,6 +356,24 @@ public class MyExcel {
                 sheet.setColumnWidth(3, (8 * 256));//Pax
                 sheet.setColumnWidth(4, (40 * 256));//Excursion
                 sheet.setColumnWidth(5, (15 * 256));//Importe(usd)
+                break;
+            case REPORTE_VENTA_MEETING_POINT:
+                sheet.setColumnWidth(0, (11 * 256));//TE
+                sheet.setColumnWidth(1, (11 * 256));//Referencia
+                sheet.setColumnWidth(2, (30 * 256));//Excursion
+                sheet.setColumnWidth(3, (15 * 256));//Prestatario
+                sheet.setColumnWidth(4, (15 * 256));//Idioma
+                sheet.setColumnWidth(5, (15 * 256));//Ejecucion
+                sheet.setColumnWidth(6, (15 * 256));//Emision
+                sheet.setColumnWidth(7, (15 * 256));//TTOO
+                sheet.setColumnWidth(8, (20 * 256));//Hotel
+                sheet.setColumnWidth(9, (13 * 256));//Hab
+                sheet.setColumnWidth(10, (13 * 256));//Adultos
+                sheet.setColumnWidth(11, (10 * 256));//Niños
+                sheet.setColumnWidth(12, (20 * 256));//Nombre
+                sheet.setColumnWidth(13, (15 * 256));//Importe
+                sheet.setColumnWidth(14, (15 * 256));//Estado
+                sheet.setColumnWidth(15, (15 * 256));//Importe dev
                 break;
         }
     }
@@ -356,10 +449,24 @@ public class MyExcel {
                     cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
                     cell.setCellStyle(centerStyle);
 
-                    String pax = String.valueOf(listaReservas.get(i).getAdultos());
+                    String pax = "";
+                    int adultos = listaReservas.get(i).getAdultos();
                     int menores = listaReservas.get(i).getMenores()+listaReservas.get(i).getInfantes();
+                    int acompanantes = listaReservas.get(i).getAcompanantes();
+                    if(adultos>0){
+                        pax += String.valueOf(adultos);
+                    }
                     if(menores>0){
-                        pax += "+" + String.valueOf(menores);
+                        if(adultos>0){
+                            pax += "+";
+                        }
+                        pax += String.valueOf(menores);
+                    }
+                    if(acompanantes>0){
+                        if(adultos>0 || menores>0){
+                            pax += "+";
+                        }
+                        pax += String.valueOf(acompanantes);
                     }
                     cell = rowData.createCell(3);//Pax
                     cell.setCellValue(pax);
@@ -372,6 +479,89 @@ public class MyExcel {
                     cell = rowData.createCell(5);//Importe
                     cell.setCellValue(listaReservas.get(i).getPrecio());
                     cell.setCellStyle(precioStyle);
+
+                    ROW_INDEX ++;
+                }
+                break;
+            case REPORTE_VENTA_MEETING_POINT:
+                for (int i = 0; i < listaReservas.size(); i++) {
+                    // Create a New Row for every new entry in list
+                    Row rowData = sheet.createRow(ROW_INDEX);
+
+                    // Create Cells for each row
+                    cell = rowData.createCell(0);//TE
+                    cell.setCellValue(listaReservas.get(i).getNoTE());
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(1);//Referencia
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(2);//Excursion
+                    cell.setCellValue(listaReservas.get(i).getExcursion());
+                    cell.setCellStyle(wrappedStyle);
+
+                    cell = rowData.createCell(3);//Prestatario
+                    cell.setCellValue("Gaviota");
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(4);//Idioma
+                    cell.setCellValue("Aleman");
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(5);//Ejecucion
+                    cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(6);//Emision
+                    cell.setCellValue(listaReservas.get(i).getFechaConfeccion());
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(7);//TTOO
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(8);//Hotel
+                    cell.setCellValue(listaReservas.get(i).getHotel());
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(9);//Hab
+                    cell.setCellValue(listaReservas.get(i).getNoHab());
+                    cell.setCellStyle(centerStyle);
+
+                    int adultos = listaReservas.get(i).getAdultos();
+                    if(adultos<1 && listaReservas.get(i).getAcompanantes()>0){
+                        adultos = listaReservas.get(i).getAcompanantes();
+                    }
+                    cell = rowData.createCell(10);//Adultos
+                    cell.setCellValue(adultos);
+                    cell.setCellStyle(centerStyle);
+
+                    int menores = listaReservas.get(i).getMenores()+listaReservas.get(i).getInfantes();
+                    cell = rowData.createCell(11);//Menores
+                    cell.setCellValue(menores);
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(12);//Nombre
+                    cell.setCellValue(listaReservas.get(i).getCliente());
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(13);//Importe
+                    cell.setCellValue(listaReservas.get(i).getPrecio());
+                    cell.setCellStyle(precioStyle);
+
+                    String estado = "";
+                    if(listaReservas.get(i).getEstado() == Reserva.ESTADO_ACTIVO){
+                        estado = "Vendido";
+                    } else if(listaReservas.get(i).getEstado() == Reserva.ESTADO_DEVUELTO){
+                        estado = "Devolucion";
+                    } else if(listaReservas.get(i).getEstado() == Reserva.ESTADO_CANCELADO){
+                        estado = "Cancelado";
+                    }
+                    cell = rowData.createCell(14);//Estado
+                    cell.setCellValue(estado);
+                    cell.setCellStyle(centerStyle);
+
+                    cell = rowData.createCell(15);//Impo Devolucion
+                    cell.setCellStyle(centerStyle);
 
                     ROW_INDEX ++;
                 }
@@ -390,15 +580,24 @@ public class MyExcel {
         }
     }
 
-    private static void addRowTotal(double total){
+    private static void addRowTotal(int columns,double total,Modelo modelo){
         Row rowData = sheet.createRow(ROW_INDEX);
-        for(int i=0;i<5;i++){
+        for(int i=0;i<columns-1;i++){
             cell = rowData.createCell(i);
-            cell.setCellStyle(headerCellStyle);
+            if(modelo == Modelo.REPORTE_VENTA_MEETING_POINT && i == (columns-3)){
+                cell.setCellValue(total);
+                cell.setCellStyle(totalStyle);
+            } else {
+                cell.setCellStyle(headerCellStyle);
+            }
         }
-        cell = rowData.createCell(5);
-        cell.setCellValue(total);
-        cell.setCellStyle(totalStyle);
+        cell = rowData.createCell(columns-1);
+        if(modelo == Modelo.REPORTE_VENTA_MEETING_POINT){
+            cell.setCellStyle(headerCellStyle);
+        }else {
+            cell.setCellValue(total);
+            cell.setCellStyle(totalStyle);
+        }
     }
 
     private static boolean storeExcelInStorage(File file) {
@@ -431,7 +630,8 @@ public class MyExcel {
 
     private enum Modelo{
         REPORTE_VENTA,
-        REPORTE_VENTA_AGENCIA
+        REPORTE_VENTA_AGENCIA,
+        REPORTE_VENTA_MEETING_POINT
     }
 
 }

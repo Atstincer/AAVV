@@ -8,9 +8,9 @@ import java.util.Comparator;
 
 public class Reserva {
 
-    static final int ESTADO_ACTIVO = 0;
-    static final int ESTADO_CANCELADO = 1;
-    static final int ESTADO_DEVUELTO = 2;
+    public static final int ESTADO_ACTIVO = 0;
+    public static final int ESTADO_CANCELADO = 1;
+    public static final int ESTADO_DEVUELTO = 2;
 
     static final int INFO_REPORTE_VENTA = 3;
     static final int INFO_LIQUIDACION = 4;
