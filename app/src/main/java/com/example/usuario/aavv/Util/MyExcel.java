@@ -306,7 +306,11 @@ public class MyExcel {
                     cell.setCellStyle(centerStyle);
 
                     cell = rowData.createCell(3);//Adultos
-                    cell.setCellValue(listaReservas.get(i).getAdultos());
+                    int value = listaReservas.get(i).getAdultos();
+                    if(value == 0 && listaReservas.get(i).getAcompanantes() != 0){
+                        value = listaReservas.get(i).getAcompanantes();
+                    }
+                    cell.setCellValue(value);
                     cell.setCellStyle(centerStyle);
 
                     int menores = listaReservas.get(i).getMenores() + listaReservas.get(i).getInfantes();

@@ -48,15 +48,18 @@ public class Reserva {
     //no extended 2+2+1 free
     //extended 2 adultos + 2 menores + 1 menor free
     String getCantPaxs(boolean extendido){
-        String cantPaxs = String.valueOf(getAdultos());
-        if(extendido){
-            if(getAdultos()==1){
-                cantPaxs += " adulto";
-            }else {
-                cantPaxs += " adultos";
+        String cantPaxs = "";
+        if(getAdultos()>0) {
+            cantPaxs += String.valueOf(getAdultos());
+            if (extendido) {
+                if (getAdultos() == 1) {
+                    cantPaxs += " adulto";
+                } else {
+                    cantPaxs += " adultos";
+                }
             }
         }
-        if(getMenores()!=0){
+        if(getMenores()>0){
             if(extendido){
                 if(getMenores()==1){
                     cantPaxs += " + " + getMenores() + " menor";
@@ -67,7 +70,7 @@ public class Reserva {
                 cantPaxs += "+" + getMenores();
             }
         }
-        if(getInfantes()!=0){
+        if(getInfantes()>0){
             if(extendido){
                 if(getInfantes()==1){
                     cantPaxs += " + " + getInfantes() + " menor free";
@@ -75,7 +78,16 @@ public class Reserva {
                     cantPaxs += " + " + getInfantes() + " menores free";
                 }
             }else {
-                cantPaxs += "+" + getInfantes() + " free";
+                cantPaxs += "+" + getInfantes() + " inf";
+            }
+        }
+        if(getAcompanantes()>0){
+            if(getAdultos()>0 || getMenores()>0 || getInfantes()>0){
+                cantPaxs += " + ";
+            }
+            cantPaxs += getAcompanantes();
+            if(extendido){
+                cantPaxs += " acomp";
             }
         }
         return cantPaxs;
