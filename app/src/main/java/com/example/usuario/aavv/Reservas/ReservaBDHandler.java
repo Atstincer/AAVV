@@ -48,7 +48,7 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_INFANTES,reserva.getInfantes());
         values.put(ReservaBDHandler.CAMPO_ACOMPANANTES,reserva.getAcompanantes());
         values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
-        if(reserva.getFechaReporteVenta()!=null && !reserva.getFechaReporteVenta().equals("")){
+        if(reserva.getFechaReporteVenta()!=null){
             values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
         }
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());
