@@ -182,6 +182,24 @@
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/layout_incluir_repventa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone">
+
+            <CheckBox
+                android:id="@+id/checkbox_incluir_rep_venta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="incluir en reporte de venta del día"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:checked="true"/>
+
+        </RelativeLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

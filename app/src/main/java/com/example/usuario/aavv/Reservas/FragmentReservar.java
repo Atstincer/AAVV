@@ -20,7 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +51,8 @@ public class FragmentReservar extends Fragment {
     private long idSelectedReserva;
     private List<Excursion> excursionesList;
 
+    private RelativeLayout layoutRepVenta;
+    private CheckBox checkBoxIncluirRepVenta;
     private TextView tvFechaConfeccion, tvFechaEjecucion, tvEstado;
     private EditText etNumeroTE, etNombreCliente, etAdultos, etMenores, etInfantes, etAcompanante, etNoHab, etPrecio, etObservaciones;
     private AutoCompleteTextView actvNombreExcursion, actvAgencia, actvIdioma, actvHotel;
@@ -77,6 +81,8 @@ public class FragmentReservar extends Fragment {
     }
 
     private void bindComponents(View v){
+        layoutRepVenta = (RelativeLayout)v.findViewById(R.id.layout_incluir_repventa);
+        checkBoxIncluirRepVenta = (CheckBox)v.findViewById(R.id.checkbox_incluir_rep_venta);
         tvFechaConfeccion = (TextView)v.findViewById(R.id.tv_fecha_confeccion);
         tvFechaEjecucion = (TextView)v.findViewById(R.id.tv_fecha_ejecucion);
         etNumeroTE = (EditText)v.findViewById(R.id.et_ticket);
@@ -208,6 +214,7 @@ public class FragmentReservar extends Fragment {
 
     private void setUpEditarMoode(){
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
+        layoutRepVenta.setVisibility(View.VISIBLE);
         btn.setText("Actualizar");
     }
 
@@ -413,6 +420,11 @@ public class FragmentReservar extends Fragment {
             reserva.setAcompanante(0);
         }
         reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
+        if(checkBoxIncluirRepVenta.isChecked()){
+            reserva.setFechaReporteVenta(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        } else {
+            reserva.setFechaReporteVenta("");
+        }
         reserva.setAgencia(actvAgencia.getText().toString());
         reserva.setHotel(actvHotel.getText().toString());
         reserva.setNoHab(etNoHab.getText().toString());

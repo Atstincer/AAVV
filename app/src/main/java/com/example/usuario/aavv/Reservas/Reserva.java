@@ -16,7 +16,7 @@ public class Reserva {
     static final int INFO_LIQUIDACION = 4;
 
     private long id;
-    private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, idioma, Observaciones;
+    private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, fechaReporteVenta, idioma, Observaciones;
     private int adultos, menores, infantes, acompanante, estado;
     private double precio;
 
@@ -131,6 +131,14 @@ public class Reserva {
 
     void setFechaEjecucion(String fechaEjecucion) {
         this.fechaEjecucion = fechaEjecucion;
+    }
+
+    public String getFechaReporteVenta() {
+        return fechaReporteVenta;
+    }
+
+    public void setFechaReporteVenta(String fechaReporteVenta) {
+        this.fechaReporteVenta = fechaReporteVenta;
     }
 
     void setIdioma(String idioma) {

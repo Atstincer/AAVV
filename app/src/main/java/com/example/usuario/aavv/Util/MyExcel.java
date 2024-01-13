@@ -83,7 +83,7 @@ public class MyExcel {
         return storeExcelInStorage(file);
     }
 
-    public static boolean generarExcelReporteVenta(Context ctx, File file, List<Reserva> listaReservas) {
+    public static boolean generarExcelReporteVenta(Context ctx, File file, List<Reserva> listaReservas, String fecha) {
 
         if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
             Log.e(TAG, "Almacenamiento no disponible o de solo lectura");
@@ -103,7 +103,7 @@ public class MyExcel {
         createNewSheet(sheetName);
         configureColumnWidth(Modelo.REPORTE_VENTA);
 
-        showGeneralInfo(ctx,listaReservas.get(0).getFechaConfeccion());
+        showGeneralInfo(ctx,fecha);
         setHeaderRow(Modelo.REPORTE_VENTA);
         fillDataIntoExcel(listaReservas,Modelo.REPORTE_VENTA);
 

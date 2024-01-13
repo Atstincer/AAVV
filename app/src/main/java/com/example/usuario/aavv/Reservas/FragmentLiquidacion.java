@@ -199,13 +199,13 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
             //File rutaSD = Environment.getExternalFilesDir(null);
             File file = new File(rutaSD.getAbsolutePath(), tvFechaConfeccion.getText().toString().replace("/","") + ".xls");
-            List<Reserva> reservasReportar = new ArrayList<>();
-            for(Reserva reserva:reservaList){
+            List<Reserva> reservasReportar = getReservasReporteVenta();
+            /*for(Reserva reserva:reservaList){
                 if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO){
                     reservasReportar.add(reserva);
                 }
-            }
-            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar)){
+            }*/
+            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar, tvFechaConfeccion.getText().toString())){
                 //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
                 myCallBack.showSnackBar("Excel generado correctamente: "+file);
             }
@@ -213,6 +213,16 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             //System.out.println("Mensaje error: " + e.getMessage());
             Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private List<Reserva> getReservasReporteVenta(){
+        String fecha = DateHandler.formatDateToStoreInDB(tvFechaConfeccion.getText().toString());
+        List<Reserva> reservasRepVenta = ReservaBDHandler.getReservasFromDB(getContext(),
+                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=? OR "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"" +
+                        "=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
+                new String[]{fecha,fecha,String.valueOf(Reserva.ESTADO_ACTIVO)});
+        Collections.sort(reservasRepVenta,Reserva.ordenarPorTE);
+        return reservasRepVenta;
     }
 
     private void copiarInfo(){

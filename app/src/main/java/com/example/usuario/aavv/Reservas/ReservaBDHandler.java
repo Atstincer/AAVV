@@ -26,6 +26,7 @@ public class ReservaBDHandler {
     private static String CAMPO_HOTEL = "hotel";
     static String CAMPO_FECHA_CONFECCION = "fechaConfeccion";
     static String CAMPO_FECHA_EJECUCION = "fechaEjecucion";
+    static String CAMPO_FECHA_REPORTE_VENTA = "fechaRepVenta";
     private static String CAMPO_ADULTOS = "adultos";
     private static String CAMPO_MENORES = "menores";
     private static String CAMPO_INFANTES = "infantes";
@@ -47,6 +48,9 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_INFANTES,reserva.getInfantes());
         values.put(ReservaBDHandler.CAMPO_ACOMPANANTES,reserva.getAcompanantes());
         values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
+        if(reserva.getFechaReporteVenta()!=null && !reserva.getFechaReporteVenta().equals("")){
+            values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
+        }
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());
         values.put(ReservaBDHandler.CAMPO_HOTEL,reserva.getHotel());
         values.put(ReservaBDHandler.CAMPO_NUMERO_HAB,reserva.getNoHab());
