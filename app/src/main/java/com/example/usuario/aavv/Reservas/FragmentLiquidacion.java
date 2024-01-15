@@ -185,7 +185,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private void generarExcelReporteDeVenta(){
-        if(reservaList.size()<1){return;}
+        //if(reservaList.size()<1){return;}
         try {
             //File rutaSD = Environment.getExternalStorageDirectory();
             File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
@@ -200,6 +200,10 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             //File rutaSD = Environment.getExternalFilesDir(null);
             File file = new File(rutaSD.getAbsolutePath(), tvFechaConfeccion.getText().toString().replace("/","") + ".xls");
             List<Reserva> reservasReportar = getReservasReporteVenta();
+            if(reservasReportar.isEmpty()){
+                Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
+                return;
+            }
             /*for(Reserva reserva:reservaList){
                 if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO){
                     reservasReportar.add(reserva);

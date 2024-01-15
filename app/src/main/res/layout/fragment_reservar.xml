@@ -195,8 +195,7 @@
                 android:layout_height="wrap_content"
                 android:text="incluir en reporte de venta del día"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:checked="true"/>
+                android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
 

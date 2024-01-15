@@ -270,6 +270,9 @@ public class FragmentReservar extends Fragment {
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
+        if(reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))){
+            checkBoxIncluirRepVenta.setChecked(true);
+        }
     }
 
     private void showEstado(int estado){

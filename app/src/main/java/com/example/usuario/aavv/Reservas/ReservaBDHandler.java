@@ -48,8 +48,10 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_INFANTES,reserva.getInfantes());
         values.put(ReservaBDHandler.CAMPO_ACOMPANANTES,reserva.getAcompanantes());
         values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
-        if(reserva.getFechaReporteVenta()!=null){
+        if(reserva.getFechaReporteVenta()!=null && !reserva.getFechaReporteVenta().equals("")){
             values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
+        }else if(reserva.getFechaReporteVenta().equals("")){
+            values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,"");
         }
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());
         values.put(ReservaBDHandler.CAMPO_HOTEL,reserva.getHotel());
@@ -71,6 +73,9 @@ public class ReservaBDHandler {
         reserva.setHotel(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_HOTEL)));
         reserva.setFechaConfeccion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_CONFECCION))));
         reserva.setFechaEjecucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION))));
+        if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA))!=null) {
+            reserva.setFechaReporteVenta(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA))));
+        }
         reserva.setIdioma(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IDIOMA)));
         reserva.setObservaciones(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_OBSERVACIONES)));
         reserva.setAdultos(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_ADULTOS)));

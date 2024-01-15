@@ -21,6 +21,7 @@ public class DateHandler {
     }
 
     public static String formatDateToStoreInDB(String date){
+        if(date.equals("")){return "";}
         return date.substring(6)+"-"+date.substring(3,5)+"-"+date.substring(0,2);
     }
 
@@ -29,6 +30,7 @@ public class DateHandler {
     }
 
     public static String formatDateToShow(String date){
+        if(date.equals("")){return "";}
         return date.substring(8) + "/" + date.substring(5,7) + "/" + date.substring(0,4);
     }
 
