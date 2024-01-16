@@ -50,8 +50,6 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
         if(reserva.getFechaReporteVenta()!=null && !reserva.getFechaReporteVenta().equals("")){
             values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
-        }else if(reserva.getFechaReporteVenta().equals("")){
-            values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,"");
         }
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());
         values.put(ReservaBDHandler.CAMPO_HOTEL,reserva.getHotel());

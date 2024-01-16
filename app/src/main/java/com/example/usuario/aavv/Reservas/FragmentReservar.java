@@ -270,7 +270,8 @@ public class FragmentReservar extends Fragment {
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
-        if(reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))){
+        if((reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)) ||
+                reserva.getFechaConfeccion().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)))){
             checkBoxIncluirRepVenta.setChecked(true);
         }
     }
@@ -423,10 +424,8 @@ public class FragmentReservar extends Fragment {
             reserva.setAcompanante(0);
         }
         reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
-        if(checkBoxIncluirRepVenta.isChecked()){
+        if(checkBoxIncluirRepVenta.isChecked() && !reserva.getFechaConfeccion().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))){
             reserva.setFechaReporteVenta(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
-        } else {
-            reserva.setFechaReporteVenta("");
         }
         reserva.setAgencia(actvAgencia.getText().toString());
         reserva.setHotel(actvHotel.getText().toString());
