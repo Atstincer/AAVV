@@ -27,6 +27,7 @@ public class ExcursionBDHandler {
     private static String CAMPO_PRECIO_ACOMPANANTE = "precioAcomp";
     private static String CAMPO_PRECIO_RANGO = "precioRango";
     private static String CAMPO_RANGO = "rango";
+    private static String CAMPO_IDIOMA_NECESARIO = "idiomaNecesario";
 
 
     static ContentValues getContentValues(Excursion excursion){
@@ -38,6 +39,7 @@ public class ExcursionBDHandler {
         values.put(ExcursionBDHandler.CAMPO_PRECIO_ACOMPANANTE,excursion.getPrecioAcomp());
         values.put(ExcursionBDHandler.CAMPO_PRECIO_RANGO,excursion.getPrecioRango());
         values.put(ExcursionBDHandler.CAMPO_RANGO,excursion.getRangoHasta());
+        values.put(ExcursionBDHandler.CAMPO_IDIOMA_NECESARIO,excursion.getIdiomaNecesario());
         return values;
     }
 
@@ -55,6 +57,7 @@ public class ExcursionBDHandler {
             Log.e(TAG, "getExcursion: ", e);
         }
         excursion.setRangoHasta(cursor.getInt(cursor.getColumnIndex(ExcursionBDHandler.CAMPO_RANGO)));
+        excursion.setIdiomaNecesario(cursor.getInt(cursor.getColumnIndex(ExcursionBDHandler.CAMPO_IDIOMA_NECESARIO)));
         return excursion;
     }
 

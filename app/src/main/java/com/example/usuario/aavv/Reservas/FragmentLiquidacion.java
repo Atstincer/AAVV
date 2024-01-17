@@ -19,7 +19,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +33,6 @@ import com.example.usuario.aavv.Util.MyExcel;
 import com.example.usuario.aavv.Util.Util;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +48,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
 
     private LinearLayout layoutInfo;
-    private TextView tvFechaConfeccion, tvInfo;
+    private TextView tvFechaLiquidacion, tvInfo;
     private RecyclerView rvReservas;
     private ReservaRVAdapter adapter;
 
@@ -76,24 +74,24 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void bindComponents(View view){
         layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
-        tvFechaConfeccion = (TextView) view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
+        tvFechaLiquidacion = (TextView) view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
         tvInfo = (TextView) view.findViewById(R.id.tv_info_venta);
         rvReservas = (RecyclerView) view.findViewById(R.id.rv_reservas_fliquidacion);
     }
 
     private void setItUp(){
         myCallBack.udUI(FragmentLiquidacion.TAG);
-        tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        tvFechaLiquidacion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
         udReservaList();
         udTvInfo();
         adapter = new ReservaRVAdapter(getContext(),reservaList, ReservaRVAdapter.Modo.LIQUIDACION,this);
         rvReservas.setAdapter(adapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        tvFechaConfeccion.setOnClickListener(new View.OnClickListener(){
+        tvFechaLiquidacion.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaConfeccion, new DateHandler.DatePickerCallBack() {
+                DateHandler.showDatePicker(getContext(), tvFechaLiquidacion, new DateHandler.DatePickerCallBack() {
                     @Override
                     public void dateSelected() {
                         udUI();
@@ -105,7 +103,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Util.copyToClipBoard(getContext(),"Venta del "+tvFechaConfeccion.getText().toString()+"\n"+tvInfo.getText().toString());
+                Util.copyToClipBoard(getContext(),"Venta del "+ tvFechaLiquidacion.getText().toString()+"\n"+tvInfo.getText().toString());
                 return true;
             }
         });
@@ -142,7 +140,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     private void udReservaList(){
         reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
                 "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=?",
-                new String[]{DateHandler.formatDateToStoreInDB(tvFechaConfeccion.getText().toString())});
+                new String[]{DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString())});
         Collections.sort(reservaList,Reserva.ordenarPorTE);
     }
 
@@ -173,7 +171,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         if(!cuerpo.equals("")) {
             cuerpo += "\n\n";
         }
-        cuerpo += "Venta del día: "+tvFechaConfeccion.getText().toString();
+        cuerpo += "Venta del día: "+ tvFechaLiquidacion.getText().toString();
         for (Reserva reserva:reservaList){
             cuerpo += "\n\n" + Reserva.toString(reserva,Reserva.INFO_REPORTE_VENTA);
         }
@@ -181,7 +179,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private void enviarMailVentaDelDia(){
-        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},"Venta del día "+tvFechaConfeccion.getText().toString(),getCuerpoMail()));
+        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},"Venta del día "+ tvFechaLiquidacion.getText().toString(),getCuerpoMail()));
     }
 
     private void generarExcelReporteDeVenta(){
@@ -192,13 +190,13 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             if(!rutaSD.exists()){rutaSD.mkdir();}
             rutaSD = new File(rutaSD.getAbsolutePath()+"/Reportes de venta");
             if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+tvFechaConfeccion.getText().toString().substring(6));
+            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+ tvFechaLiquidacion.getText().toString().substring(6));
             if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+mesesDelAno[Integer.parseInt(tvFechaConfeccion.getText().toString().substring(3,5))-1]);
+            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+mesesDelAno[Integer.parseInt(tvFechaLiquidacion.getText().toString().substring(3,5))-1]);
             if(!rutaSD.exists()){rutaSD.mkdir();}
 
             //File rutaSD = Environment.getExternalFilesDir(null);
-            File file = new File(rutaSD.getAbsolutePath(), tvFechaConfeccion.getText().toString().replace("/","") + ".xls");
+            File file = new File(rutaSD.getAbsolutePath(), tvFechaLiquidacion.getText().toString().replace("/","") + ".xls");
             List<Reserva> reservasReportar = getReservasReporteVenta();
             if(reservasReportar.isEmpty()){
                 Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
@@ -209,7 +207,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                     reservasReportar.add(reserva);
                 }
             }*/
-            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar, tvFechaConfeccion.getText().toString())){
+            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar, tvFechaLiquidacion.getText().toString())){
                 //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
                 myCallBack.showSnackBar("Excel generado correctamente: "+file);
             }
@@ -220,17 +218,17 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private List<Reserva> getReservasReporteVenta(){
-        String fecha = DateHandler.formatDateToStoreInDB(tvFechaConfeccion.getText().toString());
         List<Reserva> reservasRepVenta = ReservaBDHandler.getReservasFromDB(getContext(),
-                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=? OR "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"" +
-                        "=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
-                new String[]{fecha,fecha,String.valueOf(Reserva.ESTADO_ACTIVO)});
+                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
+                new String[]{
+                        DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString()),
+                        String.valueOf(Reserva.ESTADO_ACTIVO)});
         Collections.sort(reservasRepVenta,Reserva.ordenarPorTE);
         return reservasRepVenta;
     }
 
     private void copiarInfo(){
-        String texto = "Venta del día: "+tvFechaConfeccion.getText().toString();
+        String texto = "Venta del día: "+ tvFechaLiquidacion.getText().toString();
         texto += "\n\n" + tvInfo.getText().toString();
         for (Reserva reserva:reservaList){
             if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO) {

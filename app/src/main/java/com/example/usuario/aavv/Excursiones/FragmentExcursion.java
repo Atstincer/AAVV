@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -33,6 +34,7 @@ public class FragmentExcursion extends Fragment {
     private RadioGroup radioGroup;
     private RadioButton rbPrecioPax,rbPrecioRango;
     private LinearLayout layoutPrecioRango;
+    private CheckBox checkBoxIdiomaNecesario;
     private Button btn;
 
     private long selectedExcursionID;
@@ -71,6 +73,7 @@ public class FragmentExcursion extends Fragment {
         rbPrecioPax = (RadioButton)view.findViewById(R.id.rb_precio_pax);
         rbPrecioRango = (RadioButton)view.findViewById(R.id.rb_precio_rango);
         layoutPrecioRango = (LinearLayout)view.findViewById(R.id.layout_precio_rango);
+        checkBoxIdiomaNecesario = (CheckBox)view.findViewById(R.id.checkbox_idioma_necesario);
         btn = (Button)view.findViewById(R.id.btn_fragment_excursion);
     }
 
@@ -150,6 +153,14 @@ public class FragmentExcursion extends Fragment {
         if(excursion.getPrecioAcomp()!=0){
             etPrecioAcompanante.setText(String.valueOf(excursion.getPrecioAcomp()));
         }
+        switch (excursion.getIdiomaNecesario()){
+            case Excursion.IDIOMA_NECESARIO:
+                checkBoxIdiomaNecesario.setChecked(true);
+                break;
+            case Excursion.IDIOMA_NO_NECESARIO:
+                checkBoxIdiomaNecesario.setChecked(false);
+                break;
+        }
     }
 
     private Excursion getInfoFragment(){
@@ -188,6 +199,11 @@ public class FragmentExcursion extends Fragment {
         }else {
             excursion.setPrecioAcomp(Float.parseFloat(etPrecioAcompanante.getText().toString()));
         }
+        if(checkBoxIdiomaNecesario.isChecked()){
+            excursion.setIdiomaNecesario(Excursion.IDIOMA_NECESARIO);
+        }else {
+            excursion.setIdiomaNecesario(Excursion.IDIOMA_NO_NECESARIO);
+        }
         return excursion;
     }
 
@@ -221,6 +237,7 @@ public class FragmentExcursion extends Fragment {
         etPrecioAdulto.setText("");
         etPrecioMenor.setText("");
         etPrecioAcompanante.setText("");
+        checkBoxIdiomaNecesario.setChecked(false);
     }
 
     public interface MyCallBack{

@@ -270,8 +270,7 @@ public class FragmentReservar extends Fragment {
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
-        if((reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)) ||
-                reserva.getFechaConfeccion().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)))){
+        if(reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))){
             checkBoxIncluirRepVenta.setChecked(true);
         }
     }
@@ -352,13 +351,19 @@ public class FragmentReservar extends Fragment {
     }
 
     private void predictPrice(){
+        if(getExcursionIfMatch() != null){
+            predictPrice(getExcursionIfMatch());
+        }
+    }
+
+    private Excursion getExcursionIfMatch(){
         String excursionSelected = actvNombreExcursion.getText().toString();
         for(Excursion excursion:excursionesList){
             if(excursion.getNombre().equals(excursionSelected)){
-                predictPrice(excursion);
-                return;
+                return excursion;
             }
         }
+        return null;
     }
 
     private void setOnTextChangedListener(EditText et){
@@ -424,8 +429,14 @@ public class FragmentReservar extends Fragment {
             reserva.setAcompanante(0);
         }
         reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
-        if(checkBoxIncluirRepVenta.isChecked() && !reserva.getFechaConfeccion().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))){
-            reserva.setFechaReporteVenta(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        if(myCallBack.getEstado() == MisConstantes.Estado.NUEVO){
+            reserva.setFechaReporteVenta(tvFechaConfeccion.getText().toString());
+        }else if(myCallBack.getEstado() == MisConstantes.Estado.EDITAR){
+            if(checkBoxIncluirRepVenta.isChecked()){
+                reserva.setFechaReporteVenta(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            }else {
+                reserva.setFechaReporteVenta("");
+            }
         }
         reserva.setAgencia(actvAgencia.getText().toString());
         reserva.setHotel(actvHotel.getText().toString());
@@ -494,8 +505,12 @@ public class FragmentReservar extends Fragment {
             makeToastAtEnd = true;
         }
         if(actvIdioma.getText().toString().equals("")){
-            falta += "\n- idioma";
-            makeToastAtEnd = true;
+            if(getExcursionIfMatch() != null){
+                if(getExcursionIfMatch().getIdiomaNecesario() == Excursion.IDIOMA_NECESARIO){
+                    Toast.makeText(getContext(),"Falta el idioma",Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
         }
 
         if(makeToastAtEnd){

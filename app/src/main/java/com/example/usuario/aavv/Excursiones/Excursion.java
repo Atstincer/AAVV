@@ -10,10 +10,12 @@ public class Excursion {
 
     public static final int PRECIO_X_PAX = 0;
     public static final int PRECIO_X_RANGO = 1;
+    public static final int IDIOMA_NO_NECESARIO = 0;
+    public static final int IDIOMA_NECESARIO = 1;
 
     private String nombre;
     private long id;
-    private int tipoPrecio, rangoHasta;
+    private int tipoPrecio, rangoHasta, idiomaNecesario;
     private float precioAd, precioMenor, precioAcomp, precioRango;
 
     Excursion() {
@@ -81,6 +83,14 @@ public class Excursion {
 
     public void setPrecioRango(float precioRango) {
         this.precioRango = precioRango;
+    }
+
+    public int getIdiomaNecesario() {
+        return idiomaNecesario;
+    }
+
+    public void setIdiomaNecesario(int idiomaNecesario) {
+        this.idiomaNecesario = idiomaNecesario;
     }
 
     @Override
