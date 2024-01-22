@@ -333,7 +333,7 @@ public class FragmentReservar extends Fragment {
                 precioTotal += adultos*excursion.getPrecioAd() + (menores*excursion.getPrecioMenor());
                 break;
             case Excursion.PRECIO_X_RANGO:
-                if(excursion.getRangoHasta()<=1){return;}
+                if(excursion.getRangoHasta()<1){return;}
                 if(adultos>0){
                     precioTotal += excursion.getPrecioRango();
                 }
