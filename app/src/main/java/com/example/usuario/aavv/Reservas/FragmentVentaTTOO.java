@@ -201,7 +201,7 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private void setUpSpinner(){
-        ArrayAdapter adapter = new ArrayAdapter(getContext(),android.R.layout.simple_spinner_item,listaAgencias);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item,listaAgencias);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAgencias.setAdapter(adapter);
     }

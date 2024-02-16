@@ -42,18 +42,56 @@ public class ExcursionRVAdapter extends RecyclerView.Adapter<ExcursionRVAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private TextView tvNombre;
+        private TextView tvNombre, tvPrecioRango, tvAdultos, tvMenores, tvAcomp, tvIdioma;
         private MyCallBack callBack;
 
         public ViewHolder(View itemView, MyCallBack callBack) {
             super(itemView);
             this.callBack = callBack;
-            tvNombre = (TextView)itemView.findViewById(R.id.tv_nombre_excursion_cv);
+            tvNombre = (TextView)itemView.findViewById(R.id.tv_nombre_exc_cv);
+            tvPrecioRango = (TextView)itemView.findViewById(R.id.tv_precio_rango_exc_cv);
+            tvAdultos = (TextView)itemView.findViewById(R.id.tv_adultos_exc_cv);
+            tvMenores = (TextView)itemView.findViewById(R.id.tv_menores_exc_cv);
+            tvAcomp = (TextView)itemView.findViewById(R.id.tv_acomp_exc_cv);
+            tvIdioma = (TextView)itemView.findViewById(R.id.tv_idioma_necesario_exc_cv);
             itemView.setOnClickListener(this);
         }
 
         void bindHolder(int posicion){
             tvNombre.setText(excursionesList.get(posicion).getNombre());
+            String adultos = "";
+            if(excursionesList.get(posicion).getTipoPrecio()==Excursion.PRECIO_X_PAX){
+                tvPrecioRango.setVisibility(View.GONE);
+                adultos = "ad: ";
+            }else if(excursionesList.get(posicion).getTipoPrecio()==Excursion.PRECIO_X_RANGO){
+                tvPrecioRango.setVisibility(View.VISIBLE);
+                String precioRango = "Desde 1 hasta " + excursionesList.get(posicion).getRangoHasta() + " pax: "
+                        + excursionesList.get(posicion).getPrecioRango();
+                tvPrecioRango.setText(precioRango);
+                adultos = "pax adicional: ";
+            }
+//            adultos += excursionesList.get(posicion).getPrecioAd();
+//            tvAdultos.setText(adultos);
+
+            showIfExist(tvAdultos,adultos,excursionesList.get(posicion).getPrecioAd());
+            showIfExist(tvMenores,"men: ",excursionesList.get(posicion).getPrecioMenor());
+            showIfExist(tvAcomp,"acomp: ",excursionesList.get(posicion).getPrecioAcomp());
+            if(excursionesList.get(posicion).getIdiomaNecesario() == Excursion.IDIOMA_NECESARIO){
+                tvIdioma.setVisibility(View.VISIBLE);
+                tvIdioma.setText("idioma necesario");
+            }else {
+                tvIdioma.setVisibility(View.GONE);
+            }
+        }
+
+        private void showIfExist(TextView tv, String encabezado, Float valor){
+            if(valor == 0){
+                tv.setVisibility(View.GONE);
+            }else {
+                tv.setVisibility(View.VISIBLE);
+                String msg = encabezado + valor;
+                tv.setText(msg);
+            }
         }
 
         @Override

@@ -8,17 +8,73 @@
     app:cardCornerRadius="5dp"
     app:cardElevation="5dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/cardview_shadow_start_color"
-        android:padding="10dp">
+        android:orientation="vertical"
+        android:padding="5dp">
 
         <TextView
-            android:id="@+id/tv_nombre_excursion_cv"
+            android:id="@+id/tv_nombre_exc_cv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Catamaran"
+            android:textColor="@color/colorAccent" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_precio_rango_exc_cv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Desde 1 hasta ..." />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_adultos_exc_cv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:text="Ad:" />
+
+            <TextView
+                android:id="@+id/tv_menores_exc_cv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:text="Men:" />
+
+            <TextView
+                android:id="@+id/tv_acomp_exc_cv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Acom:" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_idioma_necesario_exc_cv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="3dp"
+                android:text="Idioma necesario"
+                android:textColor="@android:color/holo_green_dark" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

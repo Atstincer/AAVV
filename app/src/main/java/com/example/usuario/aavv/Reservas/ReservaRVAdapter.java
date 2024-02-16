@@ -105,13 +105,15 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
                 tvEstado.setText("");
             }
             tvFechaEjecucion.setText(reservaList.get(position).getFechaEjecucion());
-            tvExcursion.setText(reservaList.get(position).getExcursion());
-            tvHotel.setText(reservaList.get(position).getHotel());
-            tvHab.setText(reservaList.get(position).getNoHab());
-            String cantPax = "pax: " + reservaList.get(position).getCantPaxs(false);
-            tvCantPax.setText(cantPax);
-            tvIdioma.setText(reservaList.get(position).getIdioma());
-            //tvCantPax.setText(getCantPaxs(position));
+            showInfoIfExist(tvExcursion,reservaList.get(position).getExcursion());
+            showInfoIfExist(tvHotel,reservaList.get(position).getHotel());
+            showInfoIfExist(tvHab,reservaList.get(position).getNoHab());
+            String cantPax = "";
+            if(!reservaList.get(position).getCantPaxs(false).equals("")){
+                cantPax = "pax: " + reservaList.get(position).getCantPaxs(false);
+            }
+            showInfoIfExist(tvCantPax,cantPax);
+            showInfoIfExist(tvIdioma,reservaList.get(position).getIdioma());
             tvObs.setText(reservaList.get(position).getObservaciones());
             tvPrecio.setText(String.valueOf(reservaList.get(position).getPrecio()));
             if(reservaList.get(position).getPrecio()==0){
@@ -128,6 +130,15 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
                 showObsIfExist();
             }else if(modo == Modo.POR_AGENCIA){
                 tvObs.setText("");
+            }
+        }
+
+        private void showInfoIfExist(TextView tv,String info){
+            if(info.equals("")){
+                tv.setVisibility(View.GONE);
+            }else {
+                tv.setVisibility(View.VISIBLE);
+                tv.setText(info);
             }
         }
 

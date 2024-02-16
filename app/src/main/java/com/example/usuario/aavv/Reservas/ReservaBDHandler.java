@@ -56,6 +56,7 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_NUMERO_HAB,reserva.getNoHab());
         values.put(ReservaBDHandler.CAMPO_PRECIO,reserva.getPrecio());
         values.put(ReservaBDHandler.CAMPO_IDIOMA,reserva.getIdioma());
+        values.put(ReservaBDHandler.CAMPO_ESTADO,reserva.getEstado());
         values.put(ReservaBDHandler.CAMPO_OBSERVACIONES,reserva.getObservaciones());
         return values;
     }

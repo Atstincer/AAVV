@@ -233,6 +233,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         for (Reserva reserva:reservaList){
             if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO) {
                 texto += "\n\n" + Reserva.toString(reserva, Reserva.INFO_LIQUIDACION);
+            }else if(reserva.getEstado() == Reserva.ESTADO_CANCELADO){
+                texto += "\n\n" + "TE: " + reserva.getNoTE() + "    CANCELADO";
             }
         }
         Util.copyToClipBoard(getContext(),texto);

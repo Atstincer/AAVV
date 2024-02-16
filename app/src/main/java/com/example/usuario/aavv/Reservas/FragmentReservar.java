@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,9 +65,9 @@ public class FragmentReservar extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        View v = inflater.inflate(R.layout.fragment_reservar,container,false);
+        View v = inflater.inflate(R.layout.fragment_reservar, container, false);
         bindComponents(v);
-        if(getArguments()!=null){
+        if (getArguments() != null) {
             idSelectedReserva = getArguments().getLong("id");
         }
         setItUP();
@@ -76,34 +77,34 @@ public class FragmentReservar extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-        myCallBack = (MyCallBack)context;
+        myCallBack = (MyCallBack) context;
         super.onAttach(context);
     }
 
-    private void bindComponents(View v){
-        layoutRepVenta = (RelativeLayout)v.findViewById(R.id.layout_incluir_repventa);
-        checkBoxIncluirRepVenta = (CheckBox)v.findViewById(R.id.checkbox_incluir_rep_venta);
-        tvFechaConfeccion = (TextView)v.findViewById(R.id.tv_fecha_confeccion);
-        tvFechaEjecucion = (TextView)v.findViewById(R.id.tv_fecha_ejecucion);
-        etNumeroTE = (EditText)v.findViewById(R.id.et_ticket);
-        tvEstado = (TextView)v.findViewById(R.id.tv_estado);
-        etNombreCliente = (EditText)v.findViewById(R.id.et_nombre_cliente);
-        etAdultos = (EditText)v.findViewById(R.id.et_adultos);
-        etMenores = (EditText)v.findViewById(R.id.et_menores);
-        etInfantes = (EditText)v.findViewById(R.id.et_infantes);
-        etAcompanante = (EditText)v.findViewById(R.id.et_acompanante);
-        etNoHab = (EditText)v.findViewById(R.id.et_hab);
-        etPrecio = (EditText)v.findViewById(R.id.et_precio);
-        etObservaciones = (EditText)v.findViewById(R.id.et_observaciones);
+    private void bindComponents(View v) {
+        layoutRepVenta = (RelativeLayout) v.findViewById(R.id.layout_incluir_repventa);
+        checkBoxIncluirRepVenta = (CheckBox) v.findViewById(R.id.checkbox_incluir_rep_venta);
+        tvFechaConfeccion = (TextView) v.findViewById(R.id.tv_fecha_confeccion);
+        tvFechaEjecucion = (TextView) v.findViewById(R.id.tv_fecha_ejecucion);
+        etNumeroTE = (EditText) v.findViewById(R.id.et_ticket);
+        tvEstado = (TextView) v.findViewById(R.id.tv_estado);
+        etNombreCliente = (EditText) v.findViewById(R.id.et_nombre_cliente);
+        etAdultos = (EditText) v.findViewById(R.id.et_adultos);
+        etMenores = (EditText) v.findViewById(R.id.et_menores);
+        etInfantes = (EditText) v.findViewById(R.id.et_infantes);
+        etAcompanante = (EditText) v.findViewById(R.id.et_acompanante);
+        etNoHab = (EditText) v.findViewById(R.id.et_hab);
+        etPrecio = (EditText) v.findViewById(R.id.et_precio);
+        etObservaciones = (EditText) v.findViewById(R.id.et_observaciones);
         actvNombreExcursion = (AutoCompleteTextView) v.findViewById(R.id.actv_excursion);
         actvAgencia = (AutoCompleteTextView) v.findViewById(R.id.actv_agencia);
         actvIdioma = (AutoCompleteTextView) v.findViewById(R.id.actv_idioma);
         actvHotel = (AutoCompleteTextView) v.findViewById(R.id.actv_hotel);
-        btn = (Button)v.findViewById(R.id.btn_fragment_reservar);
+        btn = (Button) v.findViewById(R.id.btn_fragment_reservar);
     }
 
-    private void setItUP(){
-        tvFechaConfeccion.setOnClickListener(new View.OnClickListener(){
+    private void setItUP() {
+        tvFechaConfeccion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DateHandler.showDatePicker(getContext(), tvFechaConfeccion, new DateHandler.DatePickerCallBack() {
@@ -114,7 +115,7 @@ public class FragmentReservar extends Fragment {
                 });
             }
         });
-        tvFechaEjecucion.setOnClickListener(new View.OnClickListener(){
+        tvFechaEjecucion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DateHandler.showDatePicker(getContext(), tvFechaEjecucion, new DateHandler.DatePickerCallBack() {
@@ -126,17 +127,17 @@ public class FragmentReservar extends Fragment {
             }
         });
 
-        String[] excursionesPordefecto = {"Catamarán JC","Aventura marina","Nado con delfines","Nado con delfines Plus","Pesca de altura 1bote 4hrs","Pesca especializada " +
-                "1bote 4hrs","Santa Clara-Remedios","Tres ciudades","Dos ciudades coloniales","Aventura en la montaña","Santa María adentro","Buceo 2 inmersiones" +
-                "", "Buceo 1 inmersión","Catamarán MJ exclusivo","Jeep safari"};
+        String[] excursionesPordefecto = {"Catamarán JC", "Aventura marina", "Nado con delfines", "Nado con delfines Plus", "Pesca de altura 1bote 4hrs", "Pesca especializada " +
+                "1bote 4hrs", "Santa Clara-Remedios", "Tres ciudades", "Dos ciudades coloniales", "Aventura en la montaña", "Santa María adentro", "Buceo 2 inmersiones" +
+                "", "Buceo 1 inmersión", "Catamarán MJ exclusivo", "Jeep safari"};
         excursionesList = ExcursionBDHandler.getAllExcursionesfromDB(getContext());
 
         //ArrayAdapter adapterExcursiones = new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursiones);
         actvNombreExcursion.setThreshold(1);
-        if(!excursionesList.isEmpty()) {
-            actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursionesList));
-        }else {
-            actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursionesPordefecto));
+        if (!excursionesList.isEmpty()) {
+            actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, excursionesList));
+        } else {
+            actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, excursionesPordefecto));
         }
         actvNombreExcursion.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -146,7 +147,7 @@ public class FragmentReservar extends Fragment {
             }
         });
 
-        ArrayAdapter<TTOO> adapterTTOO = new ArrayAdapter<TTOO>(getContext(),R.layout.my_simple_dropdown_item_1line, TTOOBDHandler.getAllTTOOfromDB(getContext()));
+        ArrayAdapter<TTOO> adapterTTOO = new ArrayAdapter<TTOO>(getContext(), R.layout.my_simple_dropdown_item_1line, TTOOBDHandler.getAllTTOOfromDB(getContext()));
         actvAgencia.setThreshold(1);
         actvAgencia.setAdapter(adapterTTOO);
         actvAgencia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -156,26 +157,26 @@ public class FragmentReservar extends Fragment {
             }
         });
 
-        String [] idiomas = {"Español","Inglés","Frances","Aleman","Italiano","Ruso"};
-        ArrayAdapter<String> adapterIdiomas = new ArrayAdapter<String>(getContext(),R.layout.my_simple_dropdown_item_1line,idiomas);
+        String[] idiomas = {"Español", "Inglés", "Frances", "Aleman", "Italiano", "Ruso"};
+        ArrayAdapter<String> adapterIdiomas = new ArrayAdapter<String>(getContext(), R.layout.my_simple_dropdown_item_1line, idiomas);
         actvIdioma.setThreshold(1);
         actvIdioma.setAdapter(adapterIdiomas);
-        actvIdioma.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        actvIdioma.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 etObservaciones.requestFocus();
             }
         });
 
-        String[] hotelesPorDefecto = {"Valentin","Casa del Mar","Paradisus","Muthus CSM","Gran Memories","Memories","Royalton","Starfish","Playa" +
-                "","Melia las Dunas","Melia CSM","Sol CSM","Buenavista","Ensenachos","Angsana","Dhawa","Gran Aston","Sirenis","One Gallery"};
+        String[] hotelesPorDefecto = {"Valentin", "Casa del Mar", "Paradisus", "Muthus CSM", "Gran Memories", "Memories", "Royalton", "Starfish", "Playa" +
+                "", "Melia las Dunas", "Melia CSM", "Sol CSM", "Buenavista", "Ensenachos", "Angsana", "Dhawa", "Gran Aston", "Sirenis", "One Gallery"};
         List<Hotel> hoteles = HotelBDHandler.getAllHotelesfromDB(getContext());
 
         actvHotel.setThreshold(1);
-        if(!hoteles.isEmpty()){
-            actvHotel.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,hoteles));
-        }else {
-            actvHotel.setAdapter(new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,hotelesPorDefecto));
+        if (!hoteles.isEmpty()) {
+            actvHotel.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, hoteles));
+        } else {
+            actvHotel.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, hotelesPorDefecto));
         }
         actvHotel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -188,10 +189,10 @@ public class FragmentReservar extends Fragment {
         setOnTextChangedListener(etMenores);
         setOnTextChangedListener(etAcompanante);
 
-        btn.setOnClickListener(new View.OnClickListener(){
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (myCallBack.getEstado()){
+                switch (myCallBack.getEstado()) {
                     case EDITAR:
                         actualizar();
                         break;
@@ -202,7 +203,7 @@ public class FragmentReservar extends Fragment {
             }
         });
 
-        switch (myCallBack.getEstado()){
+        switch (myCallBack.getEstado()) {
             case EDITAR:
                 setUpEditarMoode();
                 break;
@@ -212,56 +213,64 @@ public class FragmentReservar extends Fragment {
         }
     }
 
-    private void setUpEditarMoode(){
+    private void setUpEditarMoode() {
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
         layoutRepVenta.setVisibility(View.VISIBLE);
         btn.setText("Actualizar");
     }
 
-    private void setUpNuevoMode(){
+    private void setUpNuevoMode() {
         tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
         tvEstado.setText("");
         btn.setText("Registrar");
     }
 
-    private void actualizar(){
-        if(!isvalid()){return;}
+    private void actualizar() {
+        if (!isvalid()) {
+            return;
+        }
         Reserva reserva = getNuevaReserva();
-        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         ContentValues values = ReservaBDHandler.getContentValues(reserva);
-        db.update(ReservaBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(idSelectedReserva)});
-        Toast.makeText(getContext(),"Actualizado correctamente",Toast.LENGTH_SHORT).show();
+        db.update(ReservaBDHandler.TABLE_NAME, values, "id=?", new String[]{String.valueOf(idSelectedReserva)});
+        Toast.makeText(getContext(), "Actualizado correctamente", Toast.LENGTH_SHORT).show();
     }
 
-    private void registrar(){
-        if(!isvalid()){return;}
+    private void registrar() {
+        if (!isvalid()) {
+            return;
+        }
         Reserva nuevaReserva = getNuevaReserva();
-        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
-        SQLiteDatabase db = admin.getWritableDatabase();
-        ContentValues values = ReservaBDHandler.getContentValues(nuevaReserva);
-        db.insert(ReservaBDHandler.TABLE_NAME,null,values);
-        getReadyForNextTE();
-        Toast.makeText(getContext(),"Registrado correctamente",Toast.LENGTH_SHORT).show();
+        registrar(nuevaReserva);
     }
 
-    private void showInfoReserva(Reserva reserva){
+    private void registrar(Reserva reserva) {
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getWritableDatabase();
+        ContentValues values = ReservaBDHandler.getContentValues(reserva);
+        db.insert(ReservaBDHandler.TABLE_NAME, null, values);
+        getReadyForNextTE();
+        Toast.makeText(getContext(), "Registrado correctamente", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showInfoReserva(Reserva reserva) {
         tvFechaConfeccion.setText(reserva.getFechaConfeccion());
         tvFechaEjecucion.setText(reserva.getFechaEjecucion());
         etNumeroTE.setText(reserva.getNoTE());
         actvNombreExcursion.setText(reserva.getExcursion());
         showEstado(reserva.getEstado());
         etNombreCliente.setText(reserva.getCliente());
-        if(reserva.getAdultos()!=0) {
+        if (reserva.getAdultos() != 0) {
             etAdultos.setText(String.valueOf(reserva.getAdultos()));
         }
-        if(reserva.getMenores()!=0) {
+        if (reserva.getMenores() != 0) {
             etMenores.setText(String.valueOf(reserva.getMenores()));
         }
-        if(reserva.getInfantes()!=0) {
+        if (reserva.getInfantes() != 0) {
             etInfantes.setText(String.valueOf(reserva.getInfantes()));
         }
-        if(reserva.getAcompanantes()!=0) {
+        if (reserva.getAcompanantes() != 0) {
             etAcompanante.setText(String.valueOf(reserva.getAcompanantes()));
         }
         etNoHab.setText(reserva.getNoHab());
@@ -270,13 +279,13 @@ public class FragmentReservar extends Fragment {
         actvAgencia.setText(reserva.getAgencia());
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
-        if(reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))){
+        if (reserva.getFechaReporteVenta() != null && reserva.getFechaReporteVenta().equals(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR))) {
             checkBoxIncluirRepVenta.setChecked(true);
         }
     }
 
-    private void showEstado(int estado){
-        switch (estado){
+    private void showEstado(int estado) {
+        switch (estado) {
             case Reserva.ESTADO_ACTIVO:
                 tvEstado.setText("");
                 break;
@@ -290,59 +299,61 @@ public class FragmentReservar extends Fragment {
         getActivity().invalidateOptionsMenu();
     }
 
-    private void getReadyForNextTE(){
+    private void getReadyForNextTE() {
         String teAnterior = etNumeroTE.getText().toString();
         limpiarCampos();
         try {
             int newTE = Integer.parseInt(teAnterior) + 1;
             String newTEString = String.valueOf(newTE);
             int difTamano = teAnterior.length() - newTEString.length();
-            if(difTamano>0){
-                for(int i=0;i<difTamano;i++){
-                    newTEString = "0"+newTEString;
+            if (difTamano > 0) {
+                for (int i = 0; i < difTamano; i++) {
+                    newTEString = "0" + newTEString;
                 }
             }
             etNumeroTE.setText(newTEString);
+            etNumeroTE.requestFocus();
             actvNombreExcursion.requestFocus();
-            //InputMethodManager imm = (InputMethodManager)getContext().getSystemService(getContext().INPUT_METHOD_SERVICE);
-            //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
-        }catch (Exception e){
-            //do nothing
+        } catch (Exception e) {
             etNumeroTE.requestFocus();
         }
     }
-    
-    private void predictPrice(Excursion excursion){
-        if(excursion == null){return;}
+
+    private void predictPrice(Excursion excursion) {
+        if (excursion == null) {
+            return;
+        }
         float precioTotal = 0;
         int adultos = 0;
         int menores = 0;
         int acompanantes = 0;
-        if(!etAdultos.getText().toString().equals("")){
+        if (!etAdultos.getText().toString().equals("")) {
             adultos += Integer.parseInt(etAdultos.getText().toString());
         }
-        if(!etMenores.getText().toString().equals("")){
+        if (!etMenores.getText().toString().equals("")) {
             menores += Integer.parseInt(etMenores.getText().toString());
         }
-        if(!etAcompanante.getText().toString().equals("")){
+        if (!etAcompanante.getText().toString().equals("")) {
             acompanantes += Integer.parseInt(etAcompanante.getText().toString());
         }
-        precioTotal += acompanantes*excursion.getPrecioAcomp();
-        switch (excursion.getTipoPrecio()){
+        precioTotal += acompanantes * excursion.getPrecioAcomp();
+        switch (excursion.getTipoPrecio()) {
             case Excursion.PRECIO_X_PAX:
-                precioTotal += adultos*excursion.getPrecioAd() + (menores*excursion.getPrecioMenor());
+                precioTotal += adultos * excursion.getPrecioAd() + (menores * excursion.getPrecioMenor());
                 break;
             case Excursion.PRECIO_X_RANGO:
-                if(excursion.getRangoHasta()<1){return;}
-                if(adultos>0){
+                if (excursion.getRangoHasta() < 1) {
+                    return;
+                }
+                if (adultos > 0) {
                     precioTotal += excursion.getPrecioRango();
                 }
-                if(adultos-excursion.getRangoHasta()>0){
-                    precioTotal += (adultos-excursion.getRangoHasta())*excursion.getPrecioAd();
-                    precioTotal += menores*excursion.getPrecioMenor();
-                }else {
-                    if((adultos+menores)-excursion.getRangoHasta()>0){
-                        precioTotal += ((adultos+menores)-excursion.getRangoHasta())*excursion.getPrecioMenor();
+                if (adultos - excursion.getRangoHasta() > 0) {
+                    precioTotal += (adultos - excursion.getRangoHasta()) * excursion.getPrecioAd();
+                    precioTotal += menores * excursion.getPrecioMenor();
+                } else {
+                    if ((adultos + menores) - excursion.getRangoHasta() > 0) {
+                        precioTotal += ((adultos + menores) - excursion.getRangoHasta()) * excursion.getPrecioMenor();
                     }
                 }
                 break;
@@ -350,23 +361,23 @@ public class FragmentReservar extends Fragment {
         etPrecio.setText(String.valueOf(precioTotal));
     }
 
-    private void predictPrice(){
-        if(getExcursionIfMatch() != null){
+    private void predictPrice() {
+        if (getExcursionIfMatch() != null) {
             predictPrice(getExcursionIfMatch());
         }
     }
 
-    private Excursion getExcursionIfMatch(){
+    private Excursion getExcursionIfMatch() {
         String excursionSelected = actvNombreExcursion.getText().toString();
-        for(Excursion excursion:excursionesList){
-            if(excursion.getNombre().equals(excursionSelected)){
+        for (Excursion excursion : excursionesList) {
+            if (excursion.getNombre().equals(excursionSelected)) {
                 return excursion;
             }
         }
         return null;
     }
 
-    private void setOnTextChangedListener(EditText et){
+    private void setOnTextChangedListener(EditText et) {
         et.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -385,7 +396,7 @@ public class FragmentReservar extends Fragment {
         });
     }
 
-    private void limpiarCampos(){
+    private void limpiarCampos() {
         etNumeroTE.setText("");
         actvNombreExcursion.setText("");
         etNombreCliente.setText("");
@@ -402,146 +413,171 @@ public class FragmentReservar extends Fragment {
         etObservaciones.setText("");
     }
 
-    private Reserva getNuevaReserva(){
+    private Reserva getNuevaReserva() {
         Reserva reserva = new Reserva();
         reserva.setFechaConfeccion(tvFechaConfeccion.getText().toString());
         reserva.setNoTE(etNumeroTE.getText().toString());
         reserva.setExcursion(actvNombreExcursion.getText().toString());
         reserva.setCliente(etNombreCliente.getText().toString());
-        if(!etAdultos.getText().toString().equals("")) {
+        if (!etAdultos.getText().toString().equals("")) {
             reserva.setAdultos(Integer.parseInt(etAdultos.getText().toString()));
-        }else {
+        } else {
             reserva.setAdultos(0);
         }
-        if(!etMenores.getText().toString().equals("")) {
+        if (!etMenores.getText().toString().equals("")) {
             reserva.setMenores(Integer.parseInt(etMenores.getText().toString()));
-        }else {
+        } else {
             reserva.setMenores(0);
         }
-        if(!etInfantes.getText().toString().equals("")) {
+        if (!etInfantes.getText().toString().equals("")) {
             reserva.setInfantes(Integer.parseInt(etInfantes.getText().toString()));
-        }else {
+        } else {
             reserva.setInfantes(0);
         }
-        if(!etAcompanante.getText().toString().equals("")) {
+        if (!etAcompanante.getText().toString().equals("")) {
             reserva.setAcompanante(Integer.parseInt(etAcompanante.getText().toString()));
-        }else {
+        } else {
             reserva.setAcompanante(0);
         }
-        reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
-        if(myCallBack.getEstado() == MisConstantes.Estado.NUEVO){
+        if(tvFechaEjecucion.getText().toString().equals("Fecha")){
+            reserva.setFechaEjecucion("");
+        } else {
+            reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
+        }
+        if (myCallBack.getEstado() == MisConstantes.Estado.NUEVO) {
             reserva.setFechaReporteVenta(tvFechaConfeccion.getText().toString());
-        }else if(myCallBack.getEstado() == MisConstantes.Estado.EDITAR){
-            if(checkBoxIncluirRepVenta.isChecked()){
+        } else if (myCallBack.getEstado() == MisConstantes.Estado.EDITAR) {
+            if (checkBoxIncluirRepVenta.isChecked()) {
                 reserva.setFechaReporteVenta(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
-            }else {
+            } else {
                 reserva.setFechaReporteVenta("");
             }
         }
         reserva.setAgencia(actvAgencia.getText().toString());
         reserva.setHotel(actvHotel.getText().toString());
         reserva.setNoHab(etNoHab.getText().toString());
-        if(!etPrecio.getText().toString().equals("")) {
+        if (!etPrecio.getText().toString().equals("")) {
             reserva.setPrecio(Double.parseDouble(etPrecio.getText().toString()));
-        }else {
+        } else {
             reserva.setPrecio(0);
         }
         reserva.setIdioma(actvIdioma.getText().toString());
         reserva.setObservaciones(etObservaciones.getText().toString());
+        if(myCallBack.getEstado()== MisConstantes.Estado.EDITAR){
+            reserva.setEstado(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getEstado());
+        }
         return reserva;
     }
 
-    private boolean isvalid(){
+    private boolean isvalid() {
         String falta = "Faltó:";
         boolean makeToastAtEnd = false;
 
+        if(myCallBack.getEstado()== MisConstantes.Estado.EDITAR){
+            if(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getEstado()==Reserva.ESTADO_CANCELADO){
+                Toast.makeText(getContext(),"Debe activar la reserva",Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+
         //obligatorio
-        if(etNumeroTE.getText().toString().equals("")){
-            Toast.makeText(getContext(),"Falta número de TE",Toast.LENGTH_SHORT).show();
+        if (etNumeroTE.getText().toString().equals("")) {
+            Toast.makeText(getContext(), "Falta número de TE", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         //obligatorio
-        if(actvNombreExcursion.getText().toString().equals("")){
-            Toast.makeText(getContext(),"Falta nombre de excurción",Toast.LENGTH_SHORT).show();
+        if (actvNombreExcursion.getText().toString().equals("")) {
+            Toast.makeText(getContext(), "Falta nombre de excurción", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if(etNombreCliente.getText().toString().equals("")){
+        if (etNombreCliente.getText().toString().equals("")) {
             falta += "\n- nombre de cliente";
             makeToastAtEnd = true;
         }
 
         //obligatorio
-        if(etAdultos.getText().toString().equals("")){
+        if (etAdultos.getText().toString().equals("")) {
             //Toast.makeText(getContext(),"Falta al menos 1 adulto",Toast.LENGTH_SHORT).show();
             //return false;
             falta += "\n- tiene 0 clientes adultos";
         }
 
         //obligatorio
-        if(tvFechaEjecucion.getText().toString().equals("Fecha")){
-            Toast.makeText(getContext(),"Falta la fecha de la excursión",Toast.LENGTH_SHORT).show();
+        if (tvFechaEjecucion.getText().toString().equals("Fecha")) {
+            Toast.makeText(getContext(), "Falta la fecha de la excursión", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if(actvAgencia.getText().toString().equals("")){
+        if (actvAgencia.getText().toString().equals("")) {
             falta += "\n- agencia";
             makeToastAtEnd = true;
         }
 
         //obligatorio
-        if(actvHotel.getText().toString().equals("")){
-            Toast.makeText(getContext(),"Falta el hotel",Toast.LENGTH_SHORT).show();
+        if (actvHotel.getText().toString().equals("")) {
+            Toast.makeText(getContext(), "Falta el hotel", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if(etNoHab.getText().toString().equals("")){
+        if (etNoHab.getText().toString().equals("")) {
             falta += "\n- número de habitación";
             makeToastAtEnd = true;
         }
-        if(etPrecio.getText().toString().equals("")){
+        if (etPrecio.getText().toString().equals("")) {
             falta += "\n- precio";
             makeToastAtEnd = true;
         }
-        if(actvIdioma.getText().toString().equals("")){
-            if(getExcursionIfMatch() != null){
-                if(getExcursionIfMatch().getIdiomaNecesario() == Excursion.IDIOMA_NECESARIO){
-                    Toast.makeText(getContext(),"Falta el idioma",Toast.LENGTH_SHORT).show();
+        if (actvIdioma.getText().toString().equals("")) {
+            if (getExcursionIfMatch() != null) {
+                if (getExcursionIfMatch().getIdiomaNecesario() == Excursion.IDIOMA_NECESARIO) {
+                    Toast.makeText(getContext(), "Falta el idioma", Toast.LENGTH_SHORT).show();
                     return false;
                 }
             }
         }
 
-        if(makeToastAtEnd){
-            Toast.makeText(getContext(),falta,Toast.LENGTH_SHORT).show();
+        if (makeToastAtEnd) {
+            Toast.makeText(getContext(), falta, Toast.LENGTH_SHORT).show();
         }
         return true;
     }
 
-    private void setActivo(){
+    private void setActivo() {
         setEstado(Reserva.ESTADO_ACTIVO);
         showEstado(Reserva.ESTADO_ACTIVO);
     }
 
-    private void setCancelado(){
-        setEstado(Reserva.ESTADO_CANCELADO);
-        showEstado(Reserva.ESTADO_CANCELADO);
+    private void setCancelado() {
+        if(myCallBack.getEstado()== MisConstantes.Estado.EDITAR) {
+            setEstado(Reserva.ESTADO_CANCELADO);
+            showEstado(Reserva.ESTADO_CANCELADO);
+        }else if(myCallBack.getEstado()== MisConstantes.Estado.NUEVO){
+            Reserva reserva = getNuevaReserva();
+            if(reserva.getNoTE().equals("")){
+                Toast.makeText(getContext(),"Debe tener al menos un numero de ticket",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            reserva.setFechaReporteVenta("");
+            reserva.setEstado(Reserva.ESTADO_CANCELADO);
+            registrar(reserva);
+        }
     }
 
-    private void setDevuelto(){
+    private void setDevuelto() {
         setEstado(Reserva.ESTADO_DEVUELTO);
         showEstado(Reserva.ESTADO_DEVUELTO);
     }
 
-    private void setEstado(int estado){
-        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+    private void setEstado(int estado) {
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(ReservaBDHandler.CAMPO_ESTADO,estado);
-        db.update(ReservaBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(idSelectedReserva)});
+        values.put(ReservaBDHandler.CAMPO_ESTADO, estado);
+        db.update(ReservaBDHandler.TABLE_NAME, values, "id=?", new String[]{String.valueOf(idSelectedReserva)});
         String mensaje = "";
-        switch (estado){
+        switch (estado) {
             case Reserva.ESTADO_ACTIVO:
                 mensaje = "Activada";
                 break;
@@ -552,10 +588,10 @@ public class FragmentReservar extends Fragment {
                 mensaje = "Devuelto";
                 break;
         }
-        Toast.makeText(getContext(),mensaje,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
     }
 
-    private void confirmarEliminar(){
+    private void confirmarEliminar() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Seguro que desea eliminar esta reserva?");
         builder.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
@@ -574,36 +610,40 @@ public class FragmentReservar extends Fragment {
         confirmationDialog.show();
     }
 
-    private void eliminarReserva(){
-        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+    private void eliminarReserva() {
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
-        db.delete(ReservaBDHandler.TABLE_NAME,"id=?",new String[]{String.valueOf(idSelectedReserva)});
-        Toast.makeText(getContext(),"Eliminado correctamente",Toast.LENGTH_SHORT).show();
+        db.delete(ReservaBDHandler.TABLE_NAME, "id=?", new String[]{String.valueOf(idSelectedReserva)});
+        Toast.makeText(getContext(), "Eliminado correctamente", Toast.LENGTH_SHORT).show();
         getActivity().onBackPressed();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(menu!=null){menu.clear();}
-        if(myCallBack.getEstado()== MisConstantes.Estado.EDITAR){
-            switch (ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getEstado()){
+        if (menu != null) {
+            menu.clear();
+        }
+        if (myCallBack.getEstado() == MisConstantes.Estado.EDITAR) {
+            switch (ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva).getEstado()) {
                 case Reserva.ESTADO_ACTIVO:
-                    inflater.inflate(R.menu.menu_frag_reservar_activo,menu);
+                    inflater.inflate(R.menu.menu_frag_reservar_activo, menu);
                     break;
                 case Reserva.ESTADO_CANCELADO:
-                    inflater.inflate(R.menu.menu_frag_reservar_cancelado,menu);
+                    inflater.inflate(R.menu.menu_frag_reservar_cancelado, menu);
                     break;
                 case Reserva.ESTADO_DEVUELTO:
-                    inflater.inflate(R.menu.menu_frag_reservar_devuelto,menu);
+                    inflater.inflate(R.menu.menu_frag_reservar_devuelto, menu);
                     break;
             }
+        } else if (myCallBack.getEstado() == MisConstantes.Estado.NUEVO) {
+            inflater.inflate(R.menu.menu_frag_reservar_nuevo, menu);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_item_set_activo:
                 setActivo();
                 break;
@@ -620,8 +660,9 @@ public class FragmentReservar extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public interface MyCallBack{
+    public interface MyCallBack {
         MisConstantes.Estado getEstado();
+
         void udUI(String tag);
     }
 
