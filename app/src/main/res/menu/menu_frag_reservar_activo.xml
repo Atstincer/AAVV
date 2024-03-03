@@ -4,7 +4,7 @@
     <item android:id="@+id/menu_item_set_cancelado"
         android:title="Cancelar"/>
 
-    <item android:id="@+id/menu_item_set_devuelto"
+    <item android:id="@+id/menu_item_set_devolver"
         android:title="Devolver"/>
 
     <item android:id="@+id/menu_item_eliminar_reserva"

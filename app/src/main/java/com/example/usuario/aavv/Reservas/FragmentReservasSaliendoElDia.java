@@ -193,6 +193,11 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     @Override
+    public String getFechaLiquidacion() {
+        return null;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if(menu != null){menu.clear();}
         inflater.inflate(R.menu.menu_frag_reservas_saliendo_el_dia,menu);

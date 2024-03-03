@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -33,6 +34,7 @@ import com.example.usuario.aavv.Util.MyExcel;
 import com.example.usuario.aavv.Util.Util;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,6 +53,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     private TextView tvFechaLiquidacion, tvInfo;
     private RecyclerView rvReservas;
     private ReservaRVAdapter adapter;
+    private FloatingActionButton btnAddReserva;
 
     private List<Reserva> reservaList;
 
@@ -77,6 +80,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         tvFechaLiquidacion = (TextView) view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
         tvInfo = (TextView) view.findViewById(R.id.tv_info_venta);
         rvReservas = (RecyclerView) view.findViewById(R.id.rv_reservas_fliquidacion);
+        btnAddReserva = (FloatingActionButton)view.findViewById(R.id.btn_add_reserva);
     }
 
     private void setItUp(){
@@ -107,6 +111,13 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 return true;
             }
         });
+
+        btnAddReserva.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addReserva();
+            }
+        });
     }
 
     private void udUI(){
@@ -129,18 +140,36 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         double total = 0;
         int cantPax = 0;
         for(Reserva reserva:reservaList){
-            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO || reserva.getEstado()==Reserva.ESTADO_DEVUELTO) {
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO) {
                 total = total + reserva.getPrecio();
                 cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+            }else if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
+                if(reserva.getFechaConfeccion().equals(reserva.getFechaDevolucion())) {
+                    cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                    total = total + reserva.getPrecio() - reserva.getImporteDevuelto();
+                } else if(reserva.getFechaConfeccion().equals(tvFechaLiquidacion.getText().toString())){
+                    total = total + reserva.getPrecio();
+                    cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                } else if(reserva.getFechaDevolucion().equals(tvFechaLiquidacion.getText().toString())) {
+                    total = total - reserva.getImporteDevuelto();
+                }
             }
         }
         return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
     }
 
     private void udReservaList(){
-        reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
-                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=?",
-                new String[]{DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString())});
+        String fechaLiqBD = DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString());
+        if(MySharedPreferences.getIncluirDevEnLiquidacion(getContext())){
+            reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
+                    "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=? OR " +
+                    ReservaBDHandler.CAMPO_FECHA_DEVOLUCION+"=?",
+                    new String[]{fechaLiqBD,fechaLiqBD});
+        }else {
+            reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
+                    "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=?",
+                    new String[]{fechaLiqBD});
+        }
         Collections.sort(reservaList,Reserva.ordenarPorTE);
     }
 
@@ -172,7 +201,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             cuerpo += "\n\n";
         }
         cuerpo += "Venta del día: "+ tvFechaLiquidacion.getText().toString();
-        for (Reserva reserva:reservaList){
+        for (Reserva reserva:getReservasReporteVenta()){
             cuerpo += "\n\n" + Reserva.toString(reserva,Reserva.INFO_REPORTE_VENTA);
         }
         return cuerpo;
@@ -202,27 +231,28 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
                 return;
             }
-            /*for(Reserva reserva:reservaList){
-                if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO){
-                    reservasReportar.add(reserva);
-                }
-            }*/
             if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar, tvFechaLiquidacion.getText().toString())){
-                //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
                 myCallBack.showSnackBar("Excel generado correctamente: "+file);
             }
         } catch (Exception e) {
-            //System.out.println("Mensaje error: " + e.getMessage());
             Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private List<Reserva> getReservasReporteVenta(){
-        List<Reserva> reservasRepVenta = ReservaBDHandler.getReservasFromDB(getContext(),
-                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
+        List<Reserva> resultadoBruto = ReservaBDHandler.getReservasFromDB(getContext(),
+                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+
+                        ReservaBDHandler.CAMPO_ESTADO+"!=?",
                 new String[]{
                         DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString()),
-                        String.valueOf(Reserva.ESTADO_ACTIVO)});
+                        String.valueOf(Reserva.ESTADO_CANCELADO)});
+        List<Reserva> reservasRepVenta = new ArrayList<>();
+        for (Reserva reserva: resultadoBruto){
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
+                    reserva.getEstado()==Reserva.ESTADO_DEVUELTO && reserva.isDevParcial()){
+                reservasRepVenta.add(reserva);
+            }
+        }
         Collections.sort(reservasRepVenta,Reserva.ordenarPorTE);
         return reservasRepVenta;
     }
@@ -231,14 +261,22 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         String texto = "Venta del día: "+ tvFechaLiquidacion.getText().toString();
         texto += "\n\n" + tvInfo.getText().toString();
         for (Reserva reserva:reservaList){
-            if(reserva.getEstado() == Reserva.ESTADO_ACTIVO || reserva.getEstado() == Reserva.ESTADO_DEVUELTO) {
+            if(reserva.getEstado() == Reserva.ESTADO_ACTIVO ||
+                    reserva.getEstado() == Reserva.ESTADO_DEVUELTO &&
+                            !tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())) {
                 texto += "\n\n" + Reserva.toString(reserva, Reserva.INFO_LIQUIDACION);
             }else if(reserva.getEstado() == Reserva.ESTADO_CANCELADO){
-                texto += "\n\n" + "TE: " + reserva.getNoTE() + "    CANCELADO";
+                texto += "\n\nTE: " + reserva.getNoTE() + "    CANCELADO";
+            } else if(reserva.getEstado() == Reserva.ESTADO_DEVUELTO && tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())){
+                if(reserva.getPrecio()==reserva.getImporteDevuelto()) {
+                    texto += "\n\nTE: " + reserva.getNoTE() + "    DEVOLUCION TOTAL";
+                }else if(reserva.getPrecio() > reserva.getImporteDevuelto()) {
+                    texto += "\n\nTE: " + reserva.getNoTE() + "    DEVOLUCION PARCIAL";
+                }
+                texto += "\nImporte devuelto: -" + reserva.getImporteDevuelto();
             }
         }
         Util.copyToClipBoard(getContext(),texto);
-        Toast.makeText(getContext(),"Info copiada",Toast.LENGTH_SHORT).show();
     }
 
     private void checkForPermissions() {
@@ -283,7 +321,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_item_enviar_mail_venta_del_dia:
-                if(!reservaList.isEmpty()) {
+                if(!getReservasReporteVenta().isEmpty()) {
                     enviarMailVentaDelDia();
                 }else {
                     Toast.makeText(getContext(), "No hay reservas para enviar", Toast.LENGTH_SHORT).show();
@@ -304,9 +342,23 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
     }
 
+    @Override
+    public String getFechaLiquidacion() {
+        return tvFechaLiquidacion.getText().toString();
+    }
+
+    private void addReserva(){
+        String lastTE = "";
+        if(reservaList.size()>0){
+            lastTE = reservaList.get(reservaList.size()-1).getNoTE();
+        }
+        myCallBack.setUpFragmentReservar(lastTE,tvFechaLiquidacion.getText().toString());
+    }
+
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(long id);
         void showSnackBar(String mensaje);
+        void setUpFragmentReservar(String lastTE, String fechaLiquidacion);
     }
 }

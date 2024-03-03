@@ -92,7 +92,8 @@ public class FragmentVentaTTOO extends Fragment {
             tvFechaDesde.setText(desde);
         }
         if(tvFechaHasta.getText().toString().equals("fecha")) {
-            tvFechaHasta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            //tvFechaHasta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            tvFechaHasta.setText(DateHandler.getLastDayOfMonth(MisConstantes.FormatoFecha.MOSTRAR));
         }
         layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -132,6 +133,11 @@ public class FragmentVentaTTOO extends Fragment {
             @Override
             public void itemClicked(int position) {
                 myCallBack.setUpFragmentReservar(listaReservas.get(position).getId());
+            }
+
+            @Override
+            public String getFechaLiquidacion() {
+                return null;
             }
         });
         rvReservas.setAdapter(rvAdapter);
@@ -180,7 +186,7 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private void udListaAgencias(){
-        List<Reserva> reservasDelPeriodo = ReservaBDHandler.getReservasFromDB(getContext(),tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString(),true);
+        List<Reserva> reservasDelPeriodo = getReservasFromDB(TODAS);
         listaAgencias.clear();
         if(reservasDelPeriodo.size()>0) {
             Collections.sort(reservasDelPeriodo, new Comparator<Reserva>() {
@@ -219,15 +225,34 @@ public class FragmentVentaTTOO extends Fragment {
             return;
         }
         String selected = spinnerAgencias.getSelectedItem().toString();
-        if(selected.equals(TODAS)){
-            listaReservas = ReservaBDHandler.getReservasFromDB(getContext(),tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString(),true);
-        }else {
-            listaReservas = ReservaBDHandler.getReservasFromDB(getContext(),tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString(),selected,true);
-        }
+        listaReservas = getReservasFromDB(selected);
         if(listaReservas.size()>1){
             Collections.sort(listaReservas,Reserva.ordenarPorTE);
         }
         rvAdapter.setReservaList(listaReservas);
+    }
+
+    private List<Reserva> getReservasFromDB(String agencia){
+        String query;
+        String [] args;
+        String desdeDBFormat = DateHandler.formatDateToStoreInDB(tvFechaDesde.getText().toString());
+        String hastaDBFormat = DateHandler.formatDateToStoreInDB(tvFechaHasta.getText().toString());
+        String cxcStr = String.valueOf(Reserva.ESTADO_CANCELADO);
+        if(agencia.equals(TODAS)){
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=? OR " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
+            args = new String[]{desdeDBFormat,hastaDBFormat,cxcStr,desdeDBFormat,hastaDBFormat,cxcStr};
+        }else {
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND " +
+                    ""+ReservaBDHandler.CAMPO_ESTADO+"!=? OR "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND " +
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND " +
+                    ""+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
+            args = new String[]{desdeDBFormat,hastaDBFormat,agencia,cxcStr,desdeDBFormat,hastaDBFormat,agencia,cxcStr};
+        }
+        return Reserva.getSoloActivas(ReservaBDHandler.getReservasFromDB(getContext(),query,args));
     }
 
     private void udTVInfo(){
@@ -290,8 +315,9 @@ public class FragmentVentaTTOO extends Fragment {
     private int getCantPax(String agencia){
         int totalPax = 0;
         for(Reserva reserva:listaReservas){
-            if(reserva.getAgencia().equals(agencia) && reserva.getEstado()==Reserva.ESTADO_ACTIVO){
-                totalPax = totalPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes();
+            if(reserva.getAgencia().equals(agencia) && reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
+                    reserva.getAgencia().equals(agencia) && reserva.getEstado()==Reserva.ESTADO_DEVUELTO && reserva.isDevParcial()){
+                totalPax += reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes();
             }
         }
         return totalPax;
@@ -301,7 +327,9 @@ public class FragmentVentaTTOO extends Fragment {
         double importeTotal = 0;
         for(Reserva reserva:listaReservas){
             if(reserva.getAgencia().equals(agencia) && reserva.getEstado()==Reserva.ESTADO_ACTIVO){
-                importeTotal = importeTotal + reserva.getPrecio();
+                importeTotal += reserva.getPrecio();
+            }else if(reserva.getAgencia().equals(agencia) && reserva.getEstado()==Reserva.ESTADO_DEVUELTO && reserva.isDevParcial()){
+                importeTotal += reserva.getPrecio()-reserva.getImporteDevuelto();
             }
         }
         return importeTotal;

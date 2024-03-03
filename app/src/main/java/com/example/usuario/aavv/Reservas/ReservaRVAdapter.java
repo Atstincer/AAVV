@@ -93,43 +93,66 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
         }
 
         void bindHolder(int position){
-            String te = "TE "+ reservaList.get(position).getNoTE();
+            Reserva reserva = reservaList.get(position);
+            String te = "TE "+ reserva.getNoTE();
             tvTE.setText(te);
-            if(reservaList.get(position).getEstado()!=Reserva.ESTADO_ACTIVO){
-                if(reservaList.get(position).getEstado()==Reserva.ESTADO_CANCELADO){
+            if(reserva.getEstado()!=Reserva.ESTADO_ACTIVO){
+                if(reserva.getEstado()==Reserva.ESTADO_CANCELADO){
                     tvEstado.setText("CANCELADO");
-                }else if(reservaList.get(position).getEstado()==Reserva.ESTADO_DEVUELTO){
+                }else if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
                     tvEstado.setText("DEVUELTO");
                 }
             }else {
                 tvEstado.setText("");
             }
-            tvFechaEjecucion.setText(reservaList.get(position).getFechaEjecucion());
-            showInfoIfExist(tvExcursion,reservaList.get(position).getExcursion());
-            showInfoIfExist(tvHotel,reservaList.get(position).getHotel());
-            showInfoIfExist(tvHab,reservaList.get(position).getNoHab());
+            if(reserva.getFechaOriginalEjecucion()==null || reserva.getFechaOriginalEjecucion().equals("")) {
+                tvFechaEjecucion.setText(reserva.getFechaEjecucion());
+            }else {
+                if(modo == Modo.POR_AGENCIA) {
+                    tvFechaEjecucion.setText(reserva.getFechaOriginalEjecucion());
+                }else {
+                    tvFechaEjecucion.setText(reserva.getFechaEjecucion());
+                }
+            }
+            showInfoIfExist(tvExcursion,reserva.getExcursion());
+            showInfoIfExist(tvHotel,reserva.getHotel());
+            showInfoIfExist(tvHab,reserva.getNoHab());
             String cantPax = "";
-            if(!reservaList.get(position).getCantPaxs(false).equals("")){
-                cantPax = "pax: " + reservaList.get(position).getCantPaxs(false);
+            if(!reserva.getCantPaxs(false).equals("")){
+                cantPax = "pax: " + reserva.getCantPaxs(false);
             }
             showInfoIfExist(tvCantPax,cantPax);
-            showInfoIfExist(tvIdioma,reservaList.get(position).getIdioma());
-            tvObs.setText(reservaList.get(position).getObservaciones());
-            tvPrecio.setText(String.valueOf(reservaList.get(position).getPrecio()));
-            if(reservaList.get(position).getPrecio()==0){
+            showInfoIfExist(tvIdioma,reserva.getIdioma());
+            tvObs.setText(reserva.getObservaciones());
+            tvPrecio.setText(String.valueOf(reserva.getPrecio()));
+            tvPrecio.setTextColor(ContextCompat.getColor(ctx,android.R.color.holo_green_dark));
+            if(reserva.getPrecio()==0){
                 tvPrecio.setTextColor(ContextCompat.getColor(ctx,R.color.atencion));
             }
 
-            if(modo == Modo.GENERAL){
+            if(this.modo == Modo.GENERAL){
                 //oculta precio, si observaciones si dice algo
                 tvPrecio.setVisibility(View.GONE);
                 showObsIfExist();
-            }else if(modo == Modo.EXC_SALIENDO_EL_DIA){
+            }else if(this.modo == Modo.EXC_SALIENDO_EL_DIA){
                 tvFechaEjecucion.setVisibility(View.GONE);
                 tvPrecio.setVisibility(View.GONE);
                 showObsIfExist();
-            }else if(modo == Modo.POR_AGENCIA){
+            }else if(this.modo == Modo.POR_AGENCIA){
                 tvObs.setText("");
+                if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
+                    double saldo = reserva.getPrecio()-reserva.getImporteDevuelto();
+                    tvPrecio.setText(String.valueOf(saldo));
+                }
+            }else if(this.modo == Modo.LIQUIDACION) {
+                if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
+                    if(myCallBack.getFechaLiquidacion() != null
+                            && myCallBack.getFechaLiquidacion().equals(reserva.getFechaDevolucion())) {
+                        tvPrecio.setTextColor(ContextCompat.getColor(ctx, R.color.atencion));
+                        String importe = "-" + String.valueOf(reserva.getImporteDevuelto());
+                        tvPrecio.setText(importe);
+                    }
+                }
             }
         }
 
@@ -151,6 +174,7 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
 
     interface MyCallBack{
         void itemClicked(int position);
+        String getFechaLiquidacion();
     }
 
     enum Modo{

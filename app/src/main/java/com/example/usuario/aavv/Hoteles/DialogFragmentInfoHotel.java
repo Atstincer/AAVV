@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
 import com.example.usuario.aavv.R;
-import com.example.usuario.aavv.TTOO.TTOO;
-import com.example.usuario.aavv.TTOO.TTOOBDHandler;
 
 /**
  * Created by usuario on 21/07/2023.

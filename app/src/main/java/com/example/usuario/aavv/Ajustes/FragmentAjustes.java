@@ -16,8 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +31,7 @@ import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Reservas.Reserva;
 import com.example.usuario.aavv.Reservas.ReservaBDHandler;
 import com.example.usuario.aavv.Util.DateHandler;
+import com.example.usuario.aavv.Util.MisConstantes;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -44,6 +49,9 @@ public class FragmentAjustes extends Fragment {
     private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor;
     private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor;
     private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor;
+    private RadioGroup radioGroup;
+    private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia;
+    private CheckBox cbIncluirDevEnLiq;
 
     private MyCallBack myCallBack;
 
@@ -76,6 +84,11 @@ public class FragmentAjustes extends Fragment {
         btnNombreVendedor = (Button)view.findViewById(R.id.btn_nombre_vendedor);
         btnTelefonoVendedor = (Button)view.findViewById(R.id.btn_telefono_vendedor);
         btnAgenciaVendedor = (Button)view.findViewById(R.id.btn_agencia_vendedor);
+        radioGroup = (RadioGroup)view.findViewById(R.id.rg_fragment_inicio);
+        rbHomePage = (RadioButton)view.findViewById(R.id.rb_iniciar_home_page);
+        rbLiquidacion = (RadioButton)view.findViewById(R.id.rb_iniciar_liquidacion);
+        rbExcDelDia = (RadioButton)view.findViewById(R.id.rb_iniciar_reservas);
+        cbIncluirDevEnLiq = (CheckBox)view.findViewById(R.id.cb_incluir_devolucion);
     }
 
     private void setItUp(){
@@ -127,6 +140,40 @@ public class FragmentAjustes extends Fragment {
                 showInfoVendedor();
             }
         });
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int idItemChecked) {
+                switch (idItemChecked){
+                    case R.id.rb_iniciar_home_page:
+                        MySharedPreferences.storeFragmentInicio(getContext(), MisConstantes.INICIAR_HOME_PAGE);
+                        break;
+                    case R.id.rb_iniciar_liquidacion:
+                        MySharedPreferences.storeFragmentInicio(getContext(),MisConstantes.INICIAR_LIQUIDACIONES);
+                        break;
+                    case R.id.rb_iniciar_reservas:
+                        MySharedPreferences.storeFragmentInicio(getContext(),MisConstantes.INICIAR_EXCURSIONES_SALIENDO);
+                        break;
+                }
+            }
+        });
+
+        radioGroup.clearCheck();
+        if(MySharedPreferences.getFragmentInicio(getContext())==MisConstantes.INICIAR_HOME_PAGE){
+            rbHomePage.setChecked(true);
+        }else if(MySharedPreferences.getFragmentInicio(getContext())==MisConstantes.INICIAR_LIQUIDACIONES){
+            rbLiquidacion.setChecked(true);
+        }else if(MySharedPreferences.getFragmentInicio(getContext())==MisConstantes.INICIAR_EXCURSIONES_SALIENDO){
+            rbExcDelDia.setChecked(true);
+        }
+
+        cbIncluirDevEnLiq.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                MySharedPreferences.storeIncluirDevEnLiquidacion(getContext(),compoundButton.isChecked());
+            }
+        });
+
+        cbIncluirDevEnLiq.setChecked(MySharedPreferences.getIncluirDevEnLiquidacion(getContext()));
     }
 
     private void showInfoVendedor(){

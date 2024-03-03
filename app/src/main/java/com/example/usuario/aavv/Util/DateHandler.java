@@ -30,6 +30,7 @@ public class DateHandler {
     }
 
     public static String formatDateToShow(String date){
+        if(date == null){return date;}
         if(date.equals("")){return "";}
         return date.substring(8) + "/" + date.substring(5,7) + "/" + date.substring(0,4);
     }
@@ -37,6 +38,20 @@ public class DateHandler {
     public static String getToday(MisConstantes.FormatoFecha formato){
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int year = calendar.get(Calendar.YEAR);
+        switch (formato){
+            case MOSTRAR:
+                return DateHandler.formatDateToShow(day,month,year);
+            case ALMACENAR:
+                return DateHandler.formatDateToStoreInDB(day,month,year);
+        }
+        return "";
+    }
+
+    public static String getLastDayOfMonth(MisConstantes.FormatoFecha formato){
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH)+1;
         int year = calendar.get(Calendar.YEAR);
         switch (formato){

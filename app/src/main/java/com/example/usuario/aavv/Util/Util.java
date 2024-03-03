@@ -15,7 +15,7 @@ public class Util {
         ClipboardManager clipboardManager = (ClipboardManager)ctx.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("text",text);
         clipboardManager.setPrimaryClip(clipData);
-        Toast.makeText(ctx,"Texto copiado",Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx,"Copiado",Toast.LENGTH_SHORT).show();
     }
 
 }

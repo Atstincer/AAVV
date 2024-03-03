@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +44,7 @@ import java.util.List;
  * Created by usuario on 18/07/2023.
  */
 
-public class FragmentReservar extends Fragment {
+public class FragmentReservar extends Fragment implements DialogFragmentDevolver.MyCallBack{
 
     public static final String TAG = "FragmentReservar";
 
@@ -67,9 +66,6 @@ public class FragmentReservar extends Fragment {
         setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.fragment_reservar, container, false);
         bindComponents(v);
-        if (getArguments() != null) {
-            idSelectedReserva = getArguments().getLong("id");
-        }
         setItUP();
         myCallBack.udUI(FragmentReservar.TAG);
         return v;
@@ -214,6 +210,9 @@ public class FragmentReservar extends Fragment {
     }
 
     private void setUpEditarMoode() {
+        if (getArguments() != null) {
+            idSelectedReserva = getArguments().getLong("id");
+        }
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
         layoutRepVenta.setVisibility(View.VISIBLE);
         btn.setText("Actualizar");
@@ -221,6 +220,14 @@ public class FragmentReservar extends Fragment {
 
     private void setUpNuevoMode() {
         tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        if(getArguments()!=null){
+            if(getArguments().getString("fechaLiq") != null && !getArguments().getString("fechaLiq").equals("")) {
+                tvFechaConfeccion.setText(getArguments().getString("fechaLiq"));
+            }
+            if(getArguments().getString("lastTE") != null && !getArguments().getString("lastTE").equals("")){
+                getReadyForNextTE(getArguments().getString("lastTE"));
+            }
+        }
         tvEstado.setText("");
         btn.setText("Registrar");
     }
@@ -242,6 +249,7 @@ public class FragmentReservar extends Fragment {
             return;
         }
         Reserva nuevaReserva = getNuevaReserva();
+        nuevaReserva.setFechaOriginalEjecucion(nuevaReserva.getFechaEjecucion());
         registrar(nuevaReserva);
     }
 
@@ -259,7 +267,7 @@ public class FragmentReservar extends Fragment {
         tvFechaEjecucion.setText(reserva.getFechaEjecucion());
         etNumeroTE.setText(reserva.getNoTE());
         actvNombreExcursion.setText(reserva.getExcursion());
-        showEstado(reserva.getEstado());
+        showEstado();
         etNombreCliente.setText(reserva.getCliente());
         if (reserva.getAdultos() != 0) {
             etAdultos.setText(String.valueOf(reserva.getAdultos()));
@@ -284,8 +292,9 @@ public class FragmentReservar extends Fragment {
         }
     }
 
-    private void showEstado(int estado) {
-        switch (estado) {
+    private void showEstado() {
+        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
+        switch (reserva.getEstado()) {
             case Reserva.ESTADO_ACTIVO:
                 tvEstado.setText("");
                 break;
@@ -293,7 +302,15 @@ public class FragmentReservar extends Fragment {
                 tvEstado.setText("CANCELADO");
                 break;
             case Reserva.ESTADO_DEVUELTO:
-                tvEstado.setText("DEVUELTO");
+                String fechaDev = "";
+                if(reserva.getFechaDevolucion()!=null && !reserva.getFechaDevolucion().equals("")){
+                    fechaDev = reserva.getFechaDevolucion().substring(0,5) + " ";
+                }
+                String info = "DEVUELTO";
+                if(reserva.getImporteDevuelto()>0){
+                    info += "\n(" + fechaDev + "-" + reserva.getImporteDevuelto() + ")";
+                }
+                tvEstado.setText(info);
                 break;
         }
         getActivity().invalidateOptionsMenu();
@@ -302,20 +319,35 @@ public class FragmentReservar extends Fragment {
     private void getReadyForNextTE() {
         String teAnterior = etNumeroTE.getText().toString();
         limpiarCampos();
+        if(getNextTE(teAnterior)!=null && !getNextTE(teAnterior).equals("")){
+            etNumeroTE.setText(getNextTE(teAnterior));
+        }
+        actvNombreExcursion.requestFocus();
+    }
+
+    private void getReadyForNextTE(String teAnterior) {
+        limpiarCampos();
+        if(getNextTE(teAnterior)!=null && !getNextTE(teAnterior).equals("")){
+            etNumeroTE.setText(getNextTE(teAnterior));
+        }
+        actvNombreExcursion.requestFocus();
+    }
+
+    private String getNextTE(String lastTE){
+        if(lastTE == null || lastTE.equals("")){return lastTE;}
         try {
-            int newTE = Integer.parseInt(teAnterior) + 1;
+            int newTE = Integer.parseInt(lastTE) + 1;
             String newTEString = String.valueOf(newTE);
-            int difTamano = teAnterior.length() - newTEString.length();
+            int difTamano = lastTE.length() - newTEString.length();
             if (difTamano > 0) {
                 for (int i = 0; i < difTamano; i++) {
                     newTEString = "0" + newTEString;
                 }
             }
-            etNumeroTE.setText(newTEString);
-            etNumeroTE.requestFocus();
-            actvNombreExcursion.requestFocus();
+            return newTEString;
         } catch (Exception e) {
-            etNumeroTE.requestFocus();
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            return lastTE;
         }
     }
 
@@ -546,13 +578,13 @@ public class FragmentReservar extends Fragment {
 
     private void setActivo() {
         setEstado(Reserva.ESTADO_ACTIVO);
-        showEstado(Reserva.ESTADO_ACTIVO);
+        showEstado();
     }
 
     private void setCancelado() {
         if(myCallBack.getEstado()== MisConstantes.Estado.EDITAR) {
             setEstado(Reserva.ESTADO_CANCELADO);
-            showEstado(Reserva.ESTADO_CANCELADO);
+            showEstado();
         }else if(myCallBack.getEstado()== MisConstantes.Estado.NUEVO){
             Reserva reserva = getNuevaReserva();
             if(reserva.getNoTE().equals("")){
@@ -565,10 +597,6 @@ public class FragmentReservar extends Fragment {
         }
     }
 
-    private void setDevuelto() {
-        setEstado(Reserva.ESTADO_DEVUELTO);
-        showEstado(Reserva.ESTADO_DEVUELTO);
-    }
 
     private void setEstado(int estado) {
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
@@ -584,11 +612,13 @@ public class FragmentReservar extends Fragment {
             case Reserva.ESTADO_CANCELADO:
                 mensaje = "Cancelado";
                 break;
-            case Reserva.ESTADO_DEVUELTO:
-                mensaje = "Devuelto";
-                break;
         }
         Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void udInfoEstado() {
+        showEstado();
     }
 
     private void confirmarEliminar() {
@@ -616,6 +646,17 @@ public class FragmentReservar extends Fragment {
         db.delete(ReservaBDHandler.TABLE_NAME, "id=?", new String[]{String.valueOf(idSelectedReserva)});
         Toast.makeText(getContext(), "Eliminado correctamente", Toast.LENGTH_SHORT).show();
         getActivity().onBackPressed();
+    }
+
+    private void showDialogDevolver(){
+        DialogFragmentDevolver dialog = new DialogFragmentDevolver();
+        dialog.setTargetFragment(this,0);
+        dialog.show(getChildFragmentManager(),DialogFragmentDevolver.TAG);
+    }
+
+    @Override
+    public long getIdReserva() {
+        return idSelectedReserva;
     }
 
     @Override
@@ -650,8 +691,8 @@ public class FragmentReservar extends Fragment {
             case R.id.menu_item_set_cancelado:
                 setCancelado();
                 break;
-            case R.id.menu_item_set_devuelto:
-                setDevuelto();
+            case R.id.menu_item_set_devolver:
+                showDialogDevolver();
                 break;
             case R.id.menu_item_eliminar_reserva:
                 confirmarEliminar();

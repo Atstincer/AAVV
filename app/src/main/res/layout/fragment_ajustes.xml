@@ -1,119 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MargenesMyApp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Información del vendedor" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/layout_editar_nombre_vendedor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/et_nombre_vendedor"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Nombre" />
+            android:text="Información del vendedor" />
 
-        <Button
-            android:id="@+id/btn_nombre_vendedor"
-            android:layout_width="50dp"
+        <LinearLayout
+            android:id="@+id/layout_editar_nombre_vendedor"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:text="Ok" />
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <EditText
+                android:id="@+id/et_nombre_vendedor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Nombre" />
 
-    <TextView
-        android:id="@+id/tv_nombre_vendedor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:text="Nombre vendedor" />
+            <Button
+                android:id="@+id/btn_nombre_vendedor"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:text="Ok" />
 
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_editar_telefono_vendedor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/et_telefono_vendedor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Teléfono" />
-
-        <Button
-            android:id="@+id/btn_telefono_vendedor"
-            android:layout_width="50dp"
+        <TextView
+            android:id="@+id/tv_nombre_vendedor"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:text="Ok" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_telefono_vendedor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:text="Teléfono vendedor" />
+            android:layout_marginTop="5dp"
+            android:text="Nombre vendedor" />
 
 
-    <LinearLayout
-        android:id="@+id/layout_editar_agencia_vendedor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/et_agencia_vendedor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Agencia" />
-
-        <Button
-            android:id="@+id/btn_agencia_vendedor"
-            android:layout_width="50dp"
+        <LinearLayout
+            android:id="@+id/layout_editar_telefono_vendedor"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
-            android:text="Ok" />
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_telefono_vendedor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Teléfono" />
+
+            <Button
+                android:id="@+id/btn_telefono_vendedor"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:text="Ok" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_telefono_vendedor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Teléfono vendedor" />
+
+
+        <LinearLayout
+            android:id="@+id/layout_editar_agencia_vendedor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_agencia_vendedor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Agencia" />
+
+            <Button
+                android:id="@+id/btn_agencia_vendedor"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:text="Ok" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_agencia_vendedor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Agencia" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/cardview_dark_background"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Inicio de la App"/>
+
+        <RadioGroup
+            android:id="@+id/rg_fragment_inicio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/rb_iniciar_home_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="home page"/>
+
+            <RadioButton
+                android:id="@+id/rb_iniciar_liquidacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="liquidación"/>
+
+            <RadioButton
+                android:id="@+id/rb_iniciar_reservas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="reservas del día"/>
+
+        </RadioGroup>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/cardview_dark_background"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Liquidaciones" />
+
+        <CheckBox
+            android:id="@+id/cb_incluir_devolucion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="incluir devoluciones en la liquidación del día" />
+
+
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_agencia_vendedor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:text="Agencia" />
-
-</LinearLayout>
+</ScrollView>

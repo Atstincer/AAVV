@@ -1,6 +1,8 @@
 package com.example.usuario.aavv.Reservas;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by usuario on 30/07/2023.
@@ -16,9 +18,10 @@ public class Reserva {
     static final int INFO_LIQUIDACION = 4;
 
     private long id;
-    private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, fechaReporteVenta, idioma, Observaciones;
+    private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, fechaReporteVenta, fechaDevolucion,
+            fechaOriginalEjecucion, idioma, Observaciones;
     private int adultos, menores, infantes, acompanante, estado;
-    private double precio;
+    private double precio, importeDevuelto;
 
     Reserva() {
     }
@@ -91,6 +94,34 @@ public class Reserva {
             }
         }
         return cantPaxs;
+    }
+
+    public String getFechaOriginalEjecucion() {
+        return fechaOriginalEjecucion;
+    }
+
+    public void setFechaOriginalEjecucion(String fechaOriginalEjecucion) {
+        this.fechaOriginalEjecucion = fechaOriginalEjecucion;
+    }
+
+    public String getFechaDevolucion() {
+        return fechaDevolucion;
+    }
+
+    public void setFechaDevolucion(String fechaDevolucion) {
+        this.fechaDevolucion = fechaDevolucion;
+    }
+
+    public double getImporteDevuelto() {
+        return importeDevuelto;
+    }
+
+    public void setImporteDevuelto(double importeDevuelto) {
+        this.importeDevuelto = importeDevuelto;
+    }
+
+    public boolean esPosibleDevolver(double aDevolver){
+        return aDevolver <= getPrecio();
     }
 
     public long getId() {
@@ -235,6 +266,42 @@ public class Reserva {
 
     void setEstado(int estado) {
         this.estado = estado;
+    }
+
+    boolean isDevTotal(){
+        if(getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()==getPrecio()){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDevParcial(){
+        if(getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()<getPrecio()){
+            return true;
+        }
+        return false;
+    }
+
+    public double getSaldoFinal(){
+        double saldo = 0;
+        if(getEstado()==ESTADO_ACTIVO){
+            saldo = getPrecio();
+        } else if(getEstado()==ESTADO_DEVUELTO && isDevParcial()){
+            saldo = getPrecio() - getImporteDevuelto();
+        }
+        return saldo;
+    }
+
+    static List<Reserva> getSoloActivas(List<Reserva> list){
+        List<Reserva> resultado = new ArrayList<>();
+        for(Reserva reserva: list){
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
+                    reserva.getEstado()==Reserva.ESTADO_DEVUELTO && reserva.getImporteDevuelto() < reserva.getPrecio()
+                            && reserva.getImporteDevuelto() > 0){
+                resultado.add(reserva);
+            }
+        }
+        return resultado;
     }
 
     static Comparator<Reserva> ordenarPorTE = new Comparator<Reserva>() {

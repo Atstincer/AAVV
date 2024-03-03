@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.usuario.aavv.Ajustes.FragmentAjustes;
+import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.Excursiones.FragmentExcursion;
 import com.example.usuario.aavv.Excursiones.FragmentExcursiones;
 import com.example.usuario.aavv.Hoteles.FragmentHoteles;
@@ -64,6 +65,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if(MySharedPreferences.getFragmentInicio(getApplicationContext())==MisConstantes.INICIAR_LIQUIDACIONES){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentLiquidacion(),FragmentLiquidacion.TAG)
+                    .addToBackStack(null).commit();
+        } else if(MySharedPreferences.getFragmentInicio(getApplicationContext())==MisConstantes.INICIAR_EXCURSIONES_SALIENDO){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservasSaliendoElDia(), FragmentReservasSaliendoElDia.TAG)
+                    .addToBackStack(null).commit();
+        }
+
     }
 
 
@@ -79,6 +88,17 @@ public class MainActivity extends AppCompatActivity
         FragmentReservar fragment = new FragmentReservar();
         Bundle bundle = new Bundle();
         bundle.putLong("id",id);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment,FragmentReservar.TAG).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void setUpFragmentReservar(String lastTE, String fechaLiquidacion) {
+        estadoFragmentReservar = MisConstantes.Estado.NUEVO;
+        FragmentReservar fragment = new FragmentReservar();
+        Bundle bundle = new Bundle();
+        bundle.putString("lastTE",lastTE);
+        bundle.putString("fechaLiq",fechaLiquidacion);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment,FragmentReservar.TAG).addToBackStack(null).commit();
     }

@@ -445,8 +445,13 @@ public class MyExcel {
                     cell.setCellValue(listaReservas.get(i).getFechaConfeccion());
                     cell.setCellStyle(centerStyle);
 
+
                     cell = rowData.createCell(2);//Ejecucion
-                    cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
+                    if(listaReservas.get(i).getFechaOriginalEjecucion()==null || listaReservas.get(i).getFechaOriginalEjecucion().equals("")) {
+                        cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
+                    }else {
+                        cell.setCellValue(listaReservas.get(i).getFechaOriginalEjecucion());
+                    }
                     cell.setCellStyle(centerStyle);
 
                     String pax = "";
@@ -477,7 +482,7 @@ public class MyExcel {
                     cell.setCellStyle(wrappedStyle);
 
                     cell = rowData.createCell(5);//Importe
-                    cell.setCellValue(listaReservas.get(i).getPrecio());
+                    cell.setCellValue(listaReservas.get(i).getSaldoFinal());
                     cell.setCellStyle(precioStyle);
 
                     ROW_INDEX ++;
@@ -509,7 +514,11 @@ public class MyExcel {
                     cell.setCellStyle(centerStyle);
 
                     cell = rowData.createCell(5);//Ejecucion
-                    cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
+                    if(listaReservas.get(i).getFechaOriginalEjecucion()==null || listaReservas.get(i).getFechaOriginalEjecucion().equals("")) {
+                        cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
+                    }else {
+                        cell.setCellValue(listaReservas.get(i).getFechaOriginalEjecucion());
+                    }
                     cell.setCellStyle(centerStyle);
 
                     cell = rowData.createCell(6);//Emision
@@ -561,7 +570,10 @@ public class MyExcel {
                     cell.setCellStyle(centerStyle);
 
                     cell = rowData.createCell(15);//Impo Devolucion
-                    cell.setCellStyle(centerStyle);
+                    if(listaReservas.get(i).getEstado()==Reserva.ESTADO_DEVUELTO){
+                        cell.setCellValue(listaReservas.get(i).getImporteDevuelto());
+                    }
+                    cell.setCellStyle(precioStyle);
 
                     ROW_INDEX ++;
                 }

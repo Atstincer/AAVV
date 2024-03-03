@@ -19,6 +19,8 @@ public class MySharedPreferences {
     private static final String KEY_NOMBRE_VENDEDOR = "nombre_vendedor";
     private static final String KEY_TELEFONO_VENDEDOR = "telefono_vendedor";
     private static final String KEY_AGENCIA_VENDEDOR = "agencia_vendedor";
+    private static final String KEY_INCLUIR_DEV = "incluir_dev_en_liq";
+    private static final String KEY_FRAGMENT_INICIO = "fragment_inicio";
 
 
 
@@ -55,6 +57,30 @@ public class MySharedPreferences {
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(KEY_AGENCIA_VENDEDOR,agenciaVendedor);
+        editor.apply();
+    }
+
+    public static boolean getIncluirDevEnLiquidacion(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        return preferences.getBoolean(KEY_INCLUIR_DEV,false);
+    }
+
+    public static void storeIncluirDevEnLiquidacion(Context ctx,boolean incluir){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_INCLUIR_DEV,incluir);
+        editor.apply();
+    }
+
+    public static int getFragmentInicio(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        return preferences.getInt(KEY_FRAGMENT_INICIO,0);
+    }
+
+    public static void storeFragmentInicio(Context ctx,int fragment){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(KEY_FRAGMENT_INICIO,fragment);
         editor.apply();
     }
 

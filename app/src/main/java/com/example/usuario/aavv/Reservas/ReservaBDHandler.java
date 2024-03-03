@@ -20,12 +20,13 @@ public class ReservaBDHandler {
     static String TABLE_NAME = "Reservas";
     private static String CAMPO_NUMERO_TE = "TE";
     private static String CAMPO_EXCURSION = "excursion";
-    private static String CAMPO_AGENCIA = "agencia";
+    static String CAMPO_AGENCIA = "agencia";
     private static String CAMPO_NUMERO_HAB = "hab";
     private static String CAMPO_CLIENTE = "cliente";
     private static String CAMPO_HOTEL = "hotel";
     static String CAMPO_FECHA_CONFECCION = "fechaConfeccion";
     static String CAMPO_FECHA_EJECUCION = "fechaEjecucion";
+    static String CAMPO_FECHA_EJECUCION_ORIGINAL = "fechaOrigEjec";
     static String CAMPO_FECHA_REPORTE_VENTA = "fechaRepVenta";
     private static String CAMPO_ADULTOS = "adultos";
     private static String CAMPO_MENORES = "menores";
@@ -34,6 +35,8 @@ public class ReservaBDHandler {
     private static String CAMPO_IDIOMA = "idioma";
     private static String CAMPO_PRECIO = "precio";
     static String CAMPO_ESTADO = "estado";
+    static String CAMPO_FECHA_DEVOLUCION = "fechaDevolucion";
+    static String CAMPO_IMPORTE_DEVUELTO = "importeDevuelto";
     private static String CAMPO_OBSERVACIONES = "observaciones";
 
 
@@ -48,6 +51,9 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_INFANTES,reserva.getInfantes());
         values.put(ReservaBDHandler.CAMPO_ACOMPANANTES,reserva.getAcompanantes());
         values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
+        if(reserva.getFechaOriginalEjecucion()!=null && !reserva.getFechaOriginalEjecucion().equals("")) {
+            values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL, DateHandler.formatDateToStoreInDB(reserva.getFechaOriginalEjecucion()));
+        }
         if(reserva.getFechaReporteVenta()!=null){
             values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
         }
@@ -72,6 +78,11 @@ public class ReservaBDHandler {
         reserva.setHotel(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_HOTEL)));
         reserva.setFechaConfeccion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_CONFECCION))));
         reserva.setFechaEjecucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION))));
+        if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL)) == null){
+            //do nothing
+        }else if(!cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL)).equals("")){
+            reserva.setFechaOriginalEjecucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL))));
+        }
         if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA))!=null) {
             reserva.setFechaReporteVenta(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA))));
         }
@@ -83,6 +94,13 @@ public class ReservaBDHandler {
         reserva.setAcompanante(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_ACOMPANANTES)));
         reserva.setPrecio(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_PRECIO))));
         reserva.setEstado(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_ESTADO)));
+        if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
+            reserva.setFechaDevolucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_DEVOLUCION))));
+            if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO))!=null &&
+                    !cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO)).equals("")) {
+                reserva.setImporteDevuelto(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO))));
+            }
+        }
         return reserva;
     }
 
@@ -101,19 +119,20 @@ public class ReservaBDHandler {
     }
 
 
-    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, boolean soloActivas){
+/*    static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, boolean soloActivas){
         String query = "";
         String [] args;
         if(soloActivas){
             query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?";
-            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),String.valueOf(Reserva.ESTADO_ACTIVO)};
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
+            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),
+                    String.valueOf(Reserva.ESTADO_CANCELADO)};
         }else {
             query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
                     ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=?";
             args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta)};
         }
-        return getReservasFromDB(ctx,query,args);
+        return filterResult(getReservasFromDB(ctx,query,args),soloActivas);
     }
 
     static List<Reserva> getReservasFromDB(Context ctx, String desde, String hasta, String agencia, boolean soloActivas){
@@ -121,15 +140,24 @@ public class ReservaBDHandler {
         String [] args;
         if(soloActivas){
             query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?";
-            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia,String.valueOf(Reserva.ESTADO_ACTIVO)};
+                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
+            args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia,
+                    String.valueOf(Reserva.ESTADO_CANCELADO)};
         }else {
             query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
                     ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=?";
             args = new String[]{DateHandler.formatDateToStoreInDB(desde),DateHandler.formatDateToStoreInDB(hasta),agencia};
         }
-        return getReservasFromDB(ctx,query,args);
+        return filterResult(getReservasFromDB(ctx,query,args),soloActivas);
     }
+
+    private static List<Reserva> filterResult(List<Reserva> list, boolean soloActivas){
+        if(soloActivas){
+            return getSoloActivas(list);
+        }
+        return list;
+    }*/
+
 
     static List<Reserva> getReservasFromDB(Context ctx, String query, String[] arg){
         List<Reserva> reservasList = new ArrayList<>();
