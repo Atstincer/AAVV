@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
+import com.example.usuario.aavv.Util.MyEmail;
 import com.example.usuario.aavv.Util.Util;
 
 import java.util.ArrayList;
@@ -183,7 +184,13 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     private void enviarMail(){
-        // TODO: 14/09/2023 funcion enviar x mail excursiones saliendo el dia...
+        if(reservasList.isEmpty()){
+            Toast.makeText(getContext(), "No hay reservas que enviar por mail", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String asunto = "Reservas saliendo el día " + tvFechaEjecucion.getText().toString();
+        String texto = asunto + "\n\n" + tvInfo.getText().toString();
+        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},asunto,texto));
     }
 
 

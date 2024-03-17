@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
+import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.Excursiones.Excursion;
 import com.example.usuario.aavv.Excursiones.ExcursionBDHandler;
 import com.example.usuario.aavv.Hoteles.Hotel;
@@ -352,7 +353,8 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void predictPrice(Excursion excursion) {
-        if (excursion == null) {
+        if (excursion == null || myCallBack.getEstado()== MisConstantes.Estado.EDITAR ||
+                !MySharedPreferences.getPredecirPrecio(getContext())) {
             return;
         }
         float precioTotal = 0;

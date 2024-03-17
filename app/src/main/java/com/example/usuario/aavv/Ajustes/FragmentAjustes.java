@@ -51,7 +51,7 @@ public class FragmentAjustes extends Fragment {
     private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor;
     private RadioGroup radioGroup;
     private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia;
-    private CheckBox cbIncluirDevEnLiq;
+    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio;
 
     private MyCallBack myCallBack;
 
@@ -89,6 +89,7 @@ public class FragmentAjustes extends Fragment {
         rbLiquidacion = (RadioButton)view.findViewById(R.id.rb_iniciar_liquidacion);
         rbExcDelDia = (RadioButton)view.findViewById(R.id.rb_iniciar_reservas);
         cbIncluirDevEnLiq = (CheckBox)view.findViewById(R.id.cb_incluir_devolucion);
+        cbPredecirPrecio = (CheckBox)view.findViewById(R.id.cb_predecir_precio);
     }
 
     private void setItUp(){
@@ -174,6 +175,15 @@ public class FragmentAjustes extends Fragment {
         });
 
         cbIncluirDevEnLiq.setChecked(MySharedPreferences.getIncluirDevEnLiquidacion(getContext()));
+
+        cbPredecirPrecio.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                MySharedPreferences.storePredecirPrecio(getContext(),compoundButton.isChecked());
+            }
+        });
+
+        cbPredecirPrecio.setChecked(MySharedPreferences.getPredecirPrecio(getContext()));
     }
 
     private void showInfoVendedor(){
@@ -288,8 +298,8 @@ public class FragmentAjustes extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(menu!=null){menu.clear();}
-        inflater.inflate(R.menu.menu_frag_ajustes,menu);
+        //if(menu!=null){menu.clear();}
+        //inflater.inflate(R.menu.menu_frag_ajustes,menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

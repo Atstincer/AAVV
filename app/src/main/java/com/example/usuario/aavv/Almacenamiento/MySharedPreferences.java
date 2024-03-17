@@ -21,6 +21,7 @@ public class MySharedPreferences {
     private static final String KEY_AGENCIA_VENDEDOR = "agencia_vendedor";
     private static final String KEY_INCLUIR_DEV = "incluir_dev_en_liq";
     private static final String KEY_FRAGMENT_INICIO = "fragment_inicio";
+    private static final String KEY_PREDECIR_PRECIO = "predecir precio";
 
 
 
@@ -84,4 +85,15 @@ public class MySharedPreferences {
         editor.apply();
     }
 
+    public static boolean getPredecirPrecio(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        return preferences.getBoolean(KEY_PREDECIR_PRECIO,true);
+    }
+
+    public static void storePredecirPrecio(Context ctx,boolean predecir){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_PREDECIR_PRECIO,predecir);
+        editor.apply();
+    }
 }

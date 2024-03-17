@@ -123,6 +123,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="3dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@color/cardview_dark_background"
             android:orientation="vertical" />
@@ -130,8 +131,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Inicio de la App"/>
+            android:text="Inicio de la App" />
 
         <RadioGroup
             android:id="@+id/rg_fragment_inicio"
@@ -143,27 +143,26 @@
                 android:id="@+id/rb_iniciar_home_page"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="home page"/>
+                android:text="home page" />
 
             <RadioButton
                 android:id="@+id/rb_iniciar_liquidacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="liquidación"/>
+                android:text="liquidación" />
 
             <RadioButton
                 android:id="@+id/rb_iniciar_reservas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="reservas del día"/>
+                android:text="reservas del día" />
 
         </RadioGroup>
-
-
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="3dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@color/cardview_dark_background"
             android:orientation="vertical" />
@@ -171,7 +170,32 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Reservar" />
+
+        <CheckBox
+            android:id="@+id/cb_predecir_precio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="predecir precio" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="la función predecir precio está desactivada en modo editar" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
+            android:background="@color/cardview_dark_background"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Liquidaciones" />
 
         <CheckBox
@@ -179,7 +203,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="incluir devoluciones en la liquidación del día" />
-
 
 
     </LinearLayout>
