@@ -23,23 +23,37 @@ import com.example.usuario.aavv.Reservas.FragmentLiquidacion;
 import com.example.usuario.aavv.Reservas.FragmentReservar;
 import com.example.usuario.aavv.Reservas.FragmentReservasSaliendoElDia;
 import com.example.usuario.aavv.Reservas.FragmentVentaTTOO;
+import com.example.usuario.aavv.Reservas.ReservaRVAdapter;
 import com.example.usuario.aavv.TTOO.FragmentTouroperadores;
 import com.example.usuario.aavv.Util.MisConstantes;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
         FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack,
-        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack{
+        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, ReservaRVAdapter.MyMainActivity{
 
     public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE = 0;
 
     private MisConstantes.Estado estadoFragmentReservar;
+    private boolean hasStarted;
+    private String lastFechaLiq, lastFechaEjec, lastDesde, lastHasta;
 
     private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState!=null){
+            if(savedInstanceState.getString("estadoFragReservar")!=null && !savedInstanceState.getString("estadoFragReservar").equals("")){
+                estadoFragmentReservar = MisConstantes.Estado.valueOf(savedInstanceState.getString("estadoFragReservar"));
+            }
+            hasStarted = savedInstanceState.getBoolean("hasStarted");
+            lastFechaLiq = savedInstanceState.getString("lastFechaLiq");
+            lastFechaEjec = savedInstanceState.getString("lastFechaEjec");
+            lastDesde = savedInstanceState.getString("lastDesde");
+            lastHasta = savedInstanceState.getString("lastHasta");
+        }
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,20 +79,75 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if(MySharedPreferences.getFragmentInicio(getApplicationContext())==MisConstantes.INICIAR_LIQUIDACIONES){
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentLiquidacion(),FragmentLiquidacion.TAG)
-                    .addToBackStack(null).commit();
-        } else if(MySharedPreferences.getFragmentInicio(getApplicationContext())==MisConstantes.INICIAR_EXCURSIONES_SALIENDO){
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservasSaliendoElDia(), FragmentReservasSaliendoElDia.TAG)
-                    .addToBackStack(null).commit();
+        if(!hasStarted) {
+            if (MySharedPreferences.getFragmentInicio(getApplicationContext()) == MisConstantes.INICIAR_LIQUIDACIONES) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentLiquidacion(), FragmentLiquidacion.TAG)
+                        .addToBackStack(null).commit();
+            } else if (MySharedPreferences.getFragmentInicio(getApplicationContext()) == MisConstantes.INICIAR_EXCURSIONES_SALIENDO) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentReservasSaliendoElDia(), FragmentReservasSaliendoElDia.TAG)
+                        .addToBackStack(null).commit();
+            }
+            hasStarted = true;
         }
-
     }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(estadoFragmentReservar!=null) {
+            outState.putString("estadoFragReservar", estadoFragmentReservar.name());
+        }
+        outState.putBoolean("hasStarted",hasStarted);
+        outState.putString("lastFechaLiq",lastFechaLiq);
+        outState.putString("lastFechaEjec",lastFechaEjec);
+        outState.putString("lastDesde",lastDesde);
+        outState.putString("lastHasta",lastHasta);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
-    public MisConstantes.Estado getEstado() {
+    public void setLastFechaLiq(String lastFechaLiq) {
+        this.lastFechaLiq = lastFechaLiq;
+    }
+
+    @Override
+    public String getLastFechaLiq() {
+        return lastFechaLiq;
+    }
+
+    @Override
+    public void setLastFechaEjec(String lastFechaEjec) {
+        this.lastFechaEjec = lastFechaEjec;
+    }
+
+    @Override
+    public String getLastFechaEjec() {
+        return lastFechaEjec;
+    }
+
+    @Override
+    public void setLastDesde(String lastDesde) {
+        this.lastDesde = lastDesde;
+    }
+
+    @Override
+    public void setLastHasta(String lastHasta) {
+        this.lastHasta = lastHasta;
+    }
+
+    @Override
+    public String getLastDesde() {
+        return lastDesde;
+    }
+
+    @Override
+    public String getLastHasta() {
+        return lastHasta;
+    }
+
+    @Override
+    public MisConstantes.Estado getEstadoFragmentReservar() {
+        //if(estadoFragmentReservar==null){return MisConstantes.Estado.NUEVO;}
         return estadoFragmentReservar;
     }
 
@@ -125,7 +194,7 @@ public class MainActivity extends AppCompatActivity
                 title = "Agencias";
                 break;
             case FragmentReservar.TAG:
-                switch (estadoFragmentReservar){
+                switch (getEstadoFragmentReservar()){
                     case NUEVO:
                         title = "Nueva Reserva";
                         break;

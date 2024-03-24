@@ -19,7 +19,7 @@ public class Reserva {
 
     private long id;
     private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, fechaReporteVenta, fechaDevolucion,
-            fechaOriginalEjecucion, idioma, Observaciones;
+            fechaOriginalEjecucion, fechaCancelacion, idioma, Observaciones, historial;
     private int adultos, menores, infantes, acompanante, estado;
     private double precio, importeDevuelto;
 
@@ -96,19 +96,43 @@ public class Reserva {
         return cantPaxs;
     }
 
+    String getFechaCancelacion() {
+        return fechaCancelacion;
+    }
+
+    void setFechaCancelacion(String fechaCancelacion) {
+        this.fechaCancelacion = fechaCancelacion;
+    }
+
+    String getHistorial() {
+        return historial;
+    }
+
+    void setHistorial(String historial) {
+        this.historial = historial;
+    }
+
+    void addToHistorial(String msg){
+        if(getHistorial()==null || getHistorial().equals("")){
+            setHistorial(msg);
+        }else {
+            historial += "\n"+msg;
+        }
+    }
+
     public String getFechaOriginalEjecucion() {
         return fechaOriginalEjecucion;
     }
 
-    public void setFechaOriginalEjecucion(String fechaOriginalEjecucion) {
+    void setFechaOriginalEjecucion(String fechaOriginalEjecucion) {
         this.fechaOriginalEjecucion = fechaOriginalEjecucion;
     }
 
-    public String getFechaDevolucion() {
+    String getFechaDevolucion() {
         return fechaDevolucion;
     }
 
-    public void setFechaDevolucion(String fechaDevolucion) {
+    void setFechaDevolucion(String fechaDevolucion) {
         this.fechaDevolucion = fechaDevolucion;
     }
 
@@ -116,11 +140,11 @@ public class Reserva {
         return importeDevuelto;
     }
 
-    public void setImporteDevuelto(double importeDevuelto) {
+    void setImporteDevuelto(double importeDevuelto) {
         this.importeDevuelto = importeDevuelto;
     }
 
-    public boolean esPosibleDevolver(double aDevolver){
+    boolean esPosibleDevolver(double aDevolver){
         return aDevolver <= getPrecio();
     }
 
@@ -164,11 +188,11 @@ public class Reserva {
         this.fechaEjecucion = fechaEjecucion;
     }
 
-    public String getFechaReporteVenta() {
+    String getFechaReporteVenta() {
         return fechaReporteVenta;
     }
 
-    public void setFechaReporteVenta(String fechaReporteVenta) {
+    void setFechaReporteVenta(String fechaReporteVenta) {
         this.fechaReporteVenta = fechaReporteVenta;
     }
 
@@ -275,11 +299,8 @@ public class Reserva {
         return false;
     }
 
-    public boolean isDevParcial(){
-        if(getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()<getPrecio()){
-            return true;
-        }
-        return false;
+    boolean isDevParcial(){
+        return getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()<getPrecio();
     }
 
     public double getSaldoFinal(){

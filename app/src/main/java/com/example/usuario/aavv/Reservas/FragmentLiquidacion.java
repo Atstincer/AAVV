@@ -65,6 +65,15 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_liquidacion,container,false);
         bindComponents(view);
+        /*System.out.println("********************************");
+        if(savedInstanceState!=null && savedInstanceState.getString("fechaLiq")!=null){
+            tvFechaLiquidacion.setText(savedInstanceState.getString("fechaLiq"));
+            System.out.println("recuperando estado: "+savedInstanceState.getString("fechaLiq"));
+        }
+        if(savedInstanceState==null){
+            System.out.println("savedInstanceState es NULL");
+        }
+        System.out.println("********************************");*/
         setItUp();
         return view;
     }
@@ -74,6 +83,26 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         myCallBack = (MyCallBack)context;
         super.onAttach(context);
     }
+
+    /*@Override
+    public void onSaveInstanceState(Bundle outState) {
+        System.out.println("********************************");
+        System.out.println("onSaveInstanceState - fragment liquidacion");
+        if(tvFechaLiquidacion!=null) {
+            outState.putString("fechaLiq", tvFechaLiquidacion.getText().toString());
+            System.out.println("salvando estado: "+tvFechaLiquidacion.getText().toString());
+        }
+        System.out.println("********************************");
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        System.out.println("********************************");
+        System.out.println("onDestroyView - fragment liquidacion");
+        System.out.println("********************************");
+    }*/
 
     private void bindComponents(View view){
         layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
@@ -85,7 +114,12 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void setItUp(){
         myCallBack.udUI(FragmentLiquidacion.TAG);
-        tvFechaLiquidacion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        if(myCallBack.getLastFechaLiq()==null) {
+            tvFechaLiquidacion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
+        }else {
+            tvFechaLiquidacion.setText(myCallBack.getLastFechaLiq());
+        }
         udReservaList();
         udTvInfo();
         adapter = new ReservaRVAdapter(getContext(),reservaList, ReservaRVAdapter.Modo.LIQUIDACION,this);
@@ -98,6 +132,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 DateHandler.showDatePicker(getContext(), tvFechaLiquidacion, new DateHandler.DatePickerCallBack() {
                     @Override
                     public void dateSelected() {
+                        myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
                         udUI();
                     }
                 });
@@ -140,7 +175,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         double total = 0;
         int cantPax = 0;
         for(Reserva reserva:reservaList){
-            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO) {
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
+                    reserva.getEstado()==Reserva.ESTADO_CANCELADO && reserva.getFechaCancelacion()!=null &&
+                            !reserva.getFechaCancelacion().equals(tvFechaLiquidacion.getText().toString())) {
                 total = total + reserva.getPrecio();
                 cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
             }else if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
@@ -339,26 +376,30 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     @Override
     public void itemClicked(int position) {
+        myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
         myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
     }
 
-    @Override
-    public String getFechaLiquidacion() {
-        return tvFechaLiquidacion.getText().toString();
-    }
-
     private void addReserva(){
-        String lastTE = "";
-        if(reservaList.size()>0){
-            lastTE = reservaList.get(reservaList.size()-1).getNoTE();
+        if(reservaList.isEmpty()){
+            myCallBack.setUpFragmentReservar("",tvFechaLiquidacion.getText().toString());
+            return;
         }
-        myCallBack.setUpFragmentReservar(lastTE,tvFechaLiquidacion.getText().toString());
+        Reserva lastReserva = reservaList.get(reservaList.size()-1);
+        if(lastReserva.getEstado()==Reserva.ESTADO_DEVUELTO && lastReserva.getFechaDevolucion().equals(tvFechaLiquidacion.getText().toString())
+                && !lastReserva.getFechaConfeccion().equals(tvFechaLiquidacion.getText().toString())){
+            myCallBack.setUpFragmentReservar("",tvFechaLiquidacion.getText().toString());
+        }else {
+            myCallBack.setUpFragmentReservar(lastReserva.getNoTE(),tvFechaLiquidacion.getText().toString());
+        }
     }
 
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(long id);
-        void showSnackBar(String mensaje);
         void setUpFragmentReservar(String lastTE, String fechaLiquidacion);
+        void showSnackBar(String mensaje);
+        void setLastFechaLiq(String lastFechaLiq);
+        String getLastFechaLiq();
     }
 }

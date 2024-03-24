@@ -76,8 +76,11 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     private void setItUp(){
-        if(tvFechaEjecucion.getText().toString().equals("fecha")) {
+        if(myCallBack.getLastFechaEjec()==null) {
             tvFechaEjecucion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            myCallBack.setLastFechaEjec(tvFechaEjecucion.getText().toString());
+        }else {
+            tvFechaEjecucion.setText(myCallBack.getLastFechaEjec());
         }
         tvFechaEjecucion.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -86,6 +89,7 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
                     @Override
                     public void dateSelected() {
                         udFragment();
+                        myCallBack.setLastFechaEjec(tvFechaEjecucion.getText().toString());
                     }
                 });
             }
@@ -200,11 +204,6 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     @Override
-    public String getFechaLiquidacion() {
-        return null;
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if(menu != null){menu.clear();}
         inflater.inflate(R.menu.menu_frag_reservas_saliendo_el_dia,menu);
@@ -224,5 +223,7 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(long id);
+        void setLastFechaEjec(String lastFechaEjec);
+        String getLastFechaEjec();
     }
 }

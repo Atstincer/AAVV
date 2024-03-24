@@ -19,10 +19,11 @@ import java.util.List;
  * Created by usuario on 30/07/2023.
  */
 
-class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder> {
+public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder> {
 
     private List<Reserva> reservaList;
     private MyCallBack myCallBack;
+    private MyMainActivity myMainActivity;
     private Context context;
     private Modo modo;
 
@@ -31,6 +32,7 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
         this.reservaList = reservaList;
         this.modo = modo;
         this.myCallBack = myCallBack;
+        myMainActivity = (MyMainActivity)context;
     }
 
     @Override
@@ -146,8 +148,8 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
                 }
             }else if(this.modo == Modo.LIQUIDACION) {
                 if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
-                    if(myCallBack.getFechaLiquidacion() != null
-                            && myCallBack.getFechaLiquidacion().equals(reserva.getFechaDevolucion())) {
+                    if(myMainActivity.getLastFechaLiq() != null
+                            && myMainActivity.getLastFechaLiq().equals(reserva.getFechaDevolucion())) {
                         tvPrecio.setTextColor(ContextCompat.getColor(ctx, R.color.atencion));
                         String importe = "-" + String.valueOf(reserva.getImporteDevuelto());
                         tvPrecio.setText(importe);
@@ -168,13 +170,19 @@ class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder>
         private void showObsIfExist(){
             if(tvObs.getText().toString().equals("")){
                 tvObs.setVisibility(View.GONE);
+            }else {
+                tvObs.setVisibility(View.VISIBLE);
             }
         }
     }
 
     interface MyCallBack{
         void itemClicked(int position);
-        String getFechaLiquidacion();
+//        String getFechaLiquidacion();
+    }
+
+    public interface MyMainActivity{
+        String getLastFechaLiq();
     }
 
     enum Modo{

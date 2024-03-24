@@ -10,4 +10,7 @@
     <item android:id="@+id/menu_item_eliminar_reserva"
         android:title="Eliminar"/>
 
+    <item android:id="@+id/menu_item_historial_reserva"
+        android:title="Historial"/>
+
 </menu>

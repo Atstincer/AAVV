@@ -36,7 +36,9 @@ public class ReservaBDHandler {
     private static String CAMPO_PRECIO = "precio";
     static String CAMPO_ESTADO = "estado";
     static String CAMPO_FECHA_DEVOLUCION = "fechaDevolucion";
+    static String CAMPO_FECHA_CANCELACION = "fechaCanc";
     static String CAMPO_IMPORTE_DEVUELTO = "importeDevuelto";
+    static String CAMPO_HISTORIAL = "historial";
     private static String CAMPO_OBSERVACIONES = "observaciones";
 
 
@@ -57,6 +59,9 @@ public class ReservaBDHandler {
         if(reserva.getFechaReporteVenta()!=null){
             values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
         }
+        if(reserva.getFechaCancelacion()!=null){
+            values.put(ReservaBDHandler.CAMPO_FECHA_CANCELACION,DateHandler.formatDateToStoreInDB(reserva.getFechaCancelacion()));
+        }
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());
         values.put(ReservaBDHandler.CAMPO_HOTEL,reserva.getHotel());
         values.put(ReservaBDHandler.CAMPO_NUMERO_HAB,reserva.getNoHab());
@@ -64,10 +69,11 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_IDIOMA,reserva.getIdioma());
         values.put(ReservaBDHandler.CAMPO_ESTADO,reserva.getEstado());
         values.put(ReservaBDHandler.CAMPO_OBSERVACIONES,reserva.getObservaciones());
+        values.put(CAMPO_HISTORIAL,reserva.getHistorial());
         return values;
     }
 
-    static Reserva getReserva(Cursor cursor){
+    private static Reserva getReserva(Cursor cursor){
         Reserva reserva = new Reserva();
         reserva.setId(cursor.getLong(0));
         reserva.setNoTE(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_NUMERO_TE)));
@@ -78,9 +84,8 @@ public class ReservaBDHandler {
         reserva.setHotel(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_HOTEL)));
         reserva.setFechaConfeccion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_CONFECCION))));
         reserva.setFechaEjecucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION))));
-        if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL)) == null){
-            //do nothing
-        }else if(!cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL)).equals("")){
+        if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL)) != null &&
+                !cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL)).equals("")){
             reserva.setFechaOriginalEjecucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL))));
         }
         if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA))!=null) {
@@ -101,6 +106,10 @@ public class ReservaBDHandler {
                 reserva.setImporteDevuelto(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO))));
             }
         }
+        if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_CANCELACION))!=null) {
+            reserva.setFechaCancelacion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_CANCELACION))));
+        }
+        reserva.setHistorial(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_HISTORIAL)));
         return reserva;
     }
 

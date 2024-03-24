@@ -117,12 +117,16 @@ public class DialogFragmentDevolver extends DialogFragment {
     }
 
     private void devolver(){
+        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),myCallBack.getIdReserva());
+        String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" DEVUELTO ("+etImporte.getText().toString()+")";
+        reserva.addToHistorial(msgHistorial);
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ReservaBDHandler.CAMPO_ESTADO,Reserva.ESTADO_DEVUELTO);
         values.put(ReservaBDHandler.CAMPO_FECHA_DEVOLUCION, DateHandler.formatDateToStoreInDB(tvFechaDev.getText().toString()));
         values.put(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO,etImporte.getText().toString());
+        values.put(ReservaBDHandler.CAMPO_HISTORIAL,reserva.getHistorial());
         db.update(ReservaBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(myCallBack.getIdReserva())});
         Toast.makeText(getContext(),"Devolucion registrada correctamente",Toast.LENGTH_SHORT).show();
         myCallBack.udInfoEstado();

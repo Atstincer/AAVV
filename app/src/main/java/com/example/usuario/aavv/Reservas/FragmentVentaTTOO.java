@@ -87,13 +87,19 @@ public class FragmentVentaTTOO extends Fragment {
 
     private void setItUp(){
         myCallBack.udUI(TAG);
-        if(tvFechaDesde.getText().toString().equals("fecha")) {
+        if(myCallBack.getLastDesde()==null) {
             String desde = "01" + DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).substring(2, 10);
             tvFechaDesde.setText(desde);
+            myCallBack.setLastDesde(desde);
+        }else {
+            tvFechaDesde.setText(myCallBack.getLastDesde());
         }
-        if(tvFechaHasta.getText().toString().equals("fecha")) {
+        if(myCallBack.getLastHasta()==null) {
             //tvFechaHasta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
             tvFechaHasta.setText(DateHandler.getLastDayOfMonth(MisConstantes.FormatoFecha.MOSTRAR));
+            myCallBack.setLastHasta(tvFechaHasta.getText().toString());
+        }else {
+            tvFechaHasta.setText(myCallBack.getLastHasta());
         }
         layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -112,6 +118,7 @@ public class FragmentVentaTTOO extends Fragment {
                     @Override
                     public void dateSelected() {
                         showInfo();
+                        myCallBack.setLastDesde(tvFechaDesde.getText().toString());
                     }
                 });
             }
@@ -123,6 +130,7 @@ public class FragmentVentaTTOO extends Fragment {
                     @Override
                     public void dateSelected() {
                         showInfo();
+                        myCallBack.setLastHasta(tvFechaHasta.getText().toString());
                     }
                 });
             }
@@ -133,11 +141,6 @@ public class FragmentVentaTTOO extends Fragment {
             @Override
             public void itemClicked(int position) {
                 myCallBack.setUpFragmentReservar(listaReservas.get(position).getId());
-            }
-
-            @Override
-            public String getFechaLiquidacion() {
-                return null;
             }
         });
         rvReservas.setAdapter(rvAdapter);
@@ -344,7 +347,7 @@ public class FragmentVentaTTOO extends Fragment {
         }
         String desde = tvFechaDesde.getText().toString();
         String hasta = tvFechaHasta.getText().toString();
-
+        String msgResultado = "";
         try {
             //File rutaSD = Environment.getExternalStorageDirectory();
             File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
@@ -360,11 +363,14 @@ public class FragmentVentaTTOO extends Fragment {
             String fileName = desde.replace("/","") + "-" + hasta.replace("/","") + " " + agencia + ".xls";
             File file = new File(rutaSD.getAbsolutePath(), fileName);
             if(MyExcel.generarExcelReporteVentaPorAgencia(file,listaReservas,agencia,desde,hasta,getImporteTotal(agencia))){
-                Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
+                msgResultado = "Excel generado correctamente: "+file;
             }
         } catch (Exception e) {
-            //System.out.println("Mensaje error: " + e.getMessage());
-            Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            msgResultado = "Mensaje error: " + e.getMessage();
+        } finally {
+            myCallBack.showSnackBar(msgResultado);
         }
     }
 
@@ -419,5 +425,10 @@ public class FragmentVentaTTOO extends Fragment {
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(long id);
+        void showSnackBar(String mensaje);
+        void setLastDesde(String lastDesde);
+        void setLastHasta(String lastHasta);
+        String getLastDesde();
+        String getLastHasta();
     }
 }
