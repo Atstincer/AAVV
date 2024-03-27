@@ -189,9 +189,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void udUI(String tag) {
         String title = "";
+        int navMenuItemId = 0;
         switch (tag){
             case FragmentTouroperadores.TAG:
                 title = "Agencias";
+                navMenuItemId = R.id.nav_agencias;
                 break;
             case FragmentReservar.TAG:
                 switch (getEstadoFragmentReservar()){
@@ -202,30 +204,44 @@ public class MainActivity extends AppCompatActivity
                         title = "Info reserva";
                         break;
                 }
+                navMenuItemId = R.id.nav_reservar;
                 break;
             case FragmentReservasSaliendoElDia.TAG:
                 title = "Reservas";
+                navMenuItemId = R.id.nav_excursiones_dia;
                 break;
             case FragmentLiquidacion.TAG:
                 title = "Liquidaciones";
+                navMenuItemId = R.id.nav_liquidacion;
                 break;
             case FragmentVentaTTOO.TAG:
                 title = "Ventas por agencias";
+                navMenuItemId = R.id.nav_venta_agencias;
                 break;
             case FragmentHoteles.TAG:
                 title = "Hoteles";
+                navMenuItemId = R.id.nav_hoteles;
                 break;
             case FragmentExcursiones.TAG:
                 title = "Excursiones";
+                navMenuItemId = R.id.nav_excursiones;
                 break;
             case FragmentExcursion.TAG:
                 title = "Excursion";
+                navMenuItemId = R.id.nav_excursiones;
                 break;
             case FragmentAjustes.TAG:
                 title = "Ajustes";
+                navMenuItemId = R.id.nav_ajustes;
                 break;
         }
         setTitle(title);
+        udNavigationView(navMenuItemId);
+    }
+
+    private void udNavigationView(int itemselected){
+        NavigationView navigationView = (NavigationView)findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(itemselected);
     }
 
     @Override
@@ -252,6 +268,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

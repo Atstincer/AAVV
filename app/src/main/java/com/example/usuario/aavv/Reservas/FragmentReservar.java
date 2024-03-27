@@ -491,7 +491,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         etMenores.setText("");
         etInfantes.setText("");
         etAcompanante.setText("");
-//        tvFechaEjecucion.setText("Fecha");
+        tvFechaEjecucion.setText("Fecha");
         actvAgencia.setText("");
         actvHotel.setText("");
         etNoHab.setText("");
