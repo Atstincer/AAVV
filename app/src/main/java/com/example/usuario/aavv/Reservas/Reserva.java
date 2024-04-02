@@ -1,5 +1,9 @@
 package com.example.usuario.aavv.Reservas;
 
+import android.content.Context;
+
+import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +30,7 @@ public class Reserva {
     Reserva() {
     }
 
-    public static String toString(Reserva reserva, int formato){
+    public static String toString(Context ctx, Reserva reserva, int formato){
         String text = "TE: " + reserva.getNoTE() + "\n" +
                 "Excursion: " + reserva.getExcursion() + "\n" +
                 "Fecha: " + reserva.getFechaEjecucion() + "\n" +
@@ -43,7 +47,12 @@ public class Reserva {
         } else if(formato == INFO_LIQUIDACION){
             text += "\nCliente: " + reserva.getCliente();
             text += "\nAgencia: " + reserva.getAgencia();
-            text += "\nImporte: " + reserva.getPrecio() + " usd";
+            if(MySharedPreferences.getIncluirPrecioCUP(ctx)&&MySharedPreferences.getTasaCUP(ctx)>0){
+                text += "\nImporte usd: " + reserva.getPrecio();
+                text += "\nImporte cup: " + reserva.getPrecio()*MySharedPreferences.getTasaCUP(ctx);
+            }else {
+                text += "\nImporte: " + reserva.getPrecio() + " usd";
+            }
         }
         return text;
     }
@@ -96,7 +105,7 @@ public class Reserva {
         return cantPaxs;
     }
 
-    String getFechaCancelacion() {
+    public String getFechaCancelacion() {
         return fechaCancelacion;
     }
 
@@ -104,7 +113,7 @@ public class Reserva {
         this.fechaCancelacion = fechaCancelacion;
     }
 
-    String getHistorial() {
+    public String getHistorial() {
         return historial;
     }
 
@@ -128,7 +137,7 @@ public class Reserva {
         this.fechaOriginalEjecucion = fechaOriginalEjecucion;
     }
 
-    String getFechaDevolucion() {
+    public String getFechaDevolucion() {
         return fechaDevolucion;
     }
 
@@ -188,7 +197,7 @@ public class Reserva {
         this.fechaEjecucion = fechaEjecucion;
     }
 
-    String getFechaReporteVenta() {
+    public String getFechaReporteVenta() {
         return fechaReporteVenta;
     }
 

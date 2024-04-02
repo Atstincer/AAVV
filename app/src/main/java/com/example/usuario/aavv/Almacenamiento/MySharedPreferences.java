@@ -22,6 +22,8 @@ public class MySharedPreferences {
     private static final String KEY_INCLUIR_DEV = "incluir_dev_en_liq";
     private static final String KEY_FRAGMENT_INICIO = "fragment_inicio";
     private static final String KEY_PREDECIR_PRECIO = "predecir precio";
+    private static final String KEY_INCLUIR_PRECIO_CUP = "incluir_precio_cup";
+    private static final String KEY_TASA_CUP = "tasa_cup";
 
 
 
@@ -94,6 +96,30 @@ public class MySharedPreferences {
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(KEY_PREDECIR_PRECIO,predecir);
+        editor.apply();
+    }
+
+    public static boolean getIncluirPrecioCUP(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        return preferences.getBoolean(KEY_INCLUIR_PRECIO_CUP,false);
+    }
+
+    public static void storeIncluirPrecioCUP(Context ctx,boolean incluir){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_INCLUIR_PRECIO_CUP,incluir);
+        editor.apply();
+    }
+
+    public static float getTasaCUP(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        return preferences.getFloat(KEY_TASA_CUP,0);
+    }
+
+    public static void storeTasaCUP(Context ctx,float tasa){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat(KEY_TASA_CUP,tasa);
         editor.apply();
     }
 }

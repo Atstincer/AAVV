@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,11 +24,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
-import com.example.usuario.aavv.MainActivity;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Reservas.Reserva;
 import com.example.usuario.aavv.Reservas.ReservaBDHandler;
@@ -46,12 +48,13 @@ public class FragmentAjustes extends Fragment {
     public static final String TAG = "FragmentAjustes";
 
     private LinearLayout layoutEditarNombreVendedor,layoutEditarTelefonoVendedor,layoutEditarAgenciaVendedor;
-    private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor;
+    private RelativeLayout layoutTasaCUP;
+    private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor, etTasaCUP;
     private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor;
     private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor;
     private RadioGroup radioGroup;
     private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia;
-    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio;
+    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio, cbIncluirPrecioCUP;
 
     private MyCallBack myCallBack;
 
@@ -90,6 +93,9 @@ public class FragmentAjustes extends Fragment {
         rbExcDelDia = (RadioButton)view.findViewById(R.id.rb_iniciar_reservas);
         cbIncluirDevEnLiq = (CheckBox)view.findViewById(R.id.cb_incluir_devolucion);
         cbPredecirPrecio = (CheckBox)view.findViewById(R.id.cb_predecir_precio);
+        cbIncluirPrecioCUP = (CheckBox)view.findViewById(R.id.cb_incluir_precio_cup);
+        etTasaCUP = (EditText)view.findViewById(R.id.et_tasa_cup);
+        layoutTasaCUP = (RelativeLayout)view.findViewById(R.id.layout_tasa_cup);
     }
 
     private void setItUp(){
@@ -184,6 +190,56 @@ public class FragmentAjustes extends Fragment {
         });
 
         cbPredecirPrecio.setChecked(MySharedPreferences.getPredecirPrecio(getContext()));
+
+        cbIncluirPrecioCUP.setChecked(MySharedPreferences.getIncluirPrecioCUP(getContext()));
+        udEstadoETTasa();
+
+        cbIncluirPrecioCUP.setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                MySharedPreferences.storeIncluirPrecioCUP(getContext(),compoundButton.isChecked());
+                udEstadoETTasa();
+            }
+        });
+
+        if(MySharedPreferences.getTasaCUP(getContext())!=0) {
+            etTasaCUP.setText(String.valueOf(MySharedPreferences.getTasaCUP(getContext())));
+        }else {
+            etTasaCUP.setText("");
+        }
+
+        etTasaCUP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    if(!etTasaCUP.getText().toString().equals("")) {
+                        MySharedPreferences.storeTasaCUP(getContext(), Float.parseFloat(etTasaCUP.getText().toString()));
+                    }else {
+                        MySharedPreferences.storeTasaCUP(getContext(),0);
+                    }
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void udEstadoETTasa(){
+        if(cbIncluirPrecioCUP.isChecked()){
+            etTasaCUP.setEnabled(true);
+        }else {
+            etTasaCUP.setEnabled(false);
+        }
     }
 
     private void showInfoVendedor(){
@@ -217,22 +273,35 @@ public class FragmentAjustes extends Fragment {
     }
 
     private void exportarBD(){
-        //File carpeta = new File(Environment.getExternalStorageDirectory() + "/ExportarSQLiteCSV");
-
         File carpeta = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
         if(!carpeta.exists()){carpeta.mkdir();}
         carpeta = new File(carpeta.getAbsolutePath()+"/Salva BD");
         if(!carpeta.exists()){carpeta.mkdir();}
 
-        String archivoAgenda = carpeta.toString() + "/" + "AAVV.csv";
+        final String archivoAgenda = carpeta.toString() + "/" + "BD"+
+                DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).replace("/","")+".csv";
 
         try {
             FileWriter fileWriter = new FileWriter(archivoAgenda);
+            addResservasToExport(fileWriter);
 
-            List<Reserva> listaReservas = ReservaBDHandler.getAllReservasFromDB(getContext());
+            fileWriter.close();
+            myCallBack.showSnackBar("Salva creada correctamente: "+archivoAgenda);
+        } catch (Exception e) {
+            Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
 
-            if(listaReservas.isEmpty()){return;}
+    private void addResservasToExport(FileWriter fileWriter){
+        List<Reserva> listaReservas = ReservaBDHandler.getAllReservasFromDB(getContext());
+        if(listaReservas.isEmpty()){
+            Toast.makeText(getContext(), "No hay reservas registradas", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        try{
+            String firstRow = "Tabla: "+ReservaBDHandler.TABLE_NAME+"\n";
+            fileWriter.append(firstRow);
             for(Reserva reserva:listaReservas){
                 fileWriter.append(String.valueOf(reserva.getId()));
                 fileWriter.append(",");
@@ -252,10 +321,9 @@ public class FragmentAjustes extends Fragment {
                 fileWriter.append(",");
                 fileWriter.append(reserva.getFechaEjecucion());
                 fileWriter.append(",");
-                fileWriter.append(reserva.getIdioma());
+                fileWriter.append(reserva.getFechaOriginalEjecucion());
                 fileWriter.append(",");
-                String observaciones = formatStringToExport(reserva.getObservaciones());
-                fileWriter.append(observaciones);
+                fileWriter.append(reserva.getFechaReporteVenta());
                 fileWriter.append(",");
                 fileWriter.append(String.valueOf(reserva.getAdultos()));
                 fileWriter.append(",");
@@ -265,17 +333,27 @@ public class FragmentAjustes extends Fragment {
                 fileWriter.append(",");
                 fileWriter.append(String.valueOf(reserva.getAcompanantes()));
                 fileWriter.append(",");
+                fileWriter.append(reserva.getIdioma());
+                fileWriter.append(",");
                 fileWriter.append(String.valueOf(reserva.getPrecio()));
                 fileWriter.append(",");
                 fileWriter.append(String.valueOf(reserva.getEstado()));
+                fileWriter.append(",");
+                fileWriter.append(reserva.getFechaDevolucion());
+                fileWriter.append(",");
+                fileWriter.append(reserva.getFechaCancelacion());
+                fileWriter.append(",");
+                fileWriter.append(String.valueOf(reserva.getImporteDevuelto()));
+                fileWriter.append(",");
+                fileWriter.append(reserva.getHistorial());
+                fileWriter.append(",");
+                String observaciones = formatStringToExport(reserva.getObservaciones());
+                fileWriter.append(observaciones);
                 fileWriter.append("\n");
             }
-
-            fileWriter.close();
-            //Toast.makeText(MainActivity.this, "SE CREO EL ARCHIVO CSV EXITOSAMENTE", Toast.LENGTH_LONG).show();
-            myCallBack.showSnackBar("Salva creada correctamente: "+archivoAgenda);
-        } catch (Exception e) {
+        }catch (Exception e){
             Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+            //System.out.println(e.getMessage());
         }
     }
 
@@ -284,8 +362,7 @@ public class FragmentAjustes extends Fragment {
     }
 
     private String formatStringToExport(String texto){
-        String formatedTexto = texto.replace(",","#").replace("\n","/");
-        return formatedTexto;
+        return texto.replace(",","#").replace("\n","^");
     }
 
     private void checkForPermissions() {

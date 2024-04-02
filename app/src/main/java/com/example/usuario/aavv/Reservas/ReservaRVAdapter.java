@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.Util;
 
@@ -58,7 +59,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio, tvEstado;
+        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio, tvEstado, tvPrecioCUP;
         private Modo modo;
 
         private Context ctx;
@@ -77,6 +78,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
             tvObs = (TextView)itemView.findViewById(R.id.tv_obs_cv);
             tvIdioma = (TextView)itemView.findViewById(R.id.tv_idioma_cv);
             tvPrecio = (TextView)itemView.findViewById(R.id.tv_precio_cv);
+            tvPrecioCUP = (TextView)itemView.findViewById(R.id.tv_precio_cup_cv);
 
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -88,7 +90,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    Util.copyToClipBoard(ctx,Reserva.toString(reservaList.get(getAdapterPosition()),Reserva.INFO_REPORTE_VENTA));
+                    Util.copyToClipBoard(ctx,Reserva.toString(ctx,reservaList.get(getAdapterPosition()),Reserva.INFO_REPORTE_VENTA));
                     return true;
                 }
             });
@@ -131,6 +133,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
             if(reserva.getPrecio()==0){
                 tvPrecio.setTextColor(ContextCompat.getColor(ctx,R.color.atencion));
             }
+            tvPrecioCUP.setVisibility(View.GONE);
 
             if(this.modo == Modo.GENERAL){
                 //oculta precio, si observaciones si dice algo
@@ -147,12 +150,22 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
                     tvPrecio.setText(String.valueOf(saldo));
                 }
             }else if(this.modo == Modo.LIQUIDACION) {
+                if(MySharedPreferences.getIncluirPrecioCUP(ctx)&&MySharedPreferences.getTasaCUP(ctx)>0){
+                    tvPrecioCUP.setVisibility(View.VISIBLE);
+                    String precioCUP = "("+String.valueOf(reserva.getPrecio()*MySharedPreferences.getTasaCUP(ctx))+")";
+                    tvPrecioCUP.setText(precioCUP);
+                }
                 if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
                     if(myMainActivity.getLastFechaLiq() != null
                             && myMainActivity.getLastFechaLiq().equals(reserva.getFechaDevolucion())) {
                         tvPrecio.setTextColor(ContextCompat.getColor(ctx, R.color.atencion));
                         String importe = "-" + String.valueOf(reserva.getImporteDevuelto());
                         tvPrecio.setText(importe);
+                        if(MySharedPreferences.getIncluirPrecioCUP(ctx)&&
+                                MySharedPreferences.getTasaCUP(ctx)>0){
+                            String importeCUP = "(-"+String.valueOf(reserva.getImporteDevuelto()*MySharedPreferences.getTasaCUP(ctx))+")";
+                            tvPrecioCUP.setText(importeCUP);
+                        }
                     }
                 }
             }
@@ -178,7 +191,6 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
 
     interface MyCallBack{
         void itemClicked(int position);
-//        String getFechaLiquidacion();
     }
 
     public interface MyMainActivity{

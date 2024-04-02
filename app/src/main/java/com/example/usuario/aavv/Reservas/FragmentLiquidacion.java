@@ -164,16 +164,20 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     private void udTvInfo(){
         String text = "";
         if(!reservaList.isEmpty()) {
-            text = "Totales: " + getTotales();
+            double[] infoTotal = getTotales();
+            text = "Totales: " + String.valueOf((int)(infoTotal[0])) + " pax  " + String.valueOf(infoTotal[1]) + " usd";
+            if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
+                text += " ("+infoTotal[1]*MySharedPreferences.getTasaCUP(getContext())+" cup)";
+            }
         } else {
             text = "No hay información para mostrar";
         }
         tvInfo.setText(text);
     }
 
-    private String getTotales(){
+    private double[] getTotales(){
         double total = 0;
-        int cantPax = 0;
+        double cantPax = 0;
         for(Reserva reserva:reservaList){
             if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
                     reserva.getEstado()==Reserva.ESTADO_CANCELADO && reserva.getFechaCancelacion()!=null &&
@@ -192,7 +196,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                 }
             }
         }
-        return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
+        //return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
+        return new double[]{cantPax,total};
     }
 
     private void udReservaList(){
@@ -239,7 +244,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         }
         cuerpo += "Venta del día: "+ tvFechaLiquidacion.getText().toString();
         for (Reserva reserva:getReservasReporteVenta()){
-            cuerpo += "\n\n" + Reserva.toString(reserva,Reserva.INFO_REPORTE_VENTA);
+            cuerpo += "\n\n" + Reserva.toString(getContext(),reserva,Reserva.INFO_REPORTE_VENTA);
         }
         return cuerpo;
     }
@@ -301,7 +306,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             if(reserva.getEstado() == Reserva.ESTADO_ACTIVO ||
                     reserva.getEstado() == Reserva.ESTADO_DEVUELTO &&
                             !tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())) {
-                texto += "\n\n" + Reserva.toString(reserva, Reserva.INFO_LIQUIDACION);
+                texto += "\n\n" + Reserva.toString(getContext(),reserva, Reserva.INFO_LIQUIDACION);
             }else if(reserva.getEstado() == Reserva.ESTADO_CANCELADO){
                 texto += "\n\nTE: " + reserva.getNoTE() + "    CANCELADO";
             } else if(reserva.getEstado() == Reserva.ESTADO_DEVUELTO && tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())){

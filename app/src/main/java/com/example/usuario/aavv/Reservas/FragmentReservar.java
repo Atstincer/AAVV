@@ -278,6 +278,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             return;
         }
         Reserva reserva = getNuevaReserva();
+        reserva.setHistorial(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getHistorial());
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" ACTUALIZADO";
