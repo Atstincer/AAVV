@@ -118,7 +118,7 @@ public class DialogFragmentDevolver extends DialogFragment {
 
     private void devolver(){
         Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),myCallBack.getIdReserva());
-        String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" DEVUELTO ("+etImporte.getText().toString()+")";
+        String msgHistorial = tvFechaDev.getText().toString()+" DEVUELTO ("+etImporte.getText().toString()+")";
         reserva.addToHistorial(msgHistorial);
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();

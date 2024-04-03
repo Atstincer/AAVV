@@ -278,7 +278,6 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             return;
         }
         Reserva reserva = getNuevaReserva();
-        reserva.setHistorial(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getHistorial());
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" ACTUALIZADO";
@@ -502,7 +501,12 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private Reserva getNuevaReserva() {
-        Reserva reserva = new Reserva();
+        Reserva reserva;
+        if(myCallBack.getEstadoFragmentReservar()== MisConstantes.Estado.EDITAR){
+            reserva = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
+        } else {
+            reserva = new Reserva();
+        }
         reserva.setFechaConfeccion(tvFechaConfeccion.getText().toString());
         reserva.setNoTE(etNumeroTE.getText().toString());
         reserva.setExcursion(actvNombreExcursion.getText().toString());
@@ -551,9 +555,6 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         }
         reserva.setIdioma(actvIdioma.getText().toString());
         reserva.setObservaciones(etObservaciones.getText().toString());
-        if(myCallBack.getEstadoFragmentReservar()== MisConstantes.Estado.EDITAR){
-            reserva.setEstado(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getEstado());
-        }
         return reserva;
     }
 
