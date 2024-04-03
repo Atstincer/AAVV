@@ -20,6 +20,7 @@ import com.example.usuario.aavv.Excursiones.FragmentExcursion;
 import com.example.usuario.aavv.Excursiones.FragmentExcursiones;
 import com.example.usuario.aavv.Hoteles.FragmentHoteles;
 import com.example.usuario.aavv.Reservas.FragmentLiquidacion;
+import com.example.usuario.aavv.Reservas.FragmentRepVenta;
 import com.example.usuario.aavv.Reservas.FragmentReservar;
 import com.example.usuario.aavv.Reservas.FragmentReservasSaliendoElDia;
 import com.example.usuario.aavv.Reservas.FragmentVentaTTOO;
@@ -30,13 +31,14 @@ import com.example.usuario.aavv.Util.MisConstantes;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
         FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack,
-        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, ReservaRVAdapter.MyMainActivity{
+        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, ReservaRVAdapter.MyMainActivity,
+        FragmentRepVenta.MyCallBack{
 
     public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE = 0;
 
     private MisConstantes.Estado estadoFragmentReservar;
     private boolean hasStarted;
-    private String lastFechaLiq, lastFechaEjec, lastDesde, lastHasta;
+    private String lastFechaLiq, lastFechaEjec, lastDesde, lastHasta, lastFechaRepVenta;
 
     private CoordinatorLayout coordinatorLayout;
 
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity
             lastFechaEjec = savedInstanceState.getString("lastFechaEjec");
             lastDesde = savedInstanceState.getString("lastDesde");
             lastHasta = savedInstanceState.getString("lastHasta");
+            lastFechaRepVenta = savedInstanceState.getString("lastFechaRepVenta");
         }
 
         setContentView(R.layout.activity_main);
@@ -102,7 +105,18 @@ public class MainActivity extends AppCompatActivity
         outState.putString("lastFechaEjec",lastFechaEjec);
         outState.putString("lastDesde",lastDesde);
         outState.putString("lastHasta",lastHasta);
+        outState.putString("lastFechaRepVenta",lastFechaRepVenta);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void setLastFechaRepVenta(String fecha) {
+        lastFechaRepVenta = fecha;
+    }
+
+    @Override
+    public String getLastFechaRepVenta() {
+        return lastFechaRepVenta;
     }
 
     @Override
@@ -214,6 +228,10 @@ public class MainActivity extends AppCompatActivity
                 title = "Liquidaciones";
                 navMenuItemId = R.id.nav_liquidacion;
                 break;
+            case FragmentRepVenta.TAG:
+                title = "Reportes de venta";
+                navMenuItemId = R.id.nav_repventa;
+                break;
             case FragmentVentaTTOO.TAG:
                 title = "Ventas por agencias";
                 navMenuItemId = R.id.nav_venta_agencias;
@@ -304,6 +322,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_liquidacion:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentLiquidacion(),FragmentLiquidacion.TAG)
+                        .addToBackStack(null).commit();
+                break;
+            case R.id.nav_repventa:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentRepVenta(),FragmentRepVenta.TAG)
                         .addToBackStack(null).commit();
                 break;
             case R.id.nav_excursiones_dia:

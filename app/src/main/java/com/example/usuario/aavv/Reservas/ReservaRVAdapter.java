@@ -168,6 +168,9 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
                         }
                     }
                 }
+            }else if(this.modo == Modo.REP_VENTA){
+                tvPrecio.setVisibility(View.GONE);
+                showObsIfExist();
             }
         }
 
@@ -201,6 +204,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
         GENERAL,
         LIQUIDACION,
         POR_AGENCIA,
-        EXC_SALIENDO_EL_DIA
+        EXC_SALIENDO_EL_DIA,
+        REP_VENTA
     }
 }

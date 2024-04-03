@@ -47,7 +47,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     public static final String TAG = "FragmentLiquidacion";
 
-    private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+//    private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
 
     private LinearLayout layoutInfo;
     private TextView tvFechaLiquidacion, tvInfo;
@@ -65,15 +65,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_liquidacion,container,false);
         bindComponents(view);
-        /*System.out.println("********************************");
-        if(savedInstanceState!=null && savedInstanceState.getString("fechaLiq")!=null){
-            tvFechaLiquidacion.setText(savedInstanceState.getString("fechaLiq"));
-            System.out.println("recuperando estado: "+savedInstanceState.getString("fechaLiq"));
-        }
-        if(savedInstanceState==null){
-            System.out.println("savedInstanceState es NULL");
-        }
-        System.out.println("********************************");*/
         setItUp();
         return view;
     }
@@ -83,26 +74,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         myCallBack = (MyCallBack)context;
         super.onAttach(context);
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        System.out.println("********************************");
-        System.out.println("onSaveInstanceState - fragment liquidacion");
-        if(tvFechaLiquidacion!=null) {
-            outState.putString("fechaLiq", tvFechaLiquidacion.getText().toString());
-            System.out.println("salvando estado: "+tvFechaLiquidacion.getText().toString());
-        }
-        System.out.println("********************************");
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        System.out.println("********************************");
-        System.out.println("onDestroyView - fragment liquidacion");
-        System.out.println("********************************");
-    }*/
 
     private void bindComponents(View view){
         layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
@@ -215,7 +186,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         Collections.sort(reservaList,Reserva.ordenarPorTE);
     }
 
-    private String getInfoVendedor(){
+/*    private String getInfoVendedor(){
         String texto = "";
         if(!MySharedPreferences.getAgenciaVendedor(getContext()).equals("")){
             texto += "Agencia: "+MySharedPreferences.getAgenciaVendedor(getContext());
@@ -233,9 +204,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             texto += "Contacto: "+MySharedPreferences.getTelefonoVendedor(getContext());
         }
         return texto;
-    }
+    }*/
 
-    private String getCuerpoMail(){
+/*    private String getCuerpoMail(){
         String cuerpo = "";
         cuerpo += getInfoVendedor();
 
@@ -247,13 +218,13 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             cuerpo += "\n\n" + Reserva.toString(getContext(),reserva,Reserva.INFO_REPORTE_VENTA);
         }
         return cuerpo;
-    }
+    }*/
 
-    private void enviarMailVentaDelDia(){
+/*    private void enviarMailVentaDelDia(){
         MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},"Venta del día "+ tvFechaLiquidacion.getText().toString(),getCuerpoMail()));
-    }
+    }*/
 
-    private void generarExcelReporteDeVenta(){
+/*    private void generarExcelReporteDeVenta(){
         //if(reservaList.size()<1){return;}
         try {
             //File rutaSD = Environment.getExternalStorageDirectory();
@@ -279,9 +250,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         } catch (Exception e) {
             Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-    }
+    }*/
 
-    private List<Reserva> getReservasReporteVenta(){
+/*    private List<Reserva> getReservasReporteVenta(){
         List<Reserva> resultadoBruto = ReservaBDHandler.getReservasFromDB(getContext(),
                 "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+
                         ReservaBDHandler.CAMPO_ESTADO+"!=?",
@@ -297,7 +268,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         }
         Collections.sort(reservasRepVenta,Reserva.ordenarPorTE);
         return reservasRepVenta;
-    }
+    }*/
 
     private void copiarInfo(){
         String texto = "Venta del día: "+ tvFechaLiquidacion.getText().toString();
@@ -321,7 +292,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         Util.copyToClipBoard(getContext(),texto);
     }
 
-    private void checkForPermissions() {
+/*    private void checkForPermissions() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -331,9 +302,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             // Permission is already granted, call the function that does what you need
             generarExcelReporteDeVenta();
         }
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
@@ -350,7 +321,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             }
             // other 'case' lines to check for other permissions this app might request.
         }
-    }
+    }*/
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -362,16 +333,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menu_item_enviar_mail_venta_del_dia:
-                if(!getReservasReporteVenta().isEmpty()) {
-                    enviarMailVentaDelDia();
-                }else {
-                    Toast.makeText(getContext(), "No hay reservas para enviar", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.menu_item_excel_reporte_venta:
-                checkForPermissions();
-                break;
             case R.id.menu_item_copiar:
                 copiarInfo();
                 break;
@@ -403,7 +364,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         void udUI(String tag);
         void setUpFragmentReservar(long id);
         void setUpFragmentReservar(String lastTE, String fechaLiquidacion);
-        void showSnackBar(String mensaje);
         void setLastFechaLiq(String lastFechaLiq);
         String getLastFechaLiq();
     }

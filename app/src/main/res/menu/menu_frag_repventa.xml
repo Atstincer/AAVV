@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_item_enviar_mail_venta_del_dia"
+        android:title="Enviar por mail"
+        android:icon="@drawable/ic_mail"
+        app:showAsAction="ifRoom|collapseActionView"/>
+
+    <item android:id="@+id/menu_item_excel_reporte_venta"
+        android:title="Excel reporte de venta" />
+
+</menu>

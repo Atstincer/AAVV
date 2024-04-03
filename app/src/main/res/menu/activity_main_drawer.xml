@@ -16,6 +16,10 @@
                     android:title="Liquidaciones"/>
 
                 <item
+                    android:id="@+id/nav_repventa"
+                    android:title="Reportes de Venta"/>
+
+                <item
                     android:id="@+id/nav_excursiones_dia"
                     android:title="Excursiones por día"/>
 
