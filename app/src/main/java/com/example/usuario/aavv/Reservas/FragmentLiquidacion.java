@@ -1,19 +1,12 @@
 package com.example.usuario.aavv.Reservas;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,19 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
-import com.example.usuario.aavv.MainActivity;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
-import com.example.usuario.aavv.Util.MyEmail;
-import com.example.usuario.aavv.Util.MyExcel;
 import com.example.usuario.aavv.Util.Util;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -133,12 +120,22 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private void udTvInfo(){
-        String text = "";
+        String text;
         if(!reservaList.isEmpty()) {
             double[] infoTotal = getTotales();
             text = "Totales: " + String.valueOf((int)(infoTotal[0])) + " pax  " + String.valueOf(infoTotal[1]) + " usd";
             if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
                 text += " ("+infoTotal[1]*MySharedPreferences.getTasaCUP(getContext())+" cup)";
+            }
+            if(infoTotal[2]>0){
+                text += "\nDevoluciones: "+String.valueOf(infoTotal[2])+" usd";
+                if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
+                    text += " ("+infoTotal[2]*MySharedPreferences.getTasaCUP(getContext())+" cup)";
+                }
+                text += "\nTotal sin dev: "+String.valueOf(infoTotal[1]-infoTotal[2])+" usd";
+                if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
+                    text += " ("+(infoTotal[1]-infoTotal[2])*MySharedPreferences.getTasaCUP(getContext())+" cup)";
+                }
             }
         } else {
             text = "No hay información para mostrar";
@@ -149,26 +146,28 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     private double[] getTotales(){
         double total = 0;
         double cantPax = 0;
+        double devoluciones = 0;
         for(Reserva reserva:reservaList){
             if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
                     reserva.getEstado()==Reserva.ESTADO_CANCELADO && reserva.getFechaCancelacion()!=null &&
                             !reserva.getFechaCancelacion().equals(tvFechaLiquidacion.getText().toString())) {
-                total = total + reserva.getPrecio();
-                cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                total += reserva.getPrecio();
+                cantPax += + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
             }else if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
                 if(reserva.getFechaConfeccion().equals(reserva.getFechaDevolucion())) {
-                    cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
-                    total = total + reserva.getPrecio() - reserva.getImporteDevuelto();
+                    cantPax += + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                    total += reserva.getPrecio();
+                    devoluciones += reserva.getImporteDevuelto();
                 } else if(reserva.getFechaConfeccion().equals(tvFechaLiquidacion.getText().toString())){
-                    total = total + reserva.getPrecio();
+                    total += reserva.getPrecio();
                     cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
                 } else if(reserva.getFechaDevolucion().equals(tvFechaLiquidacion.getText().toString())) {
-                    total = total - reserva.getImporteDevuelto();
+                    devoluciones += reserva.getImporteDevuelto();
                 }
             }
         }
         //return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
-        return new double[]{cantPax,total};
+        return new double[]{cantPax,total, devoluciones};
     }
 
     private void udReservaList(){
@@ -186,89 +185,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         Collections.sort(reservaList,Reserva.ordenarPorTE);
     }
 
-/*    private String getInfoVendedor(){
-        String texto = "";
-        if(!MySharedPreferences.getAgenciaVendedor(getContext()).equals("")){
-            texto += "Agencia: "+MySharedPreferences.getAgenciaVendedor(getContext());
-        }
-        if(!MySharedPreferences.getNombreVendedor(getContext()).equals("")){
-            if(!texto.equals("")) {
-                texto += "\n";
-            }
-            texto += "Vendedor: " + MySharedPreferences.getNombreVendedor(getContext());
-        }
-        if(!MySharedPreferences.getTelefonoVendedor(getContext()).equals("")){
-            if(!texto.equals("")) {
-                texto += "\n";
-            }
-            texto += "Contacto: "+MySharedPreferences.getTelefonoVendedor(getContext());
-        }
-        return texto;
-    }*/
-
-/*    private String getCuerpoMail(){
-        String cuerpo = "";
-        cuerpo += getInfoVendedor();
-
-        if(!cuerpo.equals("")) {
-            cuerpo += "\n\n";
-        }
-        cuerpo += "Venta del día: "+ tvFechaLiquidacion.getText().toString();
-        for (Reserva reserva:getReservasReporteVenta()){
-            cuerpo += "\n\n" + Reserva.toString(getContext(),reserva,Reserva.INFO_REPORTE_VENTA);
-        }
-        return cuerpo;
-    }*/
-
-/*    private void enviarMailVentaDelDia(){
-        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},"Venta del día "+ tvFechaLiquidacion.getText().toString(),getCuerpoMail()));
-    }*/
-
-/*    private void generarExcelReporteDeVenta(){
-        //if(reservaList.size()<1){return;}
-        try {
-            //File rutaSD = Environment.getExternalStorageDirectory();
-            File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/Reportes de venta");
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+ tvFechaLiquidacion.getText().toString().substring(6));
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+mesesDelAno[Integer.parseInt(tvFechaLiquidacion.getText().toString().substring(3,5))-1]);
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-
-            //File rutaSD = Environment.getExternalFilesDir(null);
-            File file = new File(rutaSD.getAbsolutePath(), tvFechaLiquidacion.getText().toString().replace("/","") + ".xls");
-            List<Reserva> reservasReportar = getReservasReporteVenta();
-            if(reservasReportar.isEmpty()){
-                Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservasReportar, tvFechaLiquidacion.getText().toString())){
-                myCallBack.showSnackBar("Excel generado correctamente: "+file);
-            }
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }*/
-
-/*    private List<Reserva> getReservasReporteVenta(){
-        List<Reserva> resultadoBruto = ReservaBDHandler.getReservasFromDB(getContext(),
-                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+
-                        ReservaBDHandler.CAMPO_ESTADO+"!=?",
-                new String[]{
-                        DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString()),
-                        String.valueOf(Reserva.ESTADO_CANCELADO)});
-        List<Reserva> reservasRepVenta = new ArrayList<>();
-        for (Reserva reserva: resultadoBruto){
-            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
-                    reserva.getEstado()==Reserva.ESTADO_DEVUELTO && reserva.isDevParcial()){
-                reservasRepVenta.add(reserva);
-            }
-        }
-        Collections.sort(reservasRepVenta,Reserva.ordenarPorTE);
-        return reservasRepVenta;
-    }*/
 
     private void copiarInfo(){
         String texto = "Venta del día: "+ tvFechaLiquidacion.getText().toString();
@@ -292,37 +208,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         Util.copyToClipBoard(getContext(),texto);
     }
 
-/*    private void checkForPermissions() {
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE);
-        } else {
-            // Permission is already granted, call the function that does what you need
-            generarExcelReporteDeVenta();
-        }
-    }*/
-
-/*    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay!....call the function that does what you need
-                    generarExcelReporteDeVenta();
-                } else {
-                    Log.e(TAG, "Write permissions has to be granted to ATMS, otherwise it cannot operate properly.\n Exiting the program...\n");
-                }
-                break;
-            }
-            // other 'case' lines to check for other permissions this app might request.
-        }
-    }*/
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if(menu!=null){menu.clear();}
@@ -342,7 +227,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     @Override
     public void itemClicked(int position) {
-        myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
+//        myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
         myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
     }
 
