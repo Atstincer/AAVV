@@ -21,6 +21,10 @@ public class Excursion {
     Excursion() {
     }
 
+    public Excursion(String nombre) {
+        this.nombre = nombre;
+    }
+
     public String getNombre() {
         return nombre;
     }

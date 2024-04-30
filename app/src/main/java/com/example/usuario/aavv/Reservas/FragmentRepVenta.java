@@ -83,7 +83,7 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
             tvFecha.setText(myCallBack.getLastFechaRepVenta());
         }
         udReservaList();
-        adapter = new ReservaRVAdapter(getContext(),reservaList, ReservaRVAdapter.Modo.REP_VENTA,this);
+        adapter = new ReservaRVAdapter(getContext(),Reserva.toObjectList(reservaList), ReservaRVAdapter.Modo.REP_VENTA,this);
         rvReservas.setAdapter(adapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
         tvFecha.setOnClickListener(new View.OnClickListener(){
@@ -102,7 +102,7 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
 
     private void udUI(){
         udReservaList();
-        adapter.setReservaList(reservaList);
+        adapter.setReservaList(Reserva.toObjectList(reservaList));
     }
 
     @Override

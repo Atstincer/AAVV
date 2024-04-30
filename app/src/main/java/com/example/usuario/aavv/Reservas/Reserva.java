@@ -57,6 +57,14 @@ public class Reserva {
         return text;
     }
 
+    public static List<Object> toObjectList(List<Reserva> list){
+        List<Object> objects = new ArrayList<>();
+        for (Reserva reserva: list){
+            objects.add(reserva);
+        }
+        return objects;
+    }
+
     //no extended 2+2+1 free
     //extended 2 adultos + 2 menores + 1 menor free
     String getCantPaxs(boolean extendido){

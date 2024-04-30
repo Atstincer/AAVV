@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.usuario.aavv.Excursiones.Excursion;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
@@ -42,7 +43,8 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     private RecyclerView rvReservas;
     private TextView tvFechaEjecucion, tvInfo;
 
-    private List<Reserva> reservasList;
+    //contiene Excursion y Reservas
+    private List<Object> reservasList;
     private ReservaRVAdapter adapter;
 
     private MyCallBack myCallBack;
@@ -76,6 +78,7 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     private void setItUp(){
+        reservasList = new ArrayList<>();
         if(myCallBack.getLastFechaEjec()==null) {
             tvFechaEjecucion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
             myCallBack.setLastFechaEjec(tvFechaEjecucion.getText().toString());
@@ -119,16 +122,19 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     }
 
     private void udReservasList(){
-        reservasList = ReservaBDHandler.getReservasFromDB(getContext(),
+        if(reservasList!=null) {
+            reservasList.clear();
+        }
+        List<Reserva> nuevasReservas;
+        nuevasReservas = ReservaBDHandler.getReservasFromDB(getContext(),
                 "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
                 new String[]{DateHandler.formatDateToStoreInDB(tvFechaEjecucion.getText().toString()),String.valueOf(Reserva.ESTADO_ACTIVO)});
-        if(reservasList.isEmpty()){
+        if(nuevasReservas.isEmpty()){
             return;
         }
-        Collections.sort(reservasList,Reserva.ordenarPorTE);
-        //Collections.sort(reservasList,Reserva.ordenarPorExc);
-        Map<String,List<Reserva>> mapReservas = new HashMap<String, List<Reserva>>();
-        for(Reserva reserva:reservasList){
+        Collections.sort(nuevasReservas,Reserva.ordenarPorTE);
+        Map<String,List<Reserva>> mapReservas = new HashMap<>();
+        for(Reserva reserva:nuevasReservas){
             if(mapReservas.containsKey(reserva.getExcursion())){
                 mapReservas.get(reserva.getExcursion()).add(reserva);
             }else {
@@ -136,55 +142,53 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
                 mapReservas.get(reserva.getExcursion()).add(reserva);
             }
         }
-        reservasList.clear();
         for(String excursion:mapReservas.keySet()){
+            reservasList.add(new Excursion(excursion));
             Collections.sort(mapReservas.get(excursion),Reserva.ordenarPorHotel);
             reservasList.addAll(mapReservas.get(excursion));
         }
     }
 
     private void udTvInfo(){
-        if(reservasList.isEmpty()){
+        if(reservasList==null || reservasList.isEmpty()){
             tvInfo.setText("No hay resultados para mostrar");
             return;
         }
         String texto = "";
-        List<String> excursiones = new ArrayList<>();
-
-        //llenando lista excursiones
-        for(Reserva reserva:reservasList){
-            if(!excursiones.contains(reserva.getExcursion())){
-                excursiones.add(reserva.getExcursion());
-            }
-        }
-
-        boolean primeraExc = true;
+        String nombreExc = "";
 
         //creando mensaje
-        for(String excursion:excursiones){
-            int totalPaxExc = 0;
-            String infoExc = "";
-            for(Reserva reserva:reservasList){
-                if(reserva.getExcursion().equals(excursion)){
-                    int cantPax = reserva.getAdultos()+reserva.getMenores()+reserva.getInfantes();
-                    totalPaxExc += cantPax;
-                    infoExc += "\n" + reserva.getNoTE() + " " + reserva.getHotel() + " " + reserva.getNoHab();
-                    if(cantPax!=0){
-                        infoExc += " " + cantPax + " pax";
-                    }
-                    if(reserva.getAcompanantes()!=0){
-                        infoExc += " " + reserva.getAcompanantes() + " acompañante";
-                    }
+        for(Object object:reservasList) {
+            if (object instanceof Excursion) {
+                if (!nombreExc.equals("")) {
+                    texto += "\n\n";
                 }
-            }
-            if(primeraExc){
-                texto += excursion + " (" + totalPaxExc + ")" + infoExc;
-                primeraExc = false;
-            }else {
-                texto += "\n\n" + excursion + " (" + totalPaxExc + ")" + infoExc;
+                nombreExc = ((Excursion) object).getNombre();
+                texto += nombreExc + " (" + getTotalPaxExc(nombreExc) + ")";
+            } else if (object instanceof Reserva) {
+                Reserva reserva = (Reserva) object;
+                int cantPax = reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                texto += "\n" + reserva.getNoTE() + " " + reserva.getHotel() + " " + reserva.getNoHab();
+                if (cantPax != 0) {
+                    texto += " " + cantPax + " pax";
+                }
             }
         }
         tvInfo.setText(texto);
+    }
+
+
+    private int getTotalPaxExc(String nombreExc){
+        int totalPax = 0;
+        for (Object object:reservasList){
+            if(object instanceof Reserva){
+                Reserva reserva = (Reserva)object;
+                if(reserva.getExcursion().equals(nombreExc)){
+                    totalPax += reserva.getAdultos()+reserva.getMenores()+reserva.getInfantes();
+                }
+            }
+        }
+        return totalPax;
     }
 
     private void enviarMail(){
@@ -200,7 +204,10 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
 
     @Override
     public void itemClicked(int position) {
-        myCallBack.setUpFragmentReservar(reservasList.get(position).getId());
+        if(reservasList.get(position) instanceof Reserva){
+            Reserva reserva = (Reserva)reservasList.get(position);
+            myCallBack.setUpFragmentReservar(reserva.getId());
+        }
     }
 
     @Override

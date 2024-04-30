@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
+import com.example.usuario.aavv.Excursiones.Excursion;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.Util;
 
@@ -20,15 +21,17 @@ import java.util.List;
  * Created by usuario on 30/07/2023.
  */
 
-public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.ViewHolder> {
+public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Reserva> reservaList;
+    private final int RESERVA_VIEW = 0, EXCURSION_VIEW = 1;
+
+    private List<Object> reservaList;
     private MyCallBack myCallBack;
     private MyMainActivity myMainActivity;
     private Context context;
     private Modo modo;
 
-    ReservaRVAdapter(Context ctx,List<Reserva> reservaList, Modo modo,MyCallBack myCallBack) {
+    ReservaRVAdapter(Context ctx,List<Object> reservaList, Modo modo,MyCallBack myCallBack) {
         context = ctx;
         this.reservaList = reservaList;
         this.modo = modo;
@@ -37,34 +40,55 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_reserva,parent,false);
-        return new ViewHolder(context,v,modo,myCallBack);
+    public int getItemViewType(int position) {
+        if(reservaList.get(position) instanceof Excursion){
+            return EXCURSION_VIEW;
+        }
+        return RESERVA_VIEW;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bindHolder(position);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == EXCURSION_VIEW){
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_titulo_excursion,parent,false);
+            return new ViewHolderExcursion(v);
+        }
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_reserva,parent,false);
+        return new ViewHolderReserva(context,v,modo,myCallBack);
     }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(getItemViewType(position)==EXCURSION_VIEW){
+            ((ViewHolderExcursion) holder).bindHolder(position);
+        }else if(getItemViewType(position)==RESERVA_VIEW){
+            ((ViewHolderReserva) holder).bindHolder(position);
+        }
+    }
+
+//    @Override
+//    public void onBindViewHolder(ViewHolder holder, int position) {
+//        holder.bindHolder(position);
+//    }
 
     @Override
     public int getItemCount() {
         return reservaList.size();
     }
 
-    void setReservaList(List<Reserva> lista){
+    void setReservaList(List<Object> lista){
         reservaList = lista;
         notifyDataSetChanged();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    private class ViewHolderReserva extends RecyclerView.ViewHolder{
 
         private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio, tvEstado, tvPrecioCUP;
         private Modo modo;
 
         private Context ctx;
 
-        ViewHolder(final Context ctx, View itemView, Modo modo, final MyCallBack myCallBack) {
+        ViewHolderReserva(final Context ctx, View itemView, Modo modo, final MyCallBack myCallBack) {
             super(itemView);
             this.ctx = ctx;
             this.modo = modo;
@@ -90,14 +114,14 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    Util.copyToClipBoard(ctx,Reserva.toString(ctx,reservaList.get(getAdapterPosition()),Reserva.INFO_REPORTE_VENTA));
+                    Util.copyToClipBoard(ctx,Reserva.toString(ctx,(Reserva) reservaList.get(getAdapterPosition()),Reserva.INFO_REPORTE_VENTA));
                     return true;
                 }
             });
         }
 
         void bindHolder(int position){
-            Reserva reserva = reservaList.get(position);
+            Reserva reserva = (Reserva) reservaList.get(position);
             String te = "TE "+ reserva.getNoTE();
             tvTE.setText(te);
             if(reserva.getEstado()!=Reserva.ESTADO_ACTIVO){
@@ -189,6 +213,21 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<ReservaRVAdapter.View
             }else {
                 tvObs.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    private class ViewHolderExcursion extends RecyclerView.ViewHolder{
+
+        private TextView tvNombre;
+
+        ViewHolderExcursion(View itemView) {
+            super(itemView);
+            tvNombre = (TextView)itemView.findViewById(R.id.tv_titulo_excursion);
+        }
+
+        void bindHolder(int position){
+            Excursion excursion = (Excursion) reservaList.get(position);
+            tvNombre.setText(excursion.getNombre());
         }
     }
 

@@ -137,7 +137,7 @@ public class FragmentVentaTTOO extends Fragment {
         });
         listaReservas = new ArrayList<>();
         listaAgencias = new ArrayList<>();
-        rvAdapter = new ReservaRVAdapter(getContext(), listaReservas, ReservaRVAdapter.Modo.POR_AGENCIA, new ReservaRVAdapter.MyCallBack() {
+        rvAdapter = new ReservaRVAdapter(getContext(), Reserva.toObjectList(listaReservas), ReservaRVAdapter.Modo.POR_AGENCIA, new ReservaRVAdapter.MyCallBack() {
             @Override
             public void itemClicked(int position) {
                 myCallBack.setUpFragmentReservar(listaReservas.get(position).getId());
@@ -223,7 +223,7 @@ public class FragmentVentaTTOO extends Fragment {
     private void udReservasRV(){
         listaReservas.clear();
         if(listaAgencias.isEmpty()){
-            rvAdapter.setReservaList(listaReservas);
+            rvAdapter.setReservaList(Reserva.toObjectList(listaReservas));
             //udTVInfo();
             return;
         }
@@ -232,7 +232,7 @@ public class FragmentVentaTTOO extends Fragment {
         if(listaReservas.size()>1){
             Collections.sort(listaReservas,Reserva.ordenarPorTE);
         }
-        rvAdapter.setReservaList(listaReservas);
+        rvAdapter.setReservaList(Reserva.toObjectList(listaReservas));
     }
 
     private List<Reserva> getReservasFromDB(String agencia){

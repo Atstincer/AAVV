@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
@@ -80,9 +81,25 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         }
         udReservaList();
         udTvInfo();
-        adapter = new ReservaRVAdapter(getContext(),reservaList, ReservaRVAdapter.Modo.LIQUIDACION,this);
+        adapter = new ReservaRVAdapter(getContext(),Reserva.toObjectList(reservaList), ReservaRVAdapter.Modo.LIQUIDACION,this);
         rvReservas.setAdapter(adapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvReservas.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy>0){
+                    btnAddReserva.hide();
+                }else if(dy<0){
+                    btnAddReserva.show();
+                }
+            }
+        });
 
         tvFechaLiquidacion.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -116,7 +133,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     private void udUI(){
         udReservaList();
         udTvInfo();
-        adapter.setReservaList(reservaList);
+        adapter.setReservaList(Reserva.toObjectList(reservaList));
     }
 
     private void udTvInfo(){
@@ -227,7 +244,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     @Override
     public void itemClicked(int position) {
-//        myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
         myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
     }
 
