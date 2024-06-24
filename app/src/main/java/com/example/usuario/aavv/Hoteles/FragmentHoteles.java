@@ -24,9 +24,6 @@ public class FragmentHoteles extends Fragment implements DialogFragmentInfoHotel
 
     public static final String TAG = "FragmentHoteles";
 
-    //private FloatingActionButton btnAddTTOO;
-    //private RecyclerView rvTTOOs;
-
     private HotelesRVAdapter adapter;
     private List<Hotel> hotelesList;
     private long idHotelSelected;
@@ -50,13 +47,28 @@ public class FragmentHoteles extends Fragment implements DialogFragmentInfoHotel
     }
 
     private void bindComponents(View v){
-        FloatingActionButton btnAddHotel = (FloatingActionButton)v.findViewById(R.id.btn_add_hotel);
-        RecyclerView rvHoteles = (RecyclerView)v.findViewById(R.id.rv_hoteles);
+        FloatingActionButton btnAddHotel = v.findViewById(R.id.btn_add_hotel);
+        RecyclerView rvHoteles = v.findViewById(R.id.rv_hoteles);
         udHotelesList();
         adapter = new HotelesRVAdapter(hotelesList,this);
         rvHoteles.setAdapter(adapter);
         rvHoteles.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvHoteles.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy>0){
+                    btnAddHotel.hide();
+                }else if(dy<0){
+                    btnAddHotel.show();
+                }
+            }
+        });
         btnAddHotel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {

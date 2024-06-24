@@ -199,7 +199,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         private void showInfoIfExist(TextView tv,String info){
-            if(info.equals("")){
+            if(info==null || info.isEmpty()){
                 tv.setVisibility(View.GONE);
             }else {
                 tv.setVisibility(View.VISIBLE);

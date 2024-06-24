@@ -18,7 +18,7 @@ public class Excursion {
     private int tipoPrecio, rangoHasta, idiomaNecesario;
     private float precioAd, precioMenor, precioAcomp, precioRango;
 
-    Excursion() {
+    public Excursion() {
     }
 
     public Excursion(String nombre) {

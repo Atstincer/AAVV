@@ -166,13 +166,10 @@ public class FragmentExcursion extends Fragment {
     private Excursion getInfoFragment(){
         Excursion excursion = new Excursion();
         excursion.setNombre(etExcursion.getText().toString());
-        switch (radioGroup.getCheckedRadioButtonId()){
-            case R.id.rb_precio_pax:
-                excursion.setTipoPrecio(Excursion.PRECIO_X_PAX);
-                break;
-            case R.id.rb_precio_rango:
-                excursion.setTipoPrecio(Excursion.PRECIO_X_RANGO);
-                break;
+        if(radioGroup.getCheckedRadioButtonId() == R.id.rb_precio_pax){
+            excursion.setTipoPrecio(Excursion.PRECIO_X_PAX);
+        }else if(radioGroup.getCheckedRadioButtonId() == R.id.rb_precio_rango){
+            excursion.setTipoPrecio(Excursion.PRECIO_X_RANGO);
         }
         if(etPaxHasta.getText().toString().equals("")){
             excursion.setRangoHasta(0);
@@ -216,17 +213,14 @@ public class FragmentExcursion extends Fragment {
     }
 
     private void showHideLayout(){
-        switch (radioGroup.getCheckedRadioButtonId()){
-            case R.id.rb_precio_pax:
-                etPaxHasta.setText("");
-                etPrecioRango.setText("");
-                layoutPrecioRango.setVisibility(View.GONE);
-                tvPaxAdicional.setVisibility(View.GONE);
-                break;
-            case R.id.rb_precio_rango:
-                layoutPrecioRango.setVisibility(View.VISIBLE);
-                tvPaxAdicional.setVisibility(View.VISIBLE);
-                break;
+        if(radioGroup.getCheckedRadioButtonId() == R.id.rb_precio_pax){
+            etPaxHasta.setText("");
+            etPrecioRango.setText("");
+            layoutPrecioRango.setVisibility(View.GONE);
+            tvPaxAdicional.setVisibility(View.GONE);
+        }else if(radioGroup.getCheckedRadioButtonId() == R.id.rb_precio_rango){
+            layoutPrecioRango.setVisibility(View.VISIBLE);
+            tvPaxAdicional.setVisibility(View.VISIBLE);
         }
     }
 

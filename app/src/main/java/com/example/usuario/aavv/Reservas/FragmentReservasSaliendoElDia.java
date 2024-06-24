@@ -219,10 +219,8 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_item_enviar_mail_reservas_saliendo_el_dia:
-                enviarMail();
-                break;
+        if (item.getItemId() == R.id.menu_item_enviar_mail_reservas_saliendo_el_dia) {
+            enviarMail();
         }
         return super.onOptionsItemSelected(item);
     }

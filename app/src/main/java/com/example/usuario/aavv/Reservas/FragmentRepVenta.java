@@ -29,6 +29,7 @@ import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyEmail;
 import com.example.usuario.aavv.Util.MyExcel;
+import com.example.usuario.aavv.Util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -113,9 +114,10 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
 
     private void udReservaList(){
         List<Reserva> resultadoBruto = ReservaBDHandler.getReservasFromDB(getContext(),
-                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+
-                        ReservaBDHandler.CAMPO_ESTADO+"!=?",
+                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_INCLUIR_REP_VENTA+"=? AND "+
+                        ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?",
                 new String[]{
+                        String.valueOf(1),
                         DateHandler.formatDateToStoreInDB(tvFecha.getText().toString()),
                         String.valueOf(Reserva.ESTADO_CANCELADO)});
         if(reservaList==null){reservaList = new ArrayList<>();}
@@ -172,64 +174,48 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
     }
 
     private void generarExcelReporteDeVenta(){
-        //if(reservaList.size()<1){return;}
+        if(reservaList.isEmpty()){
+            Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String ruta = getRuta();
+        if(ruta==null){
+            Toast.makeText(getContext(),"No se pudo crear el reporte",Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
-            //File rutaSD = Environment.getExternalStorageDirectory();
+            File file = new File(ruta, tvFecha.getText().toString().replace("/","") + ".xls");
+            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservaList, tvFecha.getText().toString())){
+                myCallBack.showSnackBar("Excel generado correctamente: "+file);
+            }
+        } catch (Exception e) {
+            Log.e("excel","Error creando excel",e);
+        }
+    }
+
+    private String getRuta(){
+        try {
             File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
-            if(!rutaSD.exists()){rutaSD.mkdir();}
+            if(!rutaSD.exists()){
+                if(rutaSD.mkdir()){
+                    Log.d("excel","Directorio creado");
+                }else {
+                    Log.d("excel","mkdir() no crea el directorio");
+                    return null;
+                }
+            }
             rutaSD = new File(rutaSD.getAbsolutePath()+"/Reportes de venta");
             if(!rutaSD.exists()){rutaSD.mkdir();}
             rutaSD = new File(rutaSD.getAbsolutePath()+"/"+ tvFecha.getText().toString().substring(6));
             if(!rutaSD.exists()){rutaSD.mkdir();}
             rutaSD = new File(rutaSD.getAbsolutePath()+"/"+mesesDelAno[Integer.parseInt(tvFecha.getText().toString().substring(3,5))-1]);
             if(!rutaSD.exists()){rutaSD.mkdir();}
-
-            //File rutaSD = Environment.getExternalFilesDir(null);
-            File file = new File(rutaSD.getAbsolutePath(), tvFecha.getText().toString().replace("/","") + ".xls");
-//            List<Reserva> reservasReportar = getReservasReporteVenta();
-            if(reservaList.isEmpty()){
-                Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if(MyExcel.generarExcelReporteVenta(getContext(),file,reservaList, tvFecha.getText().toString())){
-                myCallBack.showSnackBar("Excel generado correctamente: "+file);
-            }
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return rutaSD.getAbsolutePath();
+        }catch (Exception e){
+            Log.e("excel","Error creando ruta",e);
+            return null;
         }
     }
-
-    private void checkForPermissions() {
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE);
-        } else {
-            // Permission is already granted, call the function that does what you need
-            generarExcelReporteDeVenta();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay!....call the function that does what you need
-                    generarExcelReporteDeVenta();
-                } else {
-                    Log.e(TAG, "Write permissions has to be granted to ATMS, otherwise it cannot operate properly.\n Exiting the program...\n");
-                }
-                break;
-            }
-            // other 'case' lines to check for other permissions this app might request.
-        }
-    }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -240,13 +226,18 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_item_enviar_mail_venta_del_dia:
-                enviarMailVentaDelDia();
-                break;
-            case R.id.menu_item_excel_reporte_venta:
-                checkForPermissions();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_item_enviar_mail_venta_del_dia) {
+            enviarMailVentaDelDia();
+        } else if (itemId == R.id.menu_item_excel_reporte_venta) {
+            //checkForPermissions();
+            if(Util.isPermissionGranted(getContext())){
+                generarExcelReporteDeVenta();
+                Log.d("permisos","Permision is granted");
+            }else {
+                Log.d("permisos","Permision is not granted");
+                myCallBack.requestPermisionAccessExternalStorage();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -257,5 +248,6 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
         void showSnackBar(String mensaje);
         void setLastFechaRepVenta(String fecha);
         String getLastFechaRepVenta();
+        void requestPermisionAccessExternalStorage();
     }
 }

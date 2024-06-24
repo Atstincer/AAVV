@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
@@ -204,25 +203,36 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
 
     private void copiarInfo(){
-        String texto = "Venta del día: "+ tvFechaLiquidacion.getText().toString();
-        texto += "\n\n" + tvInfo.getText().toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Venta del día: ");
+        sb.append(tvFechaLiquidacion.getText().toString());
+        sb.append("\n\n");
+        sb.append(tvInfo.getText().toString());
         for (Reserva reserva:reservaList){
             if(reserva.getEstado() == Reserva.ESTADO_ACTIVO ||
                     reserva.getEstado() == Reserva.ESTADO_DEVUELTO &&
                             !tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())) {
-                texto += "\n\n" + Reserva.toString(getContext(),reserva, Reserva.INFO_LIQUIDACION);
+                sb.append("\n\n");
+                sb.append(Reserva.toString(getContext(),reserva, Reserva.INFO_LIQUIDACION));
             }else if(reserva.getEstado() == Reserva.ESTADO_CANCELADO){
-                texto += "\n\nTE: " + reserva.getNoTE() + "    CANCELADO";
+                sb.append("\n\nTE: ");
+                sb.append(reserva.getNoTE());
+                sb.append("    CANCELADO");
             } else if(reserva.getEstado() == Reserva.ESTADO_DEVUELTO && tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())){
                 if(reserva.getPrecio()==reserva.getImporteDevuelto()) {
-                    texto += "\n\nTE: " + reserva.getNoTE() + "    DEVOLUCION TOTAL";
+                    sb.append("\n\nTE: ");
+                    sb.append(reserva.getNoTE());
+                    sb.append("    DEVOLUCION TOTAL");
                 }else if(reserva.getPrecio() > reserva.getImporteDevuelto()) {
-                    texto += "\n\nTE: " + reserva.getNoTE() + "    DEVOLUCION PARCIAL";
+                    sb.append("\n\nTE: ");
+                    sb.append(reserva.getNoTE());
+                    sb.append("    DEVOLUCION PARCIAL");
                 }
-                texto += "\nImporte devuelto: -" + reserva.getImporteDevuelto();
+                sb.append("\nImporte devuelto: -");
+                sb.append(reserva.getImporteDevuelto());
             }
         }
-        Util.copyToClipBoard(getContext(),texto);
+        Util.copyToClipBoard(getContext(),sb.toString());
     }
 
     @Override
@@ -234,10 +244,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_item_copiar:
-                copiarInfo();
-                break;
+        if (item.getItemId() == R.id.menu_item_copiar) {
+            copiarInfo();
         }
         return super.onOptionsItemSelected(item);
     }

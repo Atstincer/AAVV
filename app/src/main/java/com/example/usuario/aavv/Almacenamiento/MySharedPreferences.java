@@ -2,9 +2,6 @@ package com.example.usuario.aavv.Almacenamiento;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
-
-import java.util.regex.Pattern;
 
 import static android.content.Context.MODE_APPEND;
 import static android.content.Context.MODE_PRIVATE;
@@ -28,7 +25,7 @@ public class MySharedPreferences {
 
 
     public static String getNombreVendedor(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getString(KEY_NOMBRE_VENDEDOR,"");
     }
 
@@ -40,7 +37,7 @@ public class MySharedPreferences {
     }
 
     public static String getTelefonoVendedor(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO, MODE_PRIVATE);
         return preferences.getString(KEY_TELEFONO_VENDEDOR,"");
     }
 
@@ -52,7 +49,7 @@ public class MySharedPreferences {
     }
 
     public static String getAgenciaVendedor(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getString(KEY_AGENCIA_VENDEDOR,"");
     }
 
@@ -64,7 +61,7 @@ public class MySharedPreferences {
     }
 
     public static boolean getIncluirDevEnLiquidacion(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getBoolean(KEY_INCLUIR_DEV,false);
     }
 
@@ -76,7 +73,7 @@ public class MySharedPreferences {
     }
 
     public static int getFragmentInicio(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getInt(KEY_FRAGMENT_INICIO,0);
     }
 
@@ -88,7 +85,7 @@ public class MySharedPreferences {
     }
 
     public static boolean getPredecirPrecio(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getBoolean(KEY_PREDECIR_PRECIO,true);
     }
 
@@ -100,7 +97,7 @@ public class MySharedPreferences {
     }
 
     public static boolean getIncluirPrecioCUP(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getBoolean(KEY_INCLUIR_PRECIO_CUP,false);
     }
 
@@ -112,7 +109,7 @@ public class MySharedPreferences {
     }
 
     public static float getTasaCUP(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_APPEND);
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         return preferences.getFloat(KEY_TASA_CUP,0);
     }
 

@@ -620,7 +620,7 @@ public class MyExcel {
         try {
             fileOutputStream = new FileOutputStream(file);
             workbook.write(fileOutputStream);
-            Log.e(TAG, "Writing file" + file);
+            Log.d(TAG, "Writing file" + file);
             isSuccess = true;
         } catch (IOException e) {
             Log.e(TAG, "Error writing Exception: ", e);

@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.usuario.aavv.R;
 
@@ -25,17 +24,13 @@ public class FragmentExcursiones extends Fragment implements ExcursionRVAdapter.
 
     public static final String TAG = "FragmentExcursiones";
 
-    private ExcursionRVAdapter adapter;
     private List<Excursion> excursionesList;
-    private long idExcursionSelected;
-
     private MyCallBack callBack;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_excursiones,container,false);
-        idExcursionSelected = 0;
         bindComponents(v);
         callBack.udUI(FragmentExcursiones.TAG);
         return v;
@@ -48,17 +43,31 @@ public class FragmentExcursiones extends Fragment implements ExcursionRVAdapter.
     }
 
     private void bindComponents(View v){
-        FloatingActionButton btnAddExcursion = (FloatingActionButton)v.findViewById(R.id.btn_add_excursion);
-        RecyclerView rvExcursiones = (RecyclerView)v.findViewById(R.id.rv_excursiones);
+        FloatingActionButton btnAddExcursion = v.findViewById(R.id.btn_add_excursion);
+        RecyclerView rvExcursiones = v.findViewById(R.id.rv_excursiones);
         udExcursionesList();
-        adapter = new ExcursionRVAdapter(excursionesList,this);
+        ExcursionRVAdapter adapter = new ExcursionRVAdapter(excursionesList,this);
         rvExcursiones.setAdapter(adapter);
         rvExcursiones.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvExcursiones.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy>0){
+                    btnAddExcursion.hide();
+                }else if(dy<0){
+                    btnAddExcursion.show();
+                }
+            }
+        });
         btnAddExcursion.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                idExcursionSelected = 0;
                 callBack.setUpNewFragmentExcursion();
             }
         });
@@ -72,7 +81,6 @@ public class FragmentExcursiones extends Fragment implements ExcursionRVAdapter.
 
     @Override
     public void itemClicked(int position) {
-        //Toast.makeText(getContext(),"Item clicked "+position,Toast.LENGTH_SHORT).show();
         callBack.setUpFragmentExcursion(excursionesList.get(position).getId());
     }
 

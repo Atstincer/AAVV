@@ -339,7 +339,7 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private void generarExcelReporteDeVenta(){
-        if(listaReservas.size()<1){return;}
+        if(listaReservas.isEmpty()){return;}
         String agencia = spinnerAgencias.getSelectedItem().toString();
         if(agencia.equals(TODAS)){
             Toast.makeText(getContext(),"Función no disponible para agencias: "+TODAS,Toast.LENGTH_SHORT).show();
@@ -349,7 +349,6 @@ public class FragmentVentaTTOO extends Fragment {
         String hasta = tvFechaHasta.getText().toString();
         String msgResultado = "";
         try {
-            //File rutaSD = Environment.getExternalStorageDirectory();
             File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
             if(!rutaSD.exists()){rutaSD.mkdir();}
             rutaSD = new File(rutaSD.getAbsolutePath()+"/Venta por agencias-período");
@@ -359,49 +358,16 @@ public class FragmentVentaTTOO extends Fragment {
             rutaSD = new File(rutaSD.getAbsolutePath()+"/"+desde.substring(6));
             if(!rutaSD.exists()){rutaSD.mkdir();}
 
-            //File rutaSD = Environment.getExternalFilesDir(null);
             String fileName = desde.replace("/","") + "-" + hasta.replace("/","") + " " + agencia + ".xls";
             File file = new File(rutaSD.getAbsolutePath(), fileName);
             if(MyExcel.generarExcelReporteVentaPorAgencia(file,listaReservas,agencia,desde,hasta,getImporteTotal(agencia))){
-                //Toast.makeText(getContext(),"Excel generado correctamente: "+file,Toast.LENGTH_SHORT).show();
                 msgResultado = "Excel generado correctamente: "+file;
             }
         } catch (Exception e) {
-            //Toast.makeText(getContext(), "Mensaje error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             msgResultado = "Mensaje error: " + e.getMessage();
+            Log.e("excel","Error generando excel",e);
         } finally {
             myCallBack.showSnackBar(msgResultado);
-        }
-    }
-
-    private void checkForPermissions() {
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE);
-        } else {
-            // Permission is already granted, call the function that does what you need
-            generarExcelReporteDeVenta();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MainActivity.REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay!....call the function that does what you need
-                    generarExcelReporteDeVenta();
-                } else {
-                    Log.e(TAG, "Write permissions has to be granted to ATMS, otherwise it cannot operate properly.\n Exiting the program...\n");
-                }
-                break;
-            }
-            // other 'case' lines to check for other permissions this app might request.
         }
     }
 
@@ -414,10 +380,12 @@ public class FragmentVentaTTOO extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_item_excel_reporte_venta:
-                checkForPermissions();
-                break;
+        if (item.getItemId() == R.id.menu_item_excel_reporte_venta) {
+            if(Util.isPermissionGranted(getContext())){
+                generarExcelReporteDeVenta();
+            }else {
+                myCallBack.requestPermisionAccessExternalStorage();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -430,5 +398,6 @@ public class FragmentVentaTTOO extends Fragment {
         void setLastHasta(String lastHasta);
         String getLastDesde();
         String getLastHasta();
+        void requestPermisionAccessExternalStorage();
     }
 }

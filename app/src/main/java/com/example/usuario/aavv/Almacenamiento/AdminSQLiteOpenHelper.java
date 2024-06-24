@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     public static final String BD_NAME = "MiBD";
-    public static final int BD_VERSION = 9;
+    public static final int BD_VERSION = 10;
     private static AdminSQLiteOpenHelper instancia;
 
     private AdminSQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -61,6 +61,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 "fechaDevolucion TEXT," +
                 "importeDevuelto TEXT," +
                 "historial TEXT," +
+                "incluirRepVenta INTEGER DEFAULT 1," +
                 "observaciones TEXT)");
 
         bd.execSQL("CREATE TABLE Hoteles(" +
@@ -112,6 +113,8 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
             case 8:
                 db.execSQL("ALTER TABLE Reservas ADD COLUMN fechaCanc TEXT;");
                 db.execSQL("ALTER TABLE Reservas ADD COLUMN historial TEXT;");
+            case 9:
+                db.execSQL("ALTER TABLE Reservas ADD COLUMN incluirRepVenta INTEGER DEFAULT 1;");
         }
     }
 }

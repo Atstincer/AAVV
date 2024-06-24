@@ -1,15 +1,21 @@
 package com.example.usuario.aavv;
 
+import android.Manifest;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +40,8 @@ public class MainActivity extends AppCompatActivity
         FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, ReservaRVAdapter.MyMainActivity,
         FragmentRepVenta.MyCallBack{
 
-    public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_EXTORAGE = 0;
+    public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE = 0;
+    private static final int REQUEST_CODE_PERMISSION_ACCESS_EXTERNAL_STORAGE = 1;
 
     private MisConstantes.Estado estadoFragmentReservar;
     private boolean hasStarted;
@@ -94,6 +101,25 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+     @Override
+    public void requestPermisionAccessExternalStorage() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            try{
+                Intent intent = new Intent((Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION));
+                intent.addCategory("android.intent.category.DEFAULT");
+                Uri uri = Uri.fromParts("package",getPackageName(),null);
+                intent.setData(uri);
+                startActivityForResult(intent,REQUEST_CODE_PERMISSION_ACCESS_EXTERNAL_STORAGE);
+            }catch (Exception e){
+                Log.d("permisos","Error solicitando permiso: "+e.getMessage());
+            }
+        }else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE_PERMISSION_ACCESS_EXTERNAL_STORAGE);
+        }
+         Log.d("permisos","Solicitando permisos Build.Version: " + Build.VERSION.SDK_INT);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -265,9 +291,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void showSnackBar(String mensaje) {
         final Snackbar snackbar = Snackbar.make(coordinatorLayout,mensaje,Snackbar.LENGTH_INDEFINITE);
-        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
+        //todo revisar si snackBar correcto
+        /*Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
         AppCompatTextView textView = (AppCompatTextView) snackBarView.getChildAt(0);
-        textView.setMaxLines(5);
+        textView.setMaxLines(5);*/
         snackbar.setAction("Ok", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -314,44 +341,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
-            case R.id.nav_reservar:
-                estadoFragmentReservar = MisConstantes.Estado.NUEVO;
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservar(),FragmentReservar.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_liquidacion:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentLiquidacion(),FragmentLiquidacion.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_repventa:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentRepVenta(),FragmentRepVenta.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_excursiones_dia:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentReservasSaliendoElDia(), FragmentReservasSaliendoElDia.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_venta_agencias:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentVentaTTOO(),FragmentVentaTTOO.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_agencias:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentTouroperadores(), FragmentTouroperadores.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_hoteles:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentHoteles(), FragmentHoteles.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_excursiones:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentExcursiones(), FragmentExcursiones.TAG)
-                        .addToBackStack(null).commit();
-                break;
-            case R.id.nav_ajustes:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new FragmentAjustes(), FragmentAjustes.TAG)
-                        .addToBackStack(null).commit();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_reservar) {
+            estadoFragmentReservar = MisConstantes.Estado.NUEVO;
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentReservar(), FragmentReservar.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_liquidacion) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentLiquidacion(), FragmentLiquidacion.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_repventa) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentRepVenta(), FragmentRepVenta.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_excursiones_dia) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentReservasSaliendoElDia(), FragmentReservasSaliendoElDia.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_venta_agencias) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentVentaTTOO(), FragmentVentaTTOO.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_agencias) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentTouroperadores(), FragmentTouroperadores.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_hoteles) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentHoteles(), FragmentHoteles.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_excursiones) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentExcursiones(), FragmentExcursiones.TAG)
+                    .addToBackStack(null).commit();
+        } else if (itemId == R.id.nav_ajustes) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FragmentAjustes(), FragmentAjustes.TAG)
+                    .addToBackStack(null).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

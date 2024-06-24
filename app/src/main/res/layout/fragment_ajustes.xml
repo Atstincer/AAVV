@@ -211,7 +211,6 @@
             android:text="incluir equivalente en CUP" />
 
         <RelativeLayout
-            android:id="@+id/layout_tasa_cup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

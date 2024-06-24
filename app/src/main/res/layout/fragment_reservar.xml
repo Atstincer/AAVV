@@ -34,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginStart="10dp"
-                    android:text="Fecha"/>
+                    android:text="Fecha" />
 
             </LinearLayout>
 
@@ -196,7 +196,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fecha Exc."/>
+                    android:text="Fecha Exc." />
 
                 <TextView
                     android:id="@+id/tv_fecha_ejecucion"
@@ -212,16 +212,47 @@
             android:id="@+id/layout_incluir_repventa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:visibility="gone">
+            android:layout_marginTop="10dp">
 
-            <CheckBox
-                android:id="@+id/checkbox_incluir_rep_venta"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:text="incluir en reporte de venta del día" />
+                android:orientation="vertical">
+
+                <CheckBox
+                    android:id="@+id/checkbox_incluir_rep_venta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="incluir en reporte de venta" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="35dp"
+                        android:layout_marginStart="35dp"
+                        android:text="("/>
+
+                    <TextView
+                        android:id="@+id/tv_fecha_repventa_reservar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="fecha" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=")"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </RelativeLayout>
 

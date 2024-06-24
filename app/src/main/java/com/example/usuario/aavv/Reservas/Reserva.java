@@ -26,8 +26,9 @@ public class Reserva {
             fechaOriginalEjecucion, fechaCancelacion, idioma, Observaciones, historial;
     private int adultos, menores, infantes, acompanante, estado;
     private double precio, importeDevuelto;
+    private boolean incluirEnRepVenta;
 
-    Reserva() {
+    public Reserva() {
     }
 
     public static String toString(Context ctx, Reserva reserva, int formato){
@@ -38,10 +39,10 @@ public class Reserva {
                 "Hotel: " + reserva.getHotel() + "\n" +
                 "Habitación: " + reserva.getNoHab();
         if(formato == INFO_REPORTE_VENTA) {
-            if (!reserva.getIdioma().equals("")) {
+            if (!reserva.getIdioma().isEmpty()) {
                 text += "\nIdioma: " + reserva.getIdioma();
             }
-            if (!reserva.getObservaciones().equals("")) {
+            if (!reserva.getObservaciones().isEmpty()) {
                 text += "\nObservaciones: " + reserva.getObservaciones();
             }
         } else if(formato == INFO_LIQUIDACION){
@@ -57,11 +58,8 @@ public class Reserva {
         return text;
     }
 
-    public static List<Object> toObjectList(List<Reserva> list){
-        List<Object> objects = new ArrayList<>();
-        for (Reserva reserva: list){
-            objects.add(reserva);
-        }
+    static List<Object> toObjectList(List<Reserva> list){
+        List<Object> objects = new ArrayList<>(list);
         return objects;
     }
 
@@ -113,11 +111,19 @@ public class Reserva {
         return cantPaxs;
     }
 
+    public boolean incluirEnRepVenta() {
+        return incluirEnRepVenta;
+    }
+
+    public void setIncluirEnRepVenta(boolean incluirEnRepVenta) {
+        this.incluirEnRepVenta = incluirEnRepVenta;
+    }
+
     public String getFechaCancelacion() {
         return fechaCancelacion;
     }
 
-    void setFechaCancelacion(String fechaCancelacion) {
+    public void setFechaCancelacion(String fechaCancelacion) {
         this.fechaCancelacion = fechaCancelacion;
     }
 
@@ -125,12 +131,12 @@ public class Reserva {
         return historial;
     }
 
-    void setHistorial(String historial) {
+    public void setHistorial(String historial) {
         this.historial = historial;
     }
 
     void addToHistorial(String msg){
-        if(getHistorial()==null || getHistorial().equals("")){
+        if(getHistorial()==null || getHistorial().isEmpty()){
             setHistorial(msg);
         }else {
             historial += "\n"+msg;
@@ -141,7 +147,7 @@ public class Reserva {
         return fechaOriginalEjecucion;
     }
 
-    void setFechaOriginalEjecucion(String fechaOriginalEjecucion) {
+    public void setFechaOriginalEjecucion(String fechaOriginalEjecucion) {
         this.fechaOriginalEjecucion = fechaOriginalEjecucion;
     }
 
@@ -149,7 +155,7 @@ public class Reserva {
         return fechaDevolucion;
     }
 
-    void setFechaDevolucion(String fechaDevolucion) {
+    public void setFechaDevolucion(String fechaDevolucion) {
         this.fechaDevolucion = fechaDevolucion;
     }
 
@@ -157,7 +163,7 @@ public class Reserva {
         return importeDevuelto;
     }
 
-    void setImporteDevuelto(double importeDevuelto) {
+    public void setImporteDevuelto(double importeDevuelto) {
         this.importeDevuelto = importeDevuelto;
     }
 
@@ -173,35 +179,35 @@ public class Reserva {
         this.id = id;
     }
 
-    void setNoTE(String noTE) {
+    public void setNoTE(String noTE) {
         this.noTE = noTE;
     }
 
-    void setExcursion(String excursion) {
+    public void setExcursion(String excursion) {
         this.excursion = excursion;
     }
 
-    void setAgencia(String agencia) {
+    public void setAgencia(String agencia) {
         this.agencia = agencia;
     }
 
-    void setNoHab(String noHab) {
+    public void setNoHab(String noHab) {
         this.noHab = noHab;
     }
 
-    void setCliente(String cliente) {
+    public void setCliente(String cliente) {
         this.cliente = cliente;
     }
 
-    void setHotel(String hotel) {
+    public void setHotel(String hotel) {
         this.hotel = hotel;
     }
 
-    void setFechaConfeccion(String fechaConfeccion) {
+    public void setFechaConfeccion(String fechaConfeccion) {
         this.fechaConfeccion = fechaConfeccion;
     }
 
-    void setFechaEjecucion(String fechaEjecucion) {
+    public void setFechaEjecucion(String fechaEjecucion) {
         this.fechaEjecucion = fechaEjecucion;
     }
 
@@ -209,31 +215,31 @@ public class Reserva {
         return fechaReporteVenta;
     }
 
-    void setFechaReporteVenta(String fechaReporteVenta) {
+    public void setFechaReporteVenta(String fechaReporteVenta) {
         this.fechaReporteVenta = fechaReporteVenta;
     }
 
-    void setIdioma(String idioma) {
+    public void setIdioma(String idioma) {
         this.idioma = idioma;
     }
 
-    void setObservaciones(String observaciones) {
+    public void setObservaciones(String observaciones) {
         Observaciones = observaciones;
     }
 
-    void setAdultos(int adultos) {
+    public void setAdultos(int adultos) {
         this.adultos = adultos;
     }
 
-    void setMenores(int menores) {
+    public void setMenores(int menores) {
         this.menores = menores;
     }
 
-    void setInfantes(int infantes) {
+    public void setInfantes(int infantes) {
         this.infantes = infantes;
     }
 
-    void setPrecio(double precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
 
@@ -297,7 +303,7 @@ public class Reserva {
         return acompanante;
     }
 
-    void setAcompanante(int acompanante) {
+    public void setAcompanante(int acompanante) {
         this.acompanante = acompanante;
     }
 
@@ -305,16 +311,11 @@ public class Reserva {
         return estado;
     }
 
-    void setEstado(int estado) {
+    public void setEstado(int estado) {
         this.estado = estado;
     }
 
-    boolean isDevTotal(){
-        if(getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()==getPrecio()){
-            return true;
-        }
-        return false;
-    }
+//    boolean isDevTotal(){return getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()==getPrecio();}
 
     boolean isDevParcial(){
         return getEstado()==ESTADO_DEVUELTO && getImporteDevuelto()<getPrecio();
@@ -349,12 +350,12 @@ public class Reserva {
         }
     };
 
-    static Comparator<Reserva> ordenarPorExc = new Comparator<Reserva>() {
+/*    static Comparator<Reserva> ordenarPorExc = new Comparator<Reserva>() {
         @Override
         public int compare(Reserva reserva1, Reserva reserva2) {
             return reserva1.getExcursion().toLowerCase().compareTo(reserva2.getExcursion().toLowerCase());
         }
-    };
+    };*/
 
     static Comparator<Reserva> ordenarPorHotel = new Comparator<Reserva>() {
         @Override

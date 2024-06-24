@@ -1,11 +1,14 @@
 package com.example.usuario.aavv.Hoteles;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
 import com.example.usuario.aavv.TTOO.TTOO;
+import com.example.usuario.aavv.TTOO.TTOOBDHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +19,21 @@ import java.util.List;
 
 public class HotelBDHandler {
 
-    static String TABLE_NAME = "Hoteles";
+    public final static String TABLE_NAME = "Hoteles";
     static String CAMPO_NOMBRE = "nombre";
 
+    @SuppressLint("Range")
     static Hotel getHotel(Cursor cursor){
         Hotel hotel = new Hotel();
         hotel.setId(cursor.getLong(0));
         hotel.setNombre(cursor.getString(cursor.getColumnIndex(HotelBDHandler.CAMPO_NOMBRE)));
         return hotel;
+    }
+
+    public static ContentValues getContentValues(Hotel hotel){
+        ContentValues values = new ContentValues();
+        values.put(HotelBDHandler.CAMPO_NOMBRE,hotel.getNombre());
+        return values;
     }
 
     public static List<Hotel> getAllHotelesfromDB(Context ctx){
@@ -40,7 +50,7 @@ public class HotelBDHandler {
         return hotelesList;
     }
 
-    static Hotel getHotelfromDB(Context ctx,long id){
+    public static Hotel getHotelfromDB(Context ctx,long id){
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase bd = admin.getReadableDatabase();
         Cursor cursor = bd.rawQuery("Select * from "+ HotelBDHandler.TABLE_NAME+" where id=?",new String[]{String.valueOf(id)});

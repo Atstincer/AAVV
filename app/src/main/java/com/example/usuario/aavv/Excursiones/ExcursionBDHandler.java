@@ -1,5 +1,6 @@
 package com.example.usuario.aavv.Excursiones;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,20 +18,33 @@ import java.util.List;
 
 public class ExcursionBDHandler {
 
-    static private String TAG = "ExcursionBDHandler";
+    static final private String TAG;
 
-    static String TABLE_NAME = "Excursiones";
-    private static String CAMPO_NOMBRE = "nombre";
-    private static String CAMPO_TIPO_PRECIO = "tipoPrecio";
-    private static String CAMPO_PRECIO_ADULTO = "precioAdulto";
-    private static String CAMPO_PRECIO_MENOR = "precioMenor";
-    private static String CAMPO_PRECIO_ACOMPANANTE = "precioAcomp";
-    private static String CAMPO_PRECIO_RANGO = "precioRango";
-    private static String CAMPO_RANGO = "rango";
-    private static String CAMPO_IDIOMA_NECESARIO = "idiomaNecesario";
+    public static String TABLE_NAME;
+    private final static String CAMPO_NOMBRE;
+    private final static String CAMPO_TIPO_PRECIO;
+    private final static String CAMPO_PRECIO_ADULTO;
+    private final static String CAMPO_PRECIO_MENOR;
+    private final static String CAMPO_PRECIO_ACOMPANANTE;
+    private final static String CAMPO_PRECIO_RANGO;
+    private final static String CAMPO_RANGO;
+    private final static String CAMPO_IDIOMA_NECESARIO;
+
+    static {
+        TAG = "ExcursionBDHandler";
+        TABLE_NAME = "Excursiones";
+        CAMPO_NOMBRE = "nombre";
+        CAMPO_TIPO_PRECIO = "tipoPrecio";
+        CAMPO_PRECIO_ADULTO = "precioAdulto";
+        CAMPO_PRECIO_MENOR = "precioMenor";
+        CAMPO_PRECIO_ACOMPANANTE = "precioAcomp";
+        CAMPO_PRECIO_RANGO = "precioRango";
+        CAMPO_RANGO = "rango";
+        CAMPO_IDIOMA_NECESARIO = "idiomaNecesario";
+    }
 
 
-    static ContentValues getContentValues(Excursion excursion){
+    public static ContentValues getContentValues(Excursion excursion){
         ContentValues values = new ContentValues();
         values.put(ExcursionBDHandler.CAMPO_NOMBRE,excursion.getNombre());
         values.put(ExcursionBDHandler.CAMPO_TIPO_PRECIO,excursion.getTipoPrecio());
@@ -43,6 +57,7 @@ public class ExcursionBDHandler {
         return values;
     }
 
+    @SuppressLint("Range")
     private static Excursion getExcursion(Cursor cursor){
         Excursion excursion = new Excursion();
         excursion.setId(cursor.getLong(0));
@@ -75,7 +90,7 @@ public class ExcursionBDHandler {
         return excursionesList;
     }
 
-    static Excursion getExcursionfromDB(Context ctx,long id){
+    public static Excursion getExcursionfromDB(Context ctx,long id){
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase bd = admin.getReadableDatabase();
         Cursor cursor = bd.rawQuery("Select * from "+ExcursionBDHandler.TABLE_NAME+" where id=?",new String[]{String.valueOf(id)});
