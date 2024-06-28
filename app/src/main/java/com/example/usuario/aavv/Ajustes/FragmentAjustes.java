@@ -373,57 +373,55 @@ public class FragmentAjustes extends Fragment {
             String firstRow = ReservaBDHandler.TABLE_NAME+"\n";
             fileWriter.append(firstRow);
             for(Reserva reserva:reservas){
-                fileWriter.append(String.valueOf(reserva.getId()));//1
+                fileWriter.append(reserva.getNoTE());//0
                 fileWriter.append("|");
-                fileWriter.append(reserva.getNoTE());//2
+                fileWriter.append(formatStringToExport(reserva.getExcursion()));//1
                 fileWriter.append("|");
-                fileWriter.append(formatStringToExport(reserva.getExcursion()));//3
+                fileWriter.append(reserva.getAgencia());//2
                 fileWriter.append("|");
-                fileWriter.append(reserva.getAgencia());//4
+                fileWriter.append(reserva.getNoHab());//3
                 fileWriter.append("|");
-                fileWriter.append(reserva.getNoHab());//5
+                fileWriter.append(reserva.getCliente());//4
                 fileWriter.append("|");
-                fileWriter.append(reserva.getCliente());//6
+                fileWriter.append(reserva.getHotel());//5
                 fileWriter.append("|");
-                fileWriter.append(reserva.getHotel());//7
+                fileWriter.append(reserva.getFechaConfeccion());//6
                 fileWriter.append("|");
-                fileWriter.append(reserva.getFechaConfeccion());//8
+                fileWriter.append(reserva.getFechaEjecucion());//7
                 fileWriter.append("|");
-                fileWriter.append(reserva.getFechaEjecucion());//9
+                fileWriter.append(reserva.getFechaOriginalEjecucion());//8
                 fileWriter.append("|");
-                fileWriter.append(reserva.getFechaOriginalEjecucion());//10
+                fileWriter.append(String.valueOf(reserva.incluirEnRepVenta()));//9
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.incluirEnRepVenta()));//11
+                fileWriter.append(reserva.getFechaReporteVenta());//10
                 fileWriter.append("|");
-                fileWriter.append(reserva.getFechaReporteVenta());//12
+                fileWriter.append(String.valueOf(reserva.getAdultos()));//11
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getAdultos()));//13
+                fileWriter.append(String.valueOf(reserva.getMenores()));//12
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getMenores()));//14
+                fileWriter.append(String.valueOf(reserva.getInfantes()));//13
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getInfantes()));//15
+                fileWriter.append(String.valueOf(reserva.getAcompanantes()));//14
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getAcompanantes()));//16
+                fileWriter.append(reserva.getIdioma());//15
                 fileWriter.append("|");
-                fileWriter.append(reserva.getIdioma());//17
+                fileWriter.append(String.valueOf(reserva.getPrecio()));//16
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getPrecio()));//18
+                fileWriter.append(String.valueOf(reserva.getEstado()));//17
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getEstado()));//19
+                fileWriter.append(reserva.getFechaDevolucion());//18
                 fileWriter.append("|");
-                fileWriter.append(reserva.getFechaDevolucion());//20
+                fileWriter.append(reserva.getFechaCancelacion());//19
                 fileWriter.append("|");
-                fileWriter.append(reserva.getFechaCancelacion());//21
+                fileWriter.append(String.valueOf(reserva.getImporteDevuelto()));//20
                 fileWriter.append("|");
-                fileWriter.append(String.valueOf(reserva.getImporteDevuelto()));//22
-                fileWriter.append("|");
-                if(reserva.getHistorial()!=null) {//23
+                if(reserva.getHistorial()!=null) {//21
                     fileWriter.append(formatStringToExport(reserva.getHistorial()));
                 }else {
                     fileWriter.append("");
                 }
                 fileWriter.append("|");
-                if(reserva.getObservaciones()==null || reserva.getObservaciones().isEmpty()){//24
+                if(reserva.getObservaciones()==null || reserva.getObservaciones().isEmpty()){//22
                     fileWriter.append("null");
                 }else {
                     String observaciones = formatStringToExport(reserva.getObservaciones());
@@ -721,80 +719,77 @@ public class FragmentAjustes extends Fragment {
         Reserva reserva = new Reserva();
         try{
             if(hasValue(str[0])){
-                reserva.setId(Long.parseLong(str[0]));
+                reserva.setNoTE(str[0]);
             }
             if(hasValue(str[1])){
-                reserva.setNoTE(str[1]);
+                reserva.setExcursion(formatStringToImport(str[1]));
             }
             if(hasValue(str[2])){
-                reserva.setExcursion(formatStringToImport(str[2]));
+                reserva.setAgencia(str[2]);
             }
             if(hasValue(str[3])){
-                reserva.setAgencia(str[3]);
+                reserva.setNoHab(str[3]);
             }
             if(hasValue(str[4])){
-                reserva.setNoHab(str[4]);
+                reserva.setCliente(str[4]);
             }
             if(hasValue(str[5])){
-                reserva.setCliente(str[5]);
+                reserva.setHotel(str[5]);
             }
             if(hasValue(str[6])){
-                reserva.setHotel(str[6]);
+                reserva.setFechaConfeccion(str[6]);
             }
             if(hasValue(str[7])){
-                reserva.setFechaConfeccion(str[7]);
+                reserva.setFechaEjecucion(str[7]);
             }
             if(hasValue(str[8])){
-                reserva.setFechaEjecucion(str[8]);
+                reserva.setFechaOriginalEjecucion(str[8]);
             }
             if(hasValue(str[9])){
-                reserva.setFechaOriginalEjecucion(str[9]);
-            }
-            if(hasValue(str[10])){
-                if(str[10].equals("true")){
+                if(str[9].equals("true")){
                     reserva.setIncluirEnRepVenta(true);
-                }else if(str[10].equals("false")){
+                }else if(str[9].equals("false")){
                     reserva.setIncluirEnRepVenta(false);
                 }
             }
+            if(hasValue(str[10])){
+                reserva.setFechaReporteVenta(str[10]);
+            }
             if(hasValue(str[11])){
-                reserva.setFechaReporteVenta(str[11]);
+                reserva.setAdultos(Integer.parseInt(str[11]));
             }
             if(hasValue(str[12])){
-                reserva.setAdultos(Integer.parseInt(str[12]));
+                reserva.setMenores(Integer.parseInt(str[12]));
             }
             if(hasValue(str[13])){
-                reserva.setMenores(Integer.parseInt(str[13]));
+                reserva.setInfantes(Integer.parseInt(str[13]));
             }
             if(hasValue(str[14])){
-                reserva.setInfantes(Integer.parseInt(str[14]));
+                reserva.setAcompanante(Integer.parseInt(str[14]));
             }
             if(hasValue(str[15])){
-                reserva.setAcompanante(Integer.parseInt(str[15]));
+                reserva.setIdioma(str[15]);
             }
             if(hasValue(str[16])){
-                reserva.setIdioma(str[16]);
+                reserva.setPrecio(Double.parseDouble(str[16]));
             }
             if(hasValue(str[17])){
-                reserva.setPrecio(Double.parseDouble(str[17]));
+                reserva.setEstado(Integer.parseInt(str[17]));
             }
             if(hasValue(str[18])){
-                reserva.setEstado(Integer.parseInt(str[18]));
+                reserva.setFechaDevolucion(str[18]);
             }
             if(hasValue(str[19])){
-                reserva.setFechaDevolucion(str[19]);
+                reserva.setFechaCancelacion(str[19]);
             }
             if(hasValue(str[20])){
-                reserva.setFechaCancelacion(str[20]);
+                reserva.setImporteDevuelto(Double.parseDouble(str[20]));
             }
             if(hasValue(str[21])){
-                reserva.setImporteDevuelto(Double.parseDouble(str[21]));
+                reserva.setHistorial(formatStringToImport(str[21]));
             }
             if(hasValue(str[22])){
-                reserva.setHistorial(formatStringToImport(str[22]));
-            }
-            if(hasValue(str[23])){
-                reserva.setObservaciones(formatStringToImport(str[23]));
+                reserva.setObservaciones(formatStringToImport(str[22]));
             }
             return reserva;
         }catch (Exception e){

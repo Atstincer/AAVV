@@ -1,15 +1,11 @@
 package com.example.usuario.aavv.Reservas;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.usuario.aavv.MainActivity;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
@@ -77,12 +72,12 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private void bindComponents(View view){
-        layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
-        spinnerAgencias = (AppCompatSpinner)view.findViewById(R.id.sp_agencias);
-        tvFechaDesde = (TextView)view.findViewById(R.id.tv_fecha_desde);
-        tvFechaHasta = (TextView)view.findViewById(R.id.tv_fecha_hasta);
-        tvInfoVenta = (TextView)view.findViewById(R.id.tv_info_venta);
-        rvReservas = (RecyclerView)view.findViewById(R.id.rv_reservas);
+        layoutInfo = view.findViewById(R.id.layout_info);
+        spinnerAgencias = view.findViewById(R.id.sp_agencias);
+        tvFechaDesde = view.findViewById(R.id.tv_fecha_desde);
+        tvFechaHasta = view.findViewById(R.id.tv_fecha_hasta);
+        tvInfoVenta = view.findViewById(R.id.tv_info_venta);
+        rvReservas = view.findViewById(R.id.rv_reservas);
     }
 
     private void setItUp(){
@@ -101,48 +96,25 @@ public class FragmentVentaTTOO extends Fragment {
         }else {
             tvFechaHasta.setText(myCallBack.getLastHasta());
         }
-        layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                String texto = "Agencia: "+spinnerAgencias.getSelectedItem().toString()+"\n" +
-                        "Desde: "+tvFechaDesde.getText().toString()+"\n" +
-                        "Hasta: "+tvFechaHasta.getText().toString()+"\n\n" + tvInfoVenta.getText().toString();
-                Util.copyToClipBoard(getContext(),texto);
-                return true;
-            }
+        layoutInfo.setOnLongClickListener(view -> {
+            String texto = "Agencia: "+spinnerAgencias.getSelectedItem().toString()+"\n" +
+                    "Desde: "+tvFechaDesde.getText().toString()+"\n" +
+                    "Hasta: "+tvFechaHasta.getText().toString()+"\n\n" + tvInfoVenta.getText().toString();
+            Util.copyToClipBoard(getContext(),texto);
+            return true;
         });
-        tvFechaDesde.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaDesde, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        showInfo();
-                        myCallBack.setLastDesde(tvFechaDesde.getText().toString());
-                    }
-                });
-            }
-        });
-        tvFechaHasta.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaHasta, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        showInfo();
-                        myCallBack.setLastHasta(tvFechaHasta.getText().toString());
-                    }
-                });
-            }
-        });
+        tvFechaDesde.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaDesde, () -> {
+            showInfo();
+            myCallBack.setLastDesde(tvFechaDesde.getText().toString());
+        }));
+        tvFechaHasta.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaHasta, () -> {
+            showInfo();
+            myCallBack.setLastHasta(tvFechaHasta.getText().toString());
+        }));
         listaReservas = new ArrayList<>();
         listaAgencias = new ArrayList<>();
-        rvAdapter = new ReservaRVAdapter(getContext(), Reserva.toObjectList(listaReservas), ReservaRVAdapter.Modo.POR_AGENCIA, new ReservaRVAdapter.MyCallBack() {
-            @Override
-            public void itemClicked(int position) {
-                myCallBack.setUpFragmentReservar(listaReservas.get(position).getId());
-            }
-        });
+        rvAdapter = new ReservaRVAdapter(getContext(), Reserva.toObjectList(listaReservas), ReservaRVAdapter.Modo.POR_AGENCIA,
+                position -> myCallBack.setUpFragmentReservar(listaReservas.get(position).getNoTE()));
         rvReservas.setAdapter(rvAdapter);
         rvReservas.setLayoutManager(new LinearLayoutManager(getContext()));
         spinnerAgencias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -171,14 +143,14 @@ public class FragmentVentaTTOO extends Fragment {
             }
         }
         String selected = "";
-        if(listaReservas.size()>0){
+        if(!listaReservas.isEmpty()){
             if(spinnerAgencias.getSelectedItem()!=null) {
                 selected = spinnerAgencias.getSelectedItem().toString();
             }
         }
         udListaAgencias();
         setUpSpinner();
-        if(selected.equals("") || !listaAgencias.contains(selected)){
+        if(selected.isEmpty() || !listaAgencias.contains(selected)){
             spinnerAgencias.setSelection(0);
         }else {
             if(listaAgencias.contains(selected)){
@@ -191,13 +163,13 @@ public class FragmentVentaTTOO extends Fragment {
     private void udListaAgencias(){
         List<Reserva> reservasDelPeriodo = getReservasFromDB(TODAS);
         listaAgencias.clear();
-        if(reservasDelPeriodo.size()>0) {
-            Collections.sort(reservasDelPeriodo, new Comparator<Reserva>() {
-                @Override
-                public int compare(Reserva reserva1, Reserva reserva2) {
-                    return reserva1.getAgencia().toLowerCase().compareTo(reserva2.getAgencia().toLowerCase());
-                }
-            });
+        if(!reservasDelPeriodo.isEmpty()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Collections.sort(reservasDelPeriodo,
+                        Comparator.comparing(reserva -> reserva.getAgencia().toLowerCase()));
+            }else {
+                Collections.sort(reservasDelPeriodo, (reserva1, reserva2) -> reserva1.getAgencia().toLowerCase().compareTo(reserva2.getAgencia().toLowerCase()));
+            }
             List<String> nuevasAgencias = new ArrayList<>();
             for (Reserva reserva : reservasDelPeriodo) {
                 if (!nuevasAgencias.contains(reserva.getAgencia())) {
@@ -242,31 +214,31 @@ public class FragmentVentaTTOO extends Fragment {
         String hastaDBFormat = DateHandler.formatDateToStoreInDB(tvFechaHasta.getText().toString());
         String cxcStr = String.valueOf(Reserva.ESTADO_CANCELADO);
         if(agencia.equals(TODAS)){
-            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=? OR " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND "+
+                    ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=? OR "+
+                    ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND "+
+                    ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
             args = new String[]{desdeDBFormat,hastaDBFormat,cxcStr,desdeDBFormat,hastaDBFormat,cxcStr};
         }else {
-            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND " +
-                    ""+ReservaBDHandler.CAMPO_ESTADO+"!=? OR "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND " +
-                    ""+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND " +
-                    ""+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
+            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND "+
+                    ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+
+                    ReservaBDHandler.CAMPO_ESTADO+"!=? OR "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND "+
+                    ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+
+                    ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
             args = new String[]{desdeDBFormat,hastaDBFormat,agencia,cxcStr,desdeDBFormat,hastaDBFormat,agencia,cxcStr};
         }
         return Reserva.getSoloActivas(ReservaBDHandler.getReservasFromDB(getContext(),query,args));
     }
 
     private void udTVInfo(){
-        String texto = "";
+        StringBuilder texto = new StringBuilder();
         String selected = "";
         if(spinnerAgencias.getSelectedItem()!=null){
             selected = spinnerAgencias.getSelectedItem().toString();
         }
 
-        if(listaReservas.size()==0){
-            texto = "No hay reservas para mostrar";
+        if(listaReservas.isEmpty()){
+            texto = new StringBuilder("No hay reservas para mostrar");
         } else if(selected.equals(TODAS)){
             double importeTotal = 0;
             int paxTotal = 0;
@@ -274,14 +246,14 @@ public class FragmentVentaTTOO extends Fragment {
                 if (!agencia.equals(TODAS)) {
                     double importeTotalAgencia = getImporteTotal(agencia);
                     int cantPaxAgencia = getCantPax(agencia);
-                    texto += agencia + ": " + cantPaxAgencia + " pax " + importeTotalAgencia + " usd\n";
+                    texto.append(agencia).append(": ").append(cantPaxAgencia).append(" pax ").append(importeTotalAgencia).append(" usd\n");
                     importeTotal = importeTotal + importeTotalAgencia;
                     paxTotal = paxTotal + cantPaxAgencia;
                 }
             }
-            texto += "TOTAL " + paxTotal + " pax " + importeTotal + " usd";
+            texto.append("TOTAL ").append(paxTotal).append(" pax ").append(importeTotal).append(" usd");
         } else {
-            texto = getCantPax(selected) + " pax " + getImporteTotal(selected) + " usd";
+            texto = new StringBuilder(getCantPax(selected) + " pax " + getImporteTotal(selected) + " usd");
         }
         /*double cancelaciones = getImpCancelaciones();
         double devoluciones = getImpDevoluciones();
@@ -292,7 +264,7 @@ public class FragmentVentaTTOO extends Fragment {
         if(devoluciones!=0){
             texto += "\nDevoluciones: " + devoluciones + " usd";
         }*/
-        tvInfoVenta.setText(texto);
+        tvInfoVenta.setText(texto.toString());
     }
 
     /*private double getImpCancelaciones(){
@@ -392,7 +364,7 @@ public class FragmentVentaTTOO extends Fragment {
 
     public interface MyCallBack{
         void udUI(String tag);
-        void setUpFragmentReservar(long id);
+        void setUpFragmentReservar(String id);
         void showSnackBar(String mensaje);
         void setLastDesde(String lastDesde);
         void setLastHasta(String lastHasta);

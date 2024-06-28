@@ -100,12 +100,12 @@ public class DialogFragmentDevolver extends DialogFragment {
     }
 
     private boolean validar(){
-        if(etImporte.getText().toString().equals("")){
+        if(etImporte.getText().toString().isEmpty()){
             Toast.makeText(getContext(),"Debe introducir importe a devolver",Toast.LENGTH_SHORT).show();
             return false;
         }
         try {
-            Double importe = Double.parseDouble(etImporte.getText().toString());
+            double importe = Double.parseDouble(etImporte.getText().toString());
             if (importe<0 || !ReservaBDHandler.getReservaFromDB(getContext(), myCallBack.getIdReserva()).esPosibleDevolver(importe)){
                 Toast.makeText(getContext(), "Importe incorrecto", Toast.LENGTH_SHORT).show();
                 return false;
@@ -134,7 +134,7 @@ public class DialogFragmentDevolver extends DialogFragment {
     }
 
     public interface MyCallBack{
-        long getIdReserva();
+        String getIdReserva();
         void udInfoEstado();
     }
 }

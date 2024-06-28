@@ -21,7 +21,6 @@ public class Reserva {
     static final int INFO_REPORTE_VENTA = 3;
     static final int INFO_LIQUIDACION = 4;
 
-    private long id;
     private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, fechaReporteVenta, fechaDevolucion,
             fechaOriginalEjecucion, fechaCancelacion, idioma, Observaciones, historial;
     private int adultos, menores, infantes, acompanante, estado;
@@ -169,14 +168,6 @@ public class Reserva {
 
     boolean esPosibleDevolver(double aDevolver){
         return aDevolver <= getPrecio();
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public void setNoTE(String noTE) {

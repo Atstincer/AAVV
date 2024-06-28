@@ -41,20 +41,15 @@ public class DialogFragmentHistorial extends DialogFragment {
     }
 
     private void bindcomponents(View view){
-        tvInfo = (TextView)view.findViewById(R.id.tv_info_historial);
-        btnOk = (Button)view.findViewById(R.id.btn_ok_historial);
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        tvInfo = view.findViewById(R.id.tv_info_historial);
+        btnOk = view.findViewById(R.id.btn_ok_historial);
+        btnOk.setOnClickListener(view1 -> dismiss());
     }
 
     private void setItUp(){
         Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),myCallBack.getIdReserva());
         String info = "";
-        if(reserva.getHistorial()==null || reserva.getHistorial().equals("")){
+        if(reserva.getHistorial()==null || reserva.getHistorial().isEmpty()){
             info += "Historial\n\nNo hay información para mostrar";
         }else {
             info += "TE"+reserva.getNoTE()+"\n\n"+reserva.getHistorial();
@@ -63,6 +58,6 @@ public class DialogFragmentHistorial extends DialogFragment {
     }
 
     interface MyCallBack{
-        long getIdReserva();
+        String getIdReserva();
     }
 }

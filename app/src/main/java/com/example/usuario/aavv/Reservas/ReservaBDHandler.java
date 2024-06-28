@@ -88,7 +88,6 @@ public class ReservaBDHandler {
     @SuppressLint("Range")
     private static Reserva getReserva(Cursor cursor){
         Reserva reserva = new Reserva();
-        reserva.setId(cursor.getLong(0));
         reserva.setNoTE(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_NUMERO_TE)));
         reserva.setExcursion(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_EXCURSION)));
         reserva.setAgencia(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_AGENCIA)));

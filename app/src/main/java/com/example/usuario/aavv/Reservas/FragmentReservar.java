@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,10 +49,9 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
 
     public static final String TAG = "FragmentReservar";
 
-    private long idSelectedReserva;
+    private String idSelectedReserva;
     private List<Excursion> excursionesList;
 
-//    private RelativeLayout layoutRepVenta;
     private CheckBox checkBoxIncluirRepVenta;
     private TextView tvFechaConfeccion, tvFechaEjecucion, tvFechaRepVenta, tvEstado;
     private EditText etNumeroTE, etNombreCliente, etAdultos, etMenores, etInfantes, etAcompanante, etNoHab, etPrecio, etObservaciones;
@@ -69,10 +67,10 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         View v = inflater.inflate(R.layout.fragment_reservar, container, false);
         bindComponents(v);
         if(getArguments()!=null){
-            if(getArguments().getString("fechaLiq") != null && !getArguments().getString("fechaLiq").equals("")) {
+            if(getArguments().getString("fechaLiq") != null && !getArguments().getString("fechaLiq").isEmpty()) {
                 tvFechaConfeccion.setText(getArguments().getString("fechaLiq"));
             }
-            if(getArguments().getString("lastTE") != null && !getArguments().getString("lastTE").equals("")){
+            if(getArguments().getString("lastTE") != null && !getArguments().getString("lastTE").isEmpty()){
                 getReadyForNextTE(getArguments().getString("lastTE"));
             }
         }
@@ -107,7 +105,6 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void bindComponents(View v) {
-//        layoutRepVenta = (RelativeLayout) v.findViewById(R.id.layout_incluir_repventa);
         checkBoxIncluirRepVenta = (CheckBox) v.findViewById(R.id.checkbox_incluir_rep_venta);
         tvFechaConfeccion = (TextView) v.findViewById(R.id.tv_fecha_confeccion);
         tvFechaEjecucion = (TextView) v.findViewById(R.id.tv_fecha_ejecucion);
@@ -165,9 +162,10 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             }
         });
 
-        String[] excursionesPordefecto = {"Catamarán JC", "Aventura marina", "Nado con delfines", "Nado con delfines Plus", "Pesca de altura 1bote 4hrs", "Pesca especializada " +
-                "1bote 4hrs", "Santa Clara-Remedios", "Tres ciudades", "Dos ciudades coloniales", "Aventura en la montaña", "Santa María adentro", "Buceo 2 inmersiones" +
-                "", "Buceo 1 inmersión", "Catamarán MJ exclusivo", "Jeep safari"};
+        String[] excursionesPordefecto = {"Catamarán JC", "Aventura marina", "Nado con delfines", "Nado con delfines Plus",
+                "Pesca de altura 1bote 4hrs", "Pesca especializada 1bote 4hrs", "Santa Clara-Remedios", "Tres ciudades",
+                "Dos ciudades coloniales", "Aventura en la montaña", "Santa María adentro", "Buceo 2 inmersiones", "Buceo 1 inmersión",
+                "Catamarán MJ exclusivo", "Jeep safari"};
         excursionesList = ExcursionBDHandler.getAllExcursionesfromDB(getContext());
 
         //ArrayAdapter adapterExcursiones = new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursiones);
@@ -206,8 +204,9 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             }
         });
 
-        String[] hotelesPorDefecto = {"Valentin", "Casa del Mar", "Paradisus", "Muthus CSM", "Gran Memories", "Memories", "Royalton", "Starfish", "Playa" +
-                "", "Melia las Dunas", "Melia CSM", "Sol CSM", "Buenavista", "Ensenachos", "Angsana", "Dhawa", "Gran Aston", "Sirenis", "One Gallery"};
+        String[] hotelesPorDefecto = {"Valentin", "Casa del Mar", "Paradisus", "Muthus CSM", "Gran Memories", "Memories", "Royalton",
+                "Starfish", "Playa CSM","Melia las Dunas", "Melia CSM", "Sol CSM", "Buenavista", "Ensenachos", "Angsana", "Dhawa",
+                "Gran Aston", "Sirenis", "One Gallery"};
         List<Hotel> hoteles = HotelBDHandler.getAllHotelesfromDB(getContext());
 
         actvHotel.setThreshold(1);
@@ -264,7 +263,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
 
     private void setUpEditarMoode() {
         if (getArguments() != null) {
-            idSelectedReserva = getArguments().getLong("id");
+            idSelectedReserva = getArguments().getString("id");
         }
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
 //        layoutRepVenta.setVisibility(View.VISIBLE);
@@ -368,13 +367,13 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
                 String msgDevuelto = "DEVUELTO";
                 String fechaDev = "";
                 double importeDev = reserva.getImporteDevuelto();
-                if(reserva.getFechaDevolucion()!=null && !reserva.getFechaDevolucion().equals("")){
+                if(reserva.getFechaDevolucion()!=null && !reserva.getFechaDevolucion().isEmpty()){
                     fechaDev = reserva.getFechaDevolucion().substring(0,5) + " ";
                 }
-                if(!fechaDev.equals("") || importeDev>0){
+                if(!fechaDev.isEmpty() || importeDev>0){
                     // + fechaDev + "-" + reserva.getImporteDevuelto() + ")"
                     msgDevuelto += "\n("+fechaDev;
-                    if(!fechaDev.equals("") && importeDev>0){
+                    if(!fechaDev.isEmpty() && importeDev>0){
                         msgDevuelto += " - ";
                     }
                     if(importeDev>0){
@@ -395,7 +394,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
 
     private void getReadyForNextTE(String teAnterior) {
         limpiarCampos();
-        if(getNextTE(teAnterior)!=null && !getNextTE(teAnterior).equals("")){
+        if(getNextTE(teAnterior)!=null && !getNextTE(teAnterior).isEmpty()){
             etNumeroTE.setText(getNextTE(teAnterior));
         }
         checkBoxIncluirRepVenta.setChecked(true);
@@ -404,17 +403,17 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private String getNextTE(String lastTE){
-        if(lastTE == null || lastTE.equals("")){return lastTE;}
+        if(lastTE == null || lastTE.isEmpty()){return lastTE;}
         try {
             int newTE = Integer.parseInt(lastTE) + 1;
-            String newTEString = String.valueOf(newTE);
+            StringBuilder newTEString = new StringBuilder(String.valueOf(newTE));
             int difTamano = lastTE.length() - newTEString.length();
             if (difTamano > 0) {
                 for (int i = 0; i < difTamano; i++) {
-                    newTEString = "0" + newTEString;
+                    newTEString.insert(0, "0");
                 }
             }
-            return newTEString;
+            return newTEString.toString();
         } catch (Exception e) {
             Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             return lastTE;
@@ -430,13 +429,13 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         int adultos = 0;
         int menores = 0;
         int acompanantes = 0;
-        if (!etAdultos.getText().toString().equals("")) {
+        if (!etAdultos.getText().toString().isEmpty()) {
             adultos += Integer.parseInt(etAdultos.getText().toString());
         }
-        if (!etMenores.getText().toString().equals("")) {
+        if (!etMenores.getText().toString().isEmpty()) {
             menores += Integer.parseInt(etMenores.getText().toString());
         }
-        if (!etAcompanante.getText().toString().equals("")) {
+        if (!etAcompanante.getText().toString().isEmpty()) {
             acompanantes += Integer.parseInt(etAcompanante.getText().toString());
         }
         precioTotal += acompanantes * excursion.getPrecioAcomp();
@@ -529,22 +528,22 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         reserva.setNoTE(etNumeroTE.getText().toString());
         reserva.setExcursion(actvNombreExcursion.getText().toString());
         reserva.setCliente(etNombreCliente.getText().toString());
-        if (!etAdultos.getText().toString().equals("")) {
+        if (!etAdultos.getText().toString().isEmpty()) {
             reserva.setAdultos(Integer.parseInt(etAdultos.getText().toString()));
         } else {
             reserva.setAdultos(0);
         }
-        if (!etMenores.getText().toString().equals("")) {
+        if (!etMenores.getText().toString().isEmpty()) {
             reserva.setMenores(Integer.parseInt(etMenores.getText().toString()));
         } else {
             reserva.setMenores(0);
         }
-        if (!etInfantes.getText().toString().equals("")) {
+        if (!etInfantes.getText().toString().isEmpty()) {
             reserva.setInfantes(Integer.parseInt(etInfantes.getText().toString()));
         } else {
             reserva.setInfantes(0);
         }
-        if (!etAcompanante.getText().toString().equals("")) {
+        if (!etAcompanante.getText().toString().isEmpty()) {
             reserva.setAcompanante(Integer.parseInt(etAcompanante.getText().toString()));
         } else {
             reserva.setAcompanante(0);
@@ -559,7 +558,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         reserva.setAgencia(actvAgencia.getText().toString());
         reserva.setHotel(actvHotel.getText().toString());
         reserva.setNoHab(etNoHab.getText().toString());
-        if (!etPrecio.getText().toString().equals("")) {
+        if (!etPrecio.getText().toString().isEmpty()) {
             reserva.setPrecio(Double.parseDouble(etPrecio.getText().toString()));
         } else {
             reserva.setPrecio(0);
@@ -581,24 +580,24 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         }
 
         //obligatorio
-        if (etNumeroTE.getText().toString().equals("")) {
+        if (etNumeroTE.getText().toString().isEmpty()) {
             Toast.makeText(getContext(), "Falta número de TE", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         //obligatorio
-        if (actvNombreExcursion.getText().toString().equals("")) {
+        if (actvNombreExcursion.getText().toString().isEmpty()) {
             Toast.makeText(getContext(), "Falta nombre de excurción", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (etNombreCliente.getText().toString().equals("")) {
+        if (etNombreCliente.getText().toString().isEmpty()) {
             falta += "\n- nombre de cliente";
             makeToastAtEnd = true;
         }
 
         //obligatorio
-        if (etAdultos.getText().toString().equals("")) {
+        if (etAdultos.getText().toString().isEmpty()) {
             //Toast.makeText(getContext(),"Falta al menos 1 adulto",Toast.LENGTH_SHORT).show();
             //return false;
             falta += "\n- tiene 0 clientes adultos";
@@ -610,26 +609,26 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             return false;
         }
 
-        if (actvAgencia.getText().toString().equals("")) {
+        if (actvAgencia.getText().toString().isEmpty()) {
             falta += "\n- agencia";
             makeToastAtEnd = true;
         }
 
         //obligatorio
-        if (actvHotel.getText().toString().equals("")) {
+        if (actvHotel.getText().toString().isEmpty()) {
             Toast.makeText(getContext(), "Falta el hotel", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (etNoHab.getText().toString().equals("")) {
+        if (etNoHab.getText().toString().isEmpty()) {
             falta += "\n- número de habitación";
             makeToastAtEnd = true;
         }
-        if (etPrecio.getText().toString().equals("")) {
+        if (etPrecio.getText().toString().isEmpty()) {
             falta += "\n- precio";
             makeToastAtEnd = true;
         }
-        if (actvIdioma.getText().toString().equals("")) {
+        if (actvIdioma.getText().toString().isEmpty()) {
             if (getExcursionIfMatch() != null) {
                 if (getExcursionIfMatch().getIdiomaNecesario() == Excursion.IDIOMA_NECESARIO) {
                     Toast.makeText(getContext(), "Falta el idioma", Toast.LENGTH_SHORT).show();
@@ -655,7 +654,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             showEstado();
         }else if(myCallBack.getEstadoFragmentReservar()== MisConstantes.Estado.NUEVO){
             Reserva reserva = getNuevaReserva();
-            if(reserva.getNoTE().equals("")){
+            if(reserva.getNoTE().isEmpty()){
                 Toast.makeText(getContext(),"Debe tener al menos un numero de ticket",Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -746,7 +745,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     @Override
-    public long getIdReserva() {
+    public String getIdReserva() {
         return idSelectedReserva;
     }
 

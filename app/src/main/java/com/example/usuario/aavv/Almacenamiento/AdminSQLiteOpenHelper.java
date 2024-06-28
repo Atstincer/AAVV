@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
 
     public static final String BD_NAME = "MiBD";
-    public static final int BD_VERSION = 10;
+    public static final int BD_VERSION = 11;
     private static AdminSQLiteOpenHelper instancia;
 
     private AdminSQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -39,8 +39,7 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 "nombre TEXT)");
 
         bd.execSQL("CREATE TABLE Reservas(" +
-                "id INTEGER PRIMARY KEY," +
-                "TE TEXT," +
+                "TE TEXT PRIMARY KEY," +
                 "excursion TEXT," +
                 "agencia TEXT," +
                 "hab TEXT," +
@@ -115,6 +114,40 @@ public class AdminSQLiteOpenHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE Reservas ADD COLUMN historial TEXT;");
             case 9:
                 db.execSQL("ALTER TABLE Reservas ADD COLUMN incluirRepVenta INTEGER DEFAULT 1;");
+            case 10:
+                createNewTableReservas(db);
+                db.execSQL("INSERT INTO Reservasnew SELECT TE,excursion,agencia,hab,cliente,hotel,fechaConfeccion,fechaEjecucion," +
+                        "fechaOrigEjec,fechaRepVenta,fechaCanc,adultos,menores,infantes,acompanantes,idioma,precio,estado," +
+                        "fechaDevolucion,importeDevuelto,historial,incluirRepVenta,observaciones FROM Reservas");
+                db.execSQL("DROP TABLE IF EXISTS Reservas");
+                db.execSQL("ALTER TABLE Reservasnew RENAME TO Reservas");
         }
+    }
+
+    private void createNewTableReservas(SQLiteDatabase db){
+        db.execSQL("CREATE TABLE Reservasnew(" +
+                "TE TEXT PRIMARY KEY," +
+                "excursion TEXT," +
+                "agencia TEXT," +
+                "hab TEXT," +
+                "cliente TEXT," +
+                "hotel TEXT," +
+                "fechaConfeccion TEXT," +
+                "fechaEjecucion TEXT," +
+                "fechaOrigEjec TEXT," +
+                "fechaRepVenta TEXT," +
+                "fechaCanc TEXT," +
+                "adultos INTEGER," +
+                "menores INTEGER," +
+                "infantes INTEGER," +
+                "acompanantes INTEGER," +
+                "idioma TEXT," +
+                "precio TEXT," +
+                "estado INTEGER DEFAULT 0," +
+                "fechaDevolucion TEXT," +
+                "importeDevuelto TEXT," +
+                "historial TEXT," +
+                "incluirRepVenta INTEGER DEFAULT 1," +
+                "observaciones TEXT)");
     }
 }

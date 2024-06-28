@@ -109,7 +109,7 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
     @Override
     public void itemClicked(int position) {
         myCallBack.setLastFechaRepVenta(tvFecha.getText().toString());
-        myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
+        myCallBack.setUpFragmentReservar(reservaList.get(position).getNoTE());
     }
 
     private void udReservaList(){
@@ -244,7 +244,7 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
 
     public interface MyCallBack{
         void udUI(String tag);
-        void setUpFragmentReservar(long id);
+        void setUpFragmentReservar(String id);
         void showSnackBar(String mensaje);
         void setLastFechaRepVenta(String fecha);
         String getLastFechaRepVenta();

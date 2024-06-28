@@ -206,7 +206,7 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
     public void itemClicked(int position) {
         if(reservasList.get(position) instanceof Reserva){
             Reserva reserva = (Reserva)reservasList.get(position);
-            myCallBack.setUpFragmentReservar(reserva.getId());
+            myCallBack.setUpFragmentReservar(reserva.getNoTE());
         }
     }
 
@@ -227,7 +227,7 @@ public class FragmentReservasSaliendoElDia extends Fragment implements ReservaRV
 
     public interface MyCallBack{
         void udUI(String tag);
-        void setUpFragmentReservar(long id);
+        void setUpFragmentReservar(String id);
         void setLastFechaEjec(String lastFechaEjec);
         String getLastFechaEjec();
     }

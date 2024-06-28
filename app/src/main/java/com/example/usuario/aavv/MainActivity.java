@@ -192,11 +192,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void setUpFragmentReservar(long id) {
+    public void setUpFragmentReservar(String id) {
         estadoFragmentReservar = MisConstantes.Estado.EDITAR;
         FragmentReservar fragment = new FragmentReservar();
         Bundle bundle = new Bundle();
-        bundle.putLong("id",id);
+        bundle.putString("id",id);
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment,FragmentReservar.TAG).addToBackStack(null).commit();
     }

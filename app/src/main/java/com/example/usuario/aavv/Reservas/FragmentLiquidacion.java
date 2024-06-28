@@ -252,7 +252,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     @Override
     public void itemClicked(int position) {
-        myCallBack.setUpFragmentReservar(reservaList.get(position).getId());
+        myCallBack.setUpFragmentReservar(reservaList.get(position).getNoTE());
     }
 
     private void addReserva(){
@@ -271,7 +271,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     public interface MyCallBack{
         void udUI(String tag);
-        void setUpFragmentReservar(long id);
+        void setUpFragmentReservar(String id);
         void setUpFragmentReservar(String lastTE, String fechaLiquidacion);
         void setLastFechaLiq(String lastFechaLiq);
         String getLastFechaLiq();
