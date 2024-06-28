@@ -101,4 +101,16 @@ public class ExcursionBDHandler {
         return new Excursion();
     }
 
+    public static Excursion getExcursionfromDB(Context ctx,String name){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase bd = admin.getReadableDatabase();
+        Cursor cursor = bd.rawQuery("Select * from "+ExcursionBDHandler.TABLE_NAME+" where "+ExcursionBDHandler.CAMPO_NOMBRE+"=?",
+                new String[]{name});
+        if(cursor.moveToFirst()){
+            return getExcursion(cursor);
+        }
+        cursor.close();
+        return new Excursion();
+    }
+
 }

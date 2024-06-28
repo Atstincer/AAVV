@@ -600,7 +600,7 @@ public class FragmentAjustes extends Fragment {
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         for(Hotel hotel:hoteles){
-            Hotel hotelBD = HotelBDHandler.getHotelfromDB(getContext(),hotel.getId());
+            Hotel hotelBD = HotelBDHandler.getHotelfromDB(getContext(),hotel.getNombre());
             if(hotelBD.getNombre()!=null && hotelBD.getNombre().equals(hotel.getNombre())){continue;}
             ContentValues values = HotelBDHandler.getContentValues(hotel);
             db.insert(HotelBDHandler.TABLE_NAME, null, values);
@@ -611,7 +611,7 @@ public class FragmentAjustes extends Fragment {
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         for(TTOO agencia:agencias){
-            TTOO agenciaBD = TTOOBDHandler.getTTOOfromDB(getContext(),agencia.getId());
+            TTOO agenciaBD = TTOOBDHandler.getTTOOfromDB(getContext(),agencia.getNombre());
             if(agenciaBD.getNombre()!=null && agenciaBD.getNombre().equals(agencia.getNombre())){continue;}
             ContentValues values = TTOOBDHandler.getContentValues(agencia);
             db.insert(TTOOBDHandler.TABLE_NAME, null, values);
@@ -622,7 +622,7 @@ public class FragmentAjustes extends Fragment {
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         for(Excursion excursion:excursiones){
-            Excursion excBD = ExcursionBDHandler.getExcursionfromDB(getContext(),excursion.getId());
+            Excursion excBD = ExcursionBDHandler.getExcursionfromDB(getContext(),excursion.getNombre());
             if(excBD.getNombre()!=null && excBD.getNombre().equals(excursion.getNombre())){continue;}
             ContentValues values = ExcursionBDHandler.getContentValues(excursion);
             db.insert(ExcursionBDHandler.TABLE_NAME, null, values);
@@ -633,7 +633,7 @@ public class FragmentAjustes extends Fragment {
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         for(Reserva reserva:reservaList){
-            Reserva reservaBD = ReservaBDHandler.getReservaFromDB(getContext(),reserva.getId());
+            Reserva reservaBD = ReservaBDHandler.getReservaFromDB(getContext(),reserva.getNoTE());
             if(reservaBD.getNoTE()!=null && reservaBD.getNoTE().equals(reserva.getNoTE())){continue;}
             ContentValues values = ReservaBDHandler.getContentValues(reserva);
             db.insert(ReservaBDHandler.TABLE_NAME, null, values);

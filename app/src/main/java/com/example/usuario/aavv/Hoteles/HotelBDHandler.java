@@ -60,4 +60,16 @@ public class HotelBDHandler {
         cursor.close();
         return new Hotel();
     }
+
+    public static Hotel getHotelfromDB(Context ctx,String name){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase bd = admin.getReadableDatabase();
+        Cursor cursor = bd.rawQuery("Select * from "+ HotelBDHandler.TABLE_NAME+" where "+HotelBDHandler.CAMPO_NOMBRE+"=?",
+                new String[]{name});
+        if(cursor.moveToFirst()){
+            return getHotel(cursor);
+        }
+        cursor.close();
+        return new Hotel();
+    }
 }

@@ -172,5 +172,19 @@ public class ReservaBDHandler {
         return new Reserva();
     }
 
+    public static Reserva getReservaFromDB(Context ctx, String numeroTE){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_NUMERO_TE+"=?",
+                new String[]{numeroTE});
+        if(cursor.moveToFirst()){
+            Reserva reserva = getReserva(cursor);
+            cursor.close();
+            return reserva;
+        }
+        cursor.close();
+        return new Reserva();
+    }
+
 
 }

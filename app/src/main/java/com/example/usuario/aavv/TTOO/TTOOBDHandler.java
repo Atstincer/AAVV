@@ -60,4 +60,16 @@ public class TTOOBDHandler {
         cursor.close();
         return new TTOO();
     }
+
+    public static TTOO getTTOOfromDB(Context ctx,String name){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase bd = admin.getReadableDatabase();
+        Cursor cursor = bd.rawQuery("Select * from "+TTOOBDHandler.TABLE_NAME+" where "+TTOOBDHandler.CAMPO_NOMBRE+"=?",
+                new String[]{name});
+        if(cursor.moveToFirst()){
+            return getTTOO(cursor);
+        }
+        cursor.close();
+        return new TTOO();
+    }
 }
