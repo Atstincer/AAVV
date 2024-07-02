@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -267,6 +268,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         }
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
 //        layoutRepVenta.setVisibility(View.VISIBLE);
+        etNumeroTE.setEnabled(false);
         btn.setText("Actualizar");
     }
 
@@ -288,7 +290,8 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" ACTUALIZADO";
         reserva.addToHistorial(msgHistorial);
         ContentValues values = ReservaBDHandler.getContentValues(reserva);
-        db.update(ReservaBDHandler.TABLE_NAME, values, "id=?", new String[]{String.valueOf(idSelectedReserva)});
+        db.update(ReservaBDHandler.TABLE_NAME, values, ReservaBDHandler.CAMPO_NUMERO_TE+"=?",
+                new String[]{idSelectedReserva});
         Toast.makeText(getContext(), "Actualizado correctamente", Toast.LENGTH_SHORT).show();
     }
 
@@ -307,9 +310,30 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         ContentValues values = ReservaBDHandler.getContentValues(reserva);
-        db.insert(ReservaBDHandler.TABLE_NAME, null, values);
-        getReadyForNextTE();
-        Toast.makeText(getContext(), "Registrado correctamente", Toast.LENGTH_SHORT).show();
+        long result = db.insert(ReservaBDHandler.TABLE_NAME, null, values);
+        if(result >= 0) {
+            getReadyForNextTE();
+            Toast.makeText(getContext(), "Registrado correctamente", Toast.LENGTH_SHORT).show();
+        }else {
+            StringBuilder msj = new StringBuilder();
+            if(!checkIfTeExist(reserva.getNoTE()).isEmpty()) {
+                msj.append("La reserva ya existe:\n");
+                msj.append(checkIfTeExist(reserva.getNoTE()));
+            }else {
+                msj.append("No se pudo registrar la reserva");
+            }
+            Toast.makeText(getContext(), msj.toString(), Toast.LENGTH_LONG).show();
+        }
+        Log.d("registrar","db.insert = "+result);
+    }
+
+    private String checkIfTeExist(String te){
+        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),te);
+        if(!reserva.getExcursion().isEmpty()){
+            return "TE: "+reserva.getNoTE() + "\n" + reserva.getExcursion() +
+                    "\nReservada el: " + reserva.getFechaConfeccion();
+        }
+        return "";
     }
 
     private void showInfoReserva(Reserva reserva) {

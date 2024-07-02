@@ -1,15 +1,10 @@
 package com.example.usuario.aavv.Reservas;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
-import com.example.usuario.aavv.MainActivity;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
@@ -77,7 +71,7 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
 
     private void setItUp(){
         myCallBack.udUI(TAG);
-        if(myCallBack.getLastFechaRepVenta()==null || myCallBack.getLastFechaRepVenta().equals("")){
+        if(myCallBack.getLastFechaRepVenta()==null || myCallBack.getLastFechaRepVenta().isEmpty()){
             tvFecha.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
             myCallBack.setLastFechaRepVenta(tvFecha.getText().toString());
         }else {
@@ -140,32 +134,32 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
     }
 
     private String getCuerpoMail(){
-        String cuerpo = "";
-        cuerpo += getInfoVendedor();
+        StringBuilder cuerpo = new StringBuilder();
+        cuerpo.append(getInfoVendedor());
 
-        if(!cuerpo.equals("")) {
-            cuerpo += "\n\n";
+        if(cuerpo.length() > 0) {
+            cuerpo.append("\n\n");
         }
-        cuerpo += "Venta del día: "+ tvFecha.getText().toString();
+        cuerpo.append("Venta del día: ").append(tvFecha.getText().toString());
         for (Reserva reserva:reservaList){
-            cuerpo += "\n\n" + Reserva.toString(getContext(),reserva,Reserva.INFO_REPORTE_VENTA);
+            cuerpo.append("\n\n").append(Reserva.toString(getContext(), reserva, Reserva.INFO_REPORTE_VENTA));
         }
-        return cuerpo;
+        return cuerpo.toString();
     }
 
     private String getInfoVendedor(){
         String texto = "";
-        if(!MySharedPreferences.getAgenciaVendedor(getContext()).equals("")){
+        if(!MySharedPreferences.getAgenciaVendedor(getContext()).isEmpty()){
             texto += "Agencia: "+MySharedPreferences.getAgenciaVendedor(getContext());
         }
-        if(!MySharedPreferences.getNombreVendedor(getContext()).equals("")){
-            if(!texto.equals("")) {
+        if(!MySharedPreferences.getNombreVendedor(getContext()).isEmpty()){
+            if(!texto.isEmpty()) {
                 texto += "\n";
             }
             texto += "Vendedor: " + MySharedPreferences.getNombreVendedor(getContext());
         }
-        if(!MySharedPreferences.getTelefonoVendedor(getContext()).equals("")){
-            if(!texto.equals("")) {
+        if(!MySharedPreferences.getTelefonoVendedor(getContext()).isEmpty()){
+            if(!texto.isEmpty()) {
                 texto += "\n";
             }
             texto += "Contacto: "+MySharedPreferences.getTelefonoVendedor(getContext());

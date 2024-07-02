@@ -12,14 +12,9 @@ import android.widget.Toast;
 
 public class MyEmail {
 
-    public static final String KEY_ENVIAR_INFO = "enviarInfo";
-    public static final String CAMPO_ASUNTO_MAIL = "asunto";
-    public static final String CAMPO_CUERPO_MAIL = "cuerpo";
-
     private String [] para;
     private String asunto,cuerpo;
 
-    public MyEmail(){}
 
     public MyEmail(String[] para, String asunto, String cuerpo) {
         this.para = para;
@@ -45,23 +40,12 @@ public class MyEmail {
         return para;
     }
 
-    public void setPara(String [] para) {
-        this.para = para;
-    }
-
     private String getAsunto() {
         return asunto;
-    }
-
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
     }
 
     private String getCuerpo() {
         return cuerpo;
     }
 
-    public void setCuerpo(String cuerpo) {
-        this.cuerpo = cuerpo;
-    }
 }

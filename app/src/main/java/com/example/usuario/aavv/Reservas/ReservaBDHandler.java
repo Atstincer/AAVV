@@ -20,7 +20,7 @@ import java.util.List;
 public class ReservaBDHandler {
 
     public static String TABLE_NAME = "Reservas";
-    private static String CAMPO_NUMERO_TE = "TE";
+    public static String CAMPO_NUMERO_TE = "TE";
     private static String CAMPO_EXCURSION = "excursion";
     static String CAMPO_AGENCIA = "agencia";
     private static String CAMPO_NUMERO_HAB = "hab";
