@@ -712,7 +712,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         }
         reserva.addToHistorial(msgHistorial);
         values.put(ReservaBDHandler.CAMPO_HISTORIAL,reserva.getHistorial());
-        db.update(ReservaBDHandler.TABLE_NAME, values, "id=?", new String[]{String.valueOf(idSelectedReserva)});
+        db.update(ReservaBDHandler.TABLE_NAME, values, ReservaBDHandler.CAMPO_NUMERO_TE+"=?", new String[]{idSelectedReserva});
         Toast.makeText(getContext(), msgToast, Toast.LENGTH_SHORT).show();
     }
 
@@ -724,17 +724,9 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     private void confirmarEliminar() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Seguro que desea eliminar esta reserva?");
-        builder.setPositiveButton("Eliminar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                eliminarReserva();
-            }
-        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                //do nothing
-            }
+        builder.setPositiveButton("Eliminar", (dialogInterface, i) -> eliminarReserva());
+        builder.setNegativeButton("Cancelar", (dialogInterface, i) -> {
+            //do nothing
         });
         AlertDialog confirmationDialog = builder.create();
         confirmationDialog.show();
@@ -743,7 +735,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     private void eliminarReserva() {
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
-        db.delete(ReservaBDHandler.TABLE_NAME, "id=?", new String[]{String.valueOf(idSelectedReserva)});
+        db.delete(ReservaBDHandler.TABLE_NAME, ReservaBDHandler.CAMPO_NUMERO_TE+"=?", new String[]{idSelectedReserva});
         Toast.makeText(getContext(), "Eliminado correctamente", Toast.LENGTH_SHORT).show();
         getActivity().onBackPressed();
     }
@@ -755,14 +747,6 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void showHistorial(){
-        /*System.out.println("*******************************");
-        if(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getHistorial()==null ||
-                ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva).getHistorial().equals("")){
-            System.out.println("No hay historial para mostrar");
-        }else {
-            System.out.println("HISTORIAL\n" + ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva).getHistorial());
-        }
-        System.out.println("*******************************");*/
         DialogFragmentHistorial dialog = new DialogFragmentHistorial();
         dialog.setTargetFragment(this,0);
         dialog.show(getChildFragmentManager(),DialogFragmentHistorial.TAG);

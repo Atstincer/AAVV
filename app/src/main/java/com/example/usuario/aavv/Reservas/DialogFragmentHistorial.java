@@ -48,11 +48,11 @@ public class DialogFragmentHistorial extends DialogFragment {
 
     private void setItUp(){
         Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),myCallBack.getIdReserva());
-        String info = "";
+        String info;
         if(reserva.getHistorial()==null || reserva.getHistorial().isEmpty()){
-            info += "Historial\n\nNo hay información para mostrar";
+            info = "Historial\n\nNo hay información para mostrar";
         }else {
-            info += "TE"+reserva.getNoTE()+"\n\n"+reserva.getHistorial();
+            info = "TE"+reserva.getNoTE()+"\n\n"+reserva.getHistorial();
         }
         tvInfo.setText(info);
     }

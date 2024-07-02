@@ -63,11 +63,11 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     private void bindComponents(View view){
-        layoutInfo = (LinearLayout)view.findViewById(R.id.layout_info);
-        tvFechaLiquidacion = (TextView) view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
-        tvInfo = (TextView) view.findViewById(R.id.tv_info_venta);
-        rvReservas = (RecyclerView) view.findViewById(R.id.rv_reservas_fliquidacion);
-        btnAddReserva = (FloatingActionButton)view.findViewById(R.id.btn_add_reserva);
+        layoutInfo = view.findViewById(R.id.layout_info);
+        tvFechaLiquidacion = view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
+        tvInfo = view.findViewById(R.id.tv_info_venta);
+        rvReservas = view.findViewById(R.id.rv_reservas_fliquidacion);
+        btnAddReserva = view.findViewById(R.id.btn_add_reserva);
     }
 
     private void setItUp(){
@@ -100,33 +100,17 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             }
         });
 
-        tvFechaLiquidacion.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaLiquidacion, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
-                        udUI();
-                    }
-                });
-            }
+        tvFechaLiquidacion.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaLiquidacion, () -> {
+            myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
+            udUI();
+        }));
+
+        layoutInfo.setOnLongClickListener(view -> {
+            Util.copyToClipBoard(getContext(),"Venta del "+ tvFechaLiquidacion.getText().toString()+"\n"+tvInfo.getText().toString());
+            return true;
         });
 
-        layoutInfo.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Util.copyToClipBoard(getContext(),"Venta del "+ tvFechaLiquidacion.getText().toString()+"\n"+tvInfo.getText().toString());
-                return true;
-            }
-        });
-
-        btnAddReserva.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addReserva();
-            }
-        });
+        btnAddReserva.setOnClickListener(view -> addReserva());
     }
 
     private void udUI(){
@@ -191,8 +175,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         if(MySharedPreferences.getIncluirDevEnLiquidacion(getContext())){
             reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
                     "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=? OR " +
-                    ReservaBDHandler.CAMPO_FECHA_DEVOLUCION+"=?",
-                    new String[]{fechaLiqBD,fechaLiqBD});
+                    ReservaBDHandler.CAMPO_FECHA_DEVOLUCION+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
+                    new String[]{fechaLiqBD,fechaLiqBD,String.valueOf(Reserva.ESTADO_DEVUELTO)});
         }else {
             reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
                     "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=?",

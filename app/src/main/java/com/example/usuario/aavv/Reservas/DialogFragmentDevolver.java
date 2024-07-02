@@ -49,37 +49,21 @@ public class DialogFragmentDevolver extends DialogFragment {
     }
 
     private void bindComponents(View view){
-        tvFechaDev = (TextView)view.findViewById(R.id.tv_fecha_dev);
-        tvInfo = (TextView)view.findViewById(R.id.tv_info_dfdevolver);
-        etImporte = (EditText)view.findViewById(R.id.et_importe_devolver);
-        Button btnCancelar = (Button)view.findViewById(R.id.btn_dfdevolver_cancelar);
-        Button btnDevolver = (Button)view.findViewById(R.id.btn_dfdevolver_devolver);
+        tvFechaDev = view.findViewById(R.id.tv_fecha_dev);
+        tvInfo = view.findViewById(R.id.tv_info_dfdevolver);
+        etImporte = view.findViewById(R.id.et_importe_devolver);
+        Button btnCancelar = view.findViewById(R.id.btn_dfdevolver_cancelar);
+        Button btnDevolver = view.findViewById(R.id.btn_dfdevolver_devolver);
 
-        tvFechaDev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaDev, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        //do nothing
-                    }
-                });
-            }
-        });
+        tvFechaDev.setOnClickListener(view1 -> DateHandler.showDatePicker(getContext(), tvFechaDev, () -> {
+            //do nothing
+        }));
 
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        btnCancelar.setOnClickListener(view12 -> dismiss());
 
-        btnDevolver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!validar()){return;}
-                devolver();
-            }
+        btnDevolver.setOnClickListener(view13 -> {
+            if(!validar()){return;}
+            devolver();
         });
     }
 
@@ -127,7 +111,7 @@ public class DialogFragmentDevolver extends DialogFragment {
         values.put(ReservaBDHandler.CAMPO_FECHA_DEVOLUCION, DateHandler.formatDateToStoreInDB(tvFechaDev.getText().toString()));
         values.put(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO,etImporte.getText().toString());
         values.put(ReservaBDHandler.CAMPO_HISTORIAL,reserva.getHistorial());
-        db.update(ReservaBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(myCallBack.getIdReserva())});
+        db.update(ReservaBDHandler.TABLE_NAME,values,ReservaBDHandler.CAMPO_NUMERO_TE+"=?",new String[]{myCallBack.getIdReserva()});
         Toast.makeText(getContext(),"Devolucion registrada correctamente",Toast.LENGTH_SHORT).show();
         myCallBack.udInfoEstado();
         dismiss();
