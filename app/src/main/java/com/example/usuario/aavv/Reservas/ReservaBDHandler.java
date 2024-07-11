@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
@@ -47,7 +48,7 @@ public class ReservaBDHandler {
 
     public static ContentValues getContentValues(Reserva reserva){
         ContentValues values = new ContentValues();
-        if(reserva.getFechaConfeccion()!=null) {
+        if(reserva.getFechaConfeccion()!=null && !reserva.getFechaConfeccion().isEmpty()) {
             values.put(ReservaBDHandler.CAMPO_FECHA_CONFECCION, DateHandler.formatDateToStoreInDB(reserva.getFechaConfeccion()));
         }
         values.put(ReservaBDHandler.CAMPO_NUMERO_TE,reserva.getNoTE());
@@ -57,19 +58,20 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_MENORES,reserva.getMenores());
         values.put(ReservaBDHandler.CAMPO_INFANTES,reserva.getInfantes());
         values.put(ReservaBDHandler.CAMPO_ACOMPANANTES,reserva.getAcompanantes());
-        if(reserva.getFechaEjecucion()!=null) {
+        if(reserva.getFechaEjecucion()!=null && !reserva.getFechaEjecucion().isEmpty()) {
             values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION, DateHandler.formatDateToStoreInDB(reserva.getFechaEjecucion()));
         }
         if(reserva.getFechaOriginalEjecucion()!=null && !reserva.getFechaOriginalEjecucion().isEmpty()) {
             values.put(ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL, DateHandler.formatDateToStoreInDB(reserva.getFechaOriginalEjecucion()));
         }
-        if(reserva.getFechaReporteVenta()!=null){
+        if(reserva.getFechaReporteVenta()!=null && !reserva.getFechaReporteVenta().isEmpty()){
+            Log.d("fecha","Fecha reporte de venta: "+reserva.getFechaReporteVenta());
             values.put(ReservaBDHandler.CAMPO_FECHA_REPORTE_VENTA,DateHandler.formatDateToStoreInDB(reserva.getFechaReporteVenta()));
         }
-        if(reserva.getFechaCancelacion()!=null){
+        if(reserva.getFechaCancelacion()!=null && !reserva.getFechaCancelacion().isEmpty()){
             values.put(ReservaBDHandler.CAMPO_FECHA_CANCELACION,DateHandler.formatDateToStoreInDB(reserva.getFechaCancelacion()));
         }
-        if(reserva.getFechaDevolucion()!=null){
+        if(reserva.getFechaDevolucion()!=null && !reserva.getFechaDevolucion().isEmpty()){
             values.put(ReservaBDHandler.CAMPO_FECHA_DEVOLUCION,DateHandler.formatDateToStoreInDB(reserva.getFechaDevolucion()));
         }
         values.put(ReservaBDHandler.CAMPO_AGENCIA,reserva.getAgencia());

@@ -1,15 +1,13 @@
 package com.example.usuario.aavv;
 
-import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,9 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.usuario.aavv.Ajustes.FragmentAjustes;
+import com.example.usuario.aavv.Almacenamiento.BDImporter;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.Excursiones.FragmentExcursion;
 import com.example.usuario.aavv.Excursiones.FragmentExcursiones;
@@ -40,20 +38,21 @@ public class MainActivity extends AppCompatActivity
         FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, ReservaRVAdapter.MyMainActivity,
         FragmentRepVenta.MyCallBack{
 
-    public static final int REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE = 0;
-    private static final int REQUEST_CODE_PERMISSION_ACCESS_EXTERNAL_STORAGE = 1;
+    private final int REQUEST_CODE_PERMISSION_SELECT_DIR = 200;
+    private final int SELEC_FILE_SALVA = 201;
 
     private MisConstantes.Estado estadoFragmentReservar;
     private boolean hasStarted;
     private String lastFechaLiq, lastFechaEjec, lastDesde, lastHasta, lastFechaRepVenta;
 
     private CoordinatorLayout coordinatorLayout;
+    private BDImporter.CallFromImporter caller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(savedInstanceState!=null){
-            if(savedInstanceState.getString("estadoFragReservar")!=null && !savedInstanceState.getString("estadoFragReservar").equals("")){
+            if(savedInstanceState.getString("estadoFragReservar")!=null && !savedInstanceState.getString("estadoFragReservar").isEmpty()){
                 estadoFragmentReservar = MisConstantes.Estado.valueOf(savedInstanceState.getString("estadoFragReservar"));
             }
             hasStarted = savedInstanceState.getBoolean("hasStarted");
@@ -101,24 +100,75 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-     @Override
-    public void requestPermisionAccessExternalStorage() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-            try{
-                Intent intent = new Intent((Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION));
-                intent.addCategory("android.intent.category.DEFAULT");
-                Uri uri = Uri.fromParts("package",getPackageName(),null);
-                intent.setData(uri);
-                startActivityForResult(intent,REQUEST_CODE_PERMISSION_ACCESS_EXTERNAL_STORAGE);
-            }catch (Exception e){
-                Log.d("permisos","Error solicitando permiso: "+e.getMessage());
+    @Override
+    public void requestCreateSelectAppDir() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Informacion");
+        builder.setMessage("Debe seleccionar o crear una carpeta donde se guardaran los archivos de la aplicacion.");
+        builder.setPositiveButton("Ok", (dialog, which) -> {
+            launchActivityForResult();
+            dialog.cancel();
+        });
+        builder.create().show();
+    }
+
+    private void launchActivityForResult(){
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+
+        // Optionally, specify a URI for the directory that should be opened in
+        // the system file picker when it loads.
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+        }*/
+
+        startActivityForResult(intent, REQUEST_CODE_PERMISSION_SELECT_DIR);
+    }
+
+    @Override
+    public void showFileChooser(BDImporter.CallFromImporter caller) {
+        this.caller = caller;
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        //intent.setType("text/csv");
+        intent.setType("text/*");
+
+        // Optionally, specify a URI for the directory that should be opened in
+        // the system file picker when it loads.
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+        }*/
+
+        startActivityForResult(intent, SELEC_FILE_SALVA);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_PERMISSION_SELECT_DIR
+                && resultCode == Activity.RESULT_OK) {
+            Uri uri;
+            if (data != null) {
+                uri = data.getData();
+                MySharedPreferences.storeUriExtSharedDir(this,uri.toString());
+                takePersistableUriPermission(uri);
             }
-        }else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},
-                    REQUEST_CODE_PERMISSION_ACCESS_EXTERNAL_STORAGE);
         }
-         Log.d("permisos","Solicitando permisos Build.Version: " + Build.VERSION.SDK_INT);
+        if (resultCode == MainActivity.RESULT_OK && requestCode == SELEC_FILE_SALVA) {
+            Log.d("importando","onActivityResult trigger");
+            Uri uri;
+            Log.d("importando","Data es null: "+(data==null));
+            if (data != null) {
+                uri = data.getData();
+                Log.d("importando","Importando uri: "+uri.toString());
+                BDImporter bdImporter = new BDImporter(this,this,caller);
+                bdImporter.importar(uri);
+            }
+        }
+    }
+
+    private void takePersistableUriPermission(Uri uri){
+        getContentResolver().takePersistableUriPermission(uri,
+                (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
     }
 
     @Override
@@ -295,12 +345,7 @@ public class MainActivity extends AppCompatActivity
         /*Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) snackbar.getView();
         AppCompatTextView textView = (AppCompatTextView) snackBarView.getChildAt(0);
         textView.setMaxLines(5);*/
-        snackbar.setAction("Ok", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
+        snackbar.setAction("Ok", view -> snackbar.dismiss());
         snackbar.show();
     }
 
@@ -337,7 +382,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 

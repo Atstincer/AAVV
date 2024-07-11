@@ -21,6 +21,7 @@ public class MySharedPreferences {
     private static final String KEY_PREDECIR_PRECIO = "predecir precio";
     private static final String KEY_INCLUIR_PRECIO_CUP = "incluir_precio_cup";
     private static final String KEY_TASA_CUP = "tasa_cup";
+    private static final String KEY_URI_SHARED_DIR = "uri_shared_dir";
 
 
 
@@ -117,6 +118,18 @@ public class MySharedPreferences {
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(KEY_TASA_CUP,tasa);
+        editor.apply();
+    }
+
+    public static String getUriExtSharedDir(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getString(KEY_URI_SHARED_DIR,"");
+    }
+
+    public static void storeUriExtSharedDir(Context ctx,String uri){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_URI_SHARED_DIR,uri);
         editor.apply();
     }
 }

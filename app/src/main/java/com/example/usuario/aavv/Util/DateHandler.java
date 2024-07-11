@@ -21,7 +21,7 @@ public class DateHandler {
     }
 
     public static String formatDateToStoreInDB(String date){
-        if(date == null || date.equals("")){return "";}
+        if(date == null || date.isEmpty()){return "";}
         return date.substring(6)+"-"+date.substring(3,5)+"-"+date.substring(0,2);
     }
 

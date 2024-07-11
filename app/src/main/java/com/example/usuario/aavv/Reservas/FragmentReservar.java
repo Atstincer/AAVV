@@ -106,62 +106,36 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void bindComponents(View v) {
-        checkBoxIncluirRepVenta = (CheckBox) v.findViewById(R.id.checkbox_incluir_rep_venta);
-        tvFechaConfeccion = (TextView) v.findViewById(R.id.tv_fecha_confeccion);
-        tvFechaEjecucion = (TextView) v.findViewById(R.id.tv_fecha_ejecucion);
-        tvFechaRepVenta = (TextView) v.findViewById(R.id.tv_fecha_repventa_reservar);
-        etNumeroTE = (EditText) v.findViewById(R.id.et_ticket);
-        tvEstado = (TextView) v.findViewById(R.id.tv_estado);
-        etNombreCliente = (EditText) v.findViewById(R.id.et_nombre_cliente);
-        etAdultos = (EditText) v.findViewById(R.id.et_adultos);
-        etMenores = (EditText) v.findViewById(R.id.et_menores);
-        etInfantes = (EditText) v.findViewById(R.id.et_infantes);
-        etAcompanante = (EditText) v.findViewById(R.id.et_acompanante);
-        etNoHab = (EditText) v.findViewById(R.id.et_hab);
-        etPrecio = (EditText) v.findViewById(R.id.et_precio);
-        etObservaciones = (EditText) v.findViewById(R.id.et_observaciones);
-        actvNombreExcursion = (AutoCompleteTextView) v.findViewById(R.id.actv_excursion);
-        actvAgencia = (AutoCompleteTextView) v.findViewById(R.id.actv_agencia);
-        actvIdioma = (AutoCompleteTextView) v.findViewById(R.id.actv_idioma);
-        actvHotel = (AutoCompleteTextView) v.findViewById(R.id.actv_hotel);
-        btn = (Button) v.findViewById(R.id.btn_fragment_reservar);
+        checkBoxIncluirRepVenta = v.findViewById(R.id.checkbox_incluir_rep_venta);
+        tvFechaConfeccion = v.findViewById(R.id.tv_fecha_confeccion);
+        tvFechaEjecucion = v.findViewById(R.id.tv_fecha_ejecucion);
+        tvFechaRepVenta = v.findViewById(R.id.tv_fecha_repventa_reservar);
+        etNumeroTE = v.findViewById(R.id.et_ticket);
+        tvEstado = v.findViewById(R.id.tv_estado);
+        etNombreCliente = v.findViewById(R.id.et_nombre_cliente);
+        etAdultos = v.findViewById(R.id.et_adultos);
+        etMenores = v.findViewById(R.id.et_menores);
+        etInfantes = v.findViewById(R.id.et_infantes);
+        etAcompanante = v.findViewById(R.id.et_acompanante);
+        etNoHab = v.findViewById(R.id.et_hab);
+        etPrecio = v.findViewById(R.id.et_precio);
+        etObservaciones = v.findViewById(R.id.et_observaciones);
+        actvNombreExcursion = v.findViewById(R.id.actv_excursion);
+        actvAgencia = v.findViewById(R.id.actv_agencia);
+        actvIdioma = v.findViewById(R.id.actv_idioma);
+        actvHotel = v.findViewById(R.id.actv_hotel);
+        btn = v.findViewById(R.id.btn_fragment_reservar);
     }
 
     private void setItUP() {
-        tvFechaConfeccion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaConfeccion, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        //do nothing
-                    }
-                });
-            }
-        });
-        tvFechaEjecucion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaEjecucion, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        actvAgencia.requestFocus();
-                    }
-                });
-            }
-        });
+        tvFechaConfeccion.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaConfeccion, () -> {
+            //do nothing
+        }));
+        tvFechaEjecucion.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaEjecucion,
+                () -> actvAgencia.requestFocus()));
 
-        tvFechaRepVenta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DateHandler.showDatePicker(getContext(), tvFechaRepVenta, new DateHandler.DatePickerCallBack() {
-                    @Override
-                    public void dateSelected() {
-                        actvAgencia.requestFocus();
-                    }
-                });
-            }
-        });
+        tvFechaRepVenta.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaRepVenta,
+                () -> actvAgencia.requestFocus()));
 
         String[] excursionesPordefecto = {"Catamarán JC", "Aventura marina", "Nado con delfines", "Nado con delfines Plus",
                 "Pesca de altura 1bote 4hrs", "Pesca especializada 1bote 4hrs", "Santa Clara-Remedios", "Tres ciudades",
@@ -176,34 +150,21 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         } else {
             actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, excursionesPordefecto));
         }
-        actvNombreExcursion.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                predictPrice();
-                etNombreCliente.requestFocus();
-            }
+        actvNombreExcursion.setOnItemClickListener((adapterView, view, i, l) -> {
+            predictPrice();
+            etNombreCliente.requestFocus();
         });
 
-        ArrayAdapter<TTOO> adapterTTOO = new ArrayAdapter<TTOO>(getContext(), R.layout.my_simple_dropdown_item_1line, TTOOBDHandler.getAllTTOOfromDB(getContext()));
+        ArrayAdapter<TTOO> adapterTTOO = new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, TTOOBDHandler.getAllTTOOfromDB(getContext()));
         actvAgencia.setThreshold(1);
         actvAgencia.setAdapter(adapterTTOO);
-        actvAgencia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                actvHotel.requestFocus();
-            }
-        });
+        actvAgencia.setOnItemClickListener((adapterView, view, i, l) -> actvHotel.requestFocus());
 
         String[] idiomas = {"Español", "Inglés", "Frances", "Aleman", "Italiano", "Ruso"};
         ArrayAdapter<String> adapterIdiomas = new ArrayAdapter<String>(getContext(), R.layout.my_simple_dropdown_item_1line, idiomas);
         actvIdioma.setThreshold(1);
         actvIdioma.setAdapter(adapterIdiomas);
-        actvIdioma.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                etObservaciones.requestFocus();
-            }
-        });
+        actvIdioma.setOnItemClickListener((adapterView, view, i, l) -> etObservaciones.requestFocus());
 
         String[] hotelesPorDefecto = {"Valentin", "Casa del Mar", "Paradisus", "Muthus CSM", "Gran Memories", "Memories", "Royalton",
                 "Starfish", "Playa CSM","Melia las Dunas", "Melia CSM", "Sol CSM", "Buenavista", "Ensenachos", "Angsana", "Dhawa",
@@ -216,39 +177,28 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         } else {
             actvHotel.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, hotelesPorDefecto));
         }
-        actvHotel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                etNoHab.requestFocus();
-            }
-        });
+        actvHotel.setOnItemClickListener((adapterView, view, i, l) -> etNoHab.requestFocus());
 
         setOnTextChangedListener(etAdultos);
         setOnTextChangedListener(etMenores);
         setOnTextChangedListener(etAcompanante);
 
-        checkBoxIncluirRepVenta.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked){
-                    tvFechaRepVenta.setVisibility(View.VISIBLE);
-                }else {
-                    tvFechaRepVenta.setVisibility(View.GONE);
-                }
+        checkBoxIncluirRepVenta.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if(isChecked){
+                tvFechaRepVenta.setVisibility(View.VISIBLE);
+            }else {
+                tvFechaRepVenta.setVisibility(View.GONE);
             }
         });
 
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (myCallBack.getEstadoFragmentReservar()) {
-                    case EDITAR:
-                        actualizar();
-                        break;
-                    case NUEVO:
-                        registrar();
-                        break;
-                }
+        btn.setOnClickListener(view -> {
+            switch (myCallBack.getEstadoFragmentReservar()) {
+                case EDITAR:
+                    actualizar();
+                    break;
+                case NUEVO:
+                    registrar();
+                    break;
             }
         });
 
@@ -362,13 +312,11 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         actvIdioma.setText(reserva.getIdioma());
         actvHotel.setText(reserva.getHotel());
         checkBoxIncluirRepVenta.setChecked(reserva.incluirEnRepVenta());
+        if(reserva.getFechaReporteVenta()!=null || !reserva.getFechaReporteVenta().isEmpty()) {
+            tvFechaRepVenta.setText(reserva.getFechaReporteVenta());
+        }
         if (reserva.incluirEnRepVenta()) {
             tvFechaRepVenta.setVisibility(View.VISIBLE);
-            if(reserva.getFechaReporteVenta()==null) {
-                tvFechaRepVenta.setText(reserva.getFechaConfeccion());
-            }else {
-                tvFechaRepVenta.setText(reserva.getFechaReporteVenta());
-            }
         }else {
             tvFechaRepVenta.setVisibility(View.GONE);
         }
@@ -578,7 +526,9 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
             reserva.setFechaEjecucion(tvFechaEjecucion.getText().toString());
         }
         reserva.setIncluirEnRepVenta(checkBoxIncluirRepVenta.isChecked());
-        reserva.setFechaReporteVenta(tvFechaRepVenta.getText().toString());
+        if(!tvFechaRepVenta.getText().toString().equals("fecha")) {
+            reserva.setFechaReporteVenta(tvFechaRepVenta.getText().toString());
+        }
         reserva.setAgencia(actvAgencia.getText().toString());
         reserva.setHotel(actvHotel.getText().toString());
         reserva.setNoHab(etNoHab.getText().toString());

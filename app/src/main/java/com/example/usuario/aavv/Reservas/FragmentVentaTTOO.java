@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -317,30 +318,28 @@ public class FragmentVentaTTOO extends Fragment {
             Toast.makeText(getContext(),"Función no disponible para agencias: "+TODAS,Toast.LENGTH_SHORT).show();
             return;
         }
+        if(!Util.hasPermissionGranted(getContext())){
+            myCallBack.requestCreateSelectAppDir();
+            return;
+        }
         String desde = tvFechaDesde.getText().toString();
         String hasta = tvFechaHasta.getText().toString();
-        String msgResultado = "";
-        try {
-            File rutaSD = new File(Environment.getExternalStorageDirectory()+"/"+getString(R.string.app_name));
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/Venta por agencias-período");
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+agencia);
-            if(!rutaSD.exists()){rutaSD.mkdir();}
-            rutaSD = new File(rutaSD.getAbsolutePath()+"/"+desde.substring(6));
-            if(!rutaSD.exists()){rutaSD.mkdir();}
 
-            String fileName = desde.replace("/","") + "-" + hasta.replace("/","") + " " + agencia + ".xls";
-            File file = new File(rutaSD.getAbsolutePath(), fileName);
-            if(MyExcel.generarExcelReporteVentaPorAgencia(file,listaReservas,agencia,desde,hasta,getImporteTotal(agencia))){
-                msgResultado = "Excel generado correctamente: "+file;
+        new Thread(()->{
+            try {
+                VentaTTOOStorageAccess ventaTTOOStorageAccess = new VentaTTOOStorageAccess(getContext(),desde,hasta,agencia);
+                if(MyExcel.generarExcelReporteVentaPorAgencia(ventaTTOOStorageAccess,listaReservas,getImporteTotal(agencia))){
+                    myCallBack.showSnackBar("Excel generado correctamente: "+ventaTTOOStorageAccess.getFileName()+ ".xls");
+                }else {
+                    getActivity().runOnUiThread(()->{
+                        myCallBack.requestCreateSelectAppDir();
+                    });
+                }
+            } catch (Exception e) {
+                myCallBack.showSnackBar("Error creando excel.");
+                Log.e("excel","Error generando excel",e);
             }
-        } catch (Exception e) {
-            msgResultado = "Mensaje error: " + e.getMessage();
-            Log.e("excel","Error generando excel",e);
-        } finally {
-            myCallBack.showSnackBar(msgResultado);
-        }
+        }).start();
     }
 
     @Override
@@ -353,11 +352,7 @@ public class FragmentVentaTTOO extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_item_excel_reporte_venta) {
-            if(Util.isPermissionGranted(getContext())){
-                generarExcelReporteDeVenta();
-            }else {
-                myCallBack.requestPermisionAccessExternalStorage();
-            }
+            generarExcelReporteDeVenta();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -370,6 +365,6 @@ public class FragmentVentaTTOO extends Fragment {
         void setLastHasta(String lastHasta);
         String getLastDesde();
         String getLastHasta();
-        void requestPermisionAccessExternalStorage();
+        void requestCreateSelectAppDir();
     }
 }

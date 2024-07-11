@@ -2,10 +2,14 @@ package com.example.usuario.aavv.Util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
+import com.example.usuario.aavv.Reservas.RepVentaStorageAccess;
 import com.example.usuario.aavv.Reservas.Reserva;
+import com.example.usuario.aavv.Reservas.VentaTTOOStorageAccess;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -44,14 +48,18 @@ public class MyExcel {
     private static CellStyle totalStyle;
 
 
-    public static boolean generarExcelReporteVentaPorAgencia(File file, List<Reserva> listaReservas, String agencia, String desde, String hasta, double total) {
+    public static boolean generarExcelReporteVentaPorAgencia(VentaTTOOStorageAccess ventaTTOOStorageAccess, List<Reserva> listaReservas, double total) {
 
-        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-            Log.e(TAG, "Almacenamiento no disponible o de solo lectura");
+        DocumentFile file = ventaTTOOStorageAccess.getFile();
+        if(file==null || !file.exists()){
             return false;
         }
-
         Modelo modelo = Modelo.REPORTE_VENTA_AGENCIA;
+        String agencia = ventaTTOOStorageAccess.getAgencia();
+        String desde = ventaTTOOStorageAccess.getFecha();
+        String hasta = ventaTTOOStorageAccess.getHasta();
+        Context ctx = ventaTTOOStorageAccess.getContext();
+
         if(agencia.toLowerCase().trim().contains("meeting point")){
             modelo = Modelo.REPORTE_VENTA_MEETING_POINT;
         }
@@ -80,15 +88,15 @@ public class MyExcel {
         addBlankRows(columns, 2, borderThickStyle);
         addRowTotal(columns,total,modelo);
 
-        return storeExcelInStorage(file);
+        return storeExcelInStorage(ctx,file);
     }
 
-    public static boolean generarExcelReporteVenta(Context ctx, File file, List<Reserva> listaReservas, String fecha) {
+    public static boolean generarExcelReporteVenta(RepVentaStorageAccess repVentaStorageAccess, List<Reserva> listaReservas) {
 
-        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
-            Log.e(TAG, "Almacenamiento no disponible o de solo lectura");
-            return false;
-        }
+        DocumentFile file = repVentaStorageAccess.getFile();
+        if(file==null || !file.exists()){return false;}
+        Context ctx = repVentaStorageAccess.getContext();
+        String fecha = repVentaStorageAccess.getFecha();
 
         ROW_INDEX = 0;
 
@@ -107,7 +115,7 @@ public class MyExcel {
         setHeaderRow(Modelo.REPORTE_VENTA);
         fillDataIntoExcel(listaReservas,Modelo.REPORTE_VENTA);
 
-        return storeExcelInStorage(file);
+        return storeExcelInStorage(ctx,file);
     }
 
     private static boolean isExternalStorageReadOnly() {
@@ -612,13 +620,18 @@ public class MyExcel {
         }
     }
 
-    private static boolean storeExcelInStorage(File file) {
+    private static boolean storeExcelInStorage(Context ctx, DocumentFile file) {
         boolean isSuccess;
         //File file = new File(context.getExternalFilesDir(null), fileName);
         FileOutputStream fileOutputStream = null;
+        ParcelFileDescriptor excel = null;
 
         try {
-            fileOutputStream = new FileOutputStream(file);
+            excel = ctx.getContentResolver().
+                    openFileDescriptor(file.getUri(), "w");
+            fileOutputStream =
+                    new FileOutputStream(excel.getFileDescriptor());
+            //fileOutputStream = new FileOutputStream(file.getUri());
             workbook.write(fileOutputStream);
             Log.d(TAG, "Writing file" + file);
             isSuccess = true;
@@ -633,8 +646,12 @@ public class MyExcel {
                 if (null != fileOutputStream) {
                     fileOutputStream.close();
                 }
+                if(excel != null){
+                    excel.close();
+                }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Log.e(TAG,ex.getMessage(),ex);
+                //ex.printStackTrace();
             }
         }
         return isSuccess;
