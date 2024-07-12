@@ -11,6 +11,7 @@ public abstract class StorageAccessAbstractClass {
 
     protected String fecha;
     protected final Context ctx;
+    protected DocumentFile file;
 
     protected StorageAccessAbstractClass(Context ctx, String fecha){
         this.ctx = ctx;

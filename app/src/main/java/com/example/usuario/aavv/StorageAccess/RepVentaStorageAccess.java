@@ -1,4 +1,4 @@
-package com.example.usuario.aavv.Reservas;
+package com.example.usuario.aavv.StorageAccess;
 
 import android.content.Context;
 import android.content.UriPermission;
@@ -22,7 +22,10 @@ public class RepVentaStorageAccess extends StorageAccessAbstractClass {
 
     @Override
     public String getFileName() {
-        return fecha.replace("/","");
+        if(file==null || !file.exists()){
+            return fecha.replace("/","");
+        }
+        return file.getName();
     }
 
     @Nullable
@@ -38,12 +41,14 @@ public class RepVentaStorageAccess extends StorageAccessAbstractClass {
     @Nullable
     @Override
     public DocumentFile getFile() {
+        if(this.file!=null && this.file.exists()){return this.file;}
         DocumentFile documentFile = getProperDirectory();
         if(documentFile==null || !documentFile.exists()){return null;}
         DocumentFile file = documentFile.findFile(getFileName()+".xls");
         if(file!=null && file.exists()){
             file.delete();
         }
-        return documentFile.createFile("application/vnd.ms-excel",getFileName());
+        this.file = documentFile.createFile("application/vnd.ms-excel",getFileName());
+        return this.file;
     }
 }

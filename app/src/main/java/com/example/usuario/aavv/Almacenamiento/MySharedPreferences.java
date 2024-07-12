@@ -22,6 +22,7 @@ public class MySharedPreferences {
     private static final String KEY_INCLUIR_PRECIO_CUP = "incluir_precio_cup";
     private static final String KEY_TASA_CUP = "tasa_cup";
     private static final String KEY_URI_SHARED_DIR = "uri_shared_dir";
+    private static final String KEY_DEFAULT_MAIL = "default_mail";
 
 
 
@@ -130,6 +131,18 @@ public class MySharedPreferences {
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(KEY_URI_SHARED_DIR,uri);
+        editor.apply();
+    }
+
+    public static String getDefaultMailAdress(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getString(KEY_DEFAULT_MAIL,"");
+    }
+
+    public static void storeDefaultMailAdress(Context ctx,String mailAdress){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_DEFAULT_MAIL,mailAdress);
         editor.apply();
     }
 }

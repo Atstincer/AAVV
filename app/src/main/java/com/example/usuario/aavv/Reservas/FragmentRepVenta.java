@@ -1,6 +1,7 @@
 package com.example.usuario.aavv.Reservas;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
+import com.example.usuario.aavv.StorageAccess.RepVentaStorageAccess;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyEmail;
@@ -115,7 +117,15 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
             Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
             return;
         }
-        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{},"Venta del día "+ tvFecha.getText().toString(),getCuerpoMail()));
+        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{MySharedPreferences.getDefaultMailAdress(getContext())},
+                "Venta "+ tvFecha.getText().toString(),getCuerpoMail()));
+    }
+
+    private void enviarMailVentaDelDia(Uri uri){
+        MyEmail.setUpEmail(getContext(),
+                new MyEmail(new String[]{MySharedPreferences.getDefaultMailAdress(getContext())},
+                        "Venta "+ tvFecha.getText().toString(),""),
+                uri);
     }
 
     private String getCuerpoMail(){
@@ -152,24 +162,34 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
         return texto;
     }
 
-    private void generarExcelReporteDeVenta(){
+    private void generarExcelReporteDeVenta(boolean enviarPorMail){
         if(reservaList.isEmpty()){
             Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
             return;
         }
         if(!Util.hasPermissionGranted(getContext())){
-            myCallBack.requestCreateSelectAppDir();
+            myCallBack.requestCreateSelectAppDir(true);
             return;
         }
+
         RepVentaStorageAccess repVentaSA = new RepVentaStorageAccess(getContext(),tvFecha.getText().toString());
 
         new Thread(()->{
             try {
                 if(MyExcel.generarExcelReporteVenta(repVentaSA,reservaList)){
-                    myCallBack.showSnackBar("Excel generado correctamente: "+repVentaSA.getFileName());
+                    if(enviarPorMail){
+                        if(repVentaSA.getFile()!=null && repVentaSA.getFile().exists()) {
+                            getActivity().runOnUiThread(()->{
+                                Uri uri = repVentaSA.getFile().getUri();
+                                enviarMailVentaDelDia(uri);
+                            });
+                        }
+                    }else {
+                        myCallBack.showSnackBar("Excel generado correctamente: " + repVentaSA.getFileName());
+                    }
                 }else {
                     getActivity().runOnUiThread(()->{
-                        myCallBack.requestCreateSelectAppDir();
+                        myCallBack.requestCreateSelectAppDir(true);
                     });
                 }
             } catch (Exception e) {
@@ -191,7 +211,9 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
         if (itemId == R.id.menu_item_enviar_mail_venta_del_dia) {
             enviarMailVentaDelDia();
         } else if (itemId == R.id.menu_item_excel_reporte_venta) {
-            generarExcelReporteDeVenta();
+            generarExcelReporteDeVenta(false);
+        }else if(itemId == R.id.menu_item_excel_mail){
+            generarExcelReporteDeVenta(true);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -202,6 +224,6 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
         void showSnackBar(String mensaje);
         void setLastFechaRepVenta(String fecha);
         String getLastFechaRepVenta();
-        void requestCreateSelectAppDir();
+        void requestCreateSelectAppDir(boolean conAlertDialog);
     }
 }

@@ -44,13 +44,10 @@ public class BDImporter {
             List<Excursion> excursionList = new ArrayList<>();
             List<TTOO> ttooList = new ArrayList<>();
             List<Hotel> hotelList = new ArrayList<>();
-//            StringBuilder stringBuilder = new StringBuilder();
             try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
                  BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-//                    stringBuilder.append(line);
-                    Log.d("importando","Leyendo linea: "+line);
                     if(line.equals(ReservaBDHandler.TABLE_NAME)){tipoDato= TipoDato.RESERVAS;continue;}//Reservas
                     if(line.equals(ExcursionBDHandler.TABLE_NAME)){tipoDato= TipoDato.EXCURSIONES;continue;}//Excursiones
                     if(line.equals(TTOOBDHandler.TABLE_NAME)){tipoDato= TipoDato.AGENCIAS;continue;}//Agencias
@@ -305,6 +302,13 @@ public class BDImporter {
             }
             if(hasValue(str[7])) {//tasa cup
                 MySharedPreferences.storeTasaCUP(context,Float.parseFloat(str[7]));
+            }
+
+            if(hasValue(str[8])) {//mail repVenta
+                MySharedPreferences.storeDefaultMailAdress(context,str[8]);
+            }
+            if(hasValue(str[9])) {//carpeta de la app
+                MySharedPreferences.storeUriExtSharedDir(context,str[9]);
             }
         }catch (Exception e){
             Log.e("Importando","Error salvando la configuracion",e);

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity
     private String lastFechaLiq, lastFechaEjec, lastDesde, lastHasta, lastFechaRepVenta;
 
     private CoordinatorLayout coordinatorLayout;
-    private BDImporter.CallFromImporter caller;
+//    private BDImporter.CallFromImporter caller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,15 +102,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void requestCreateSelectAppDir() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Informacion");
-        builder.setMessage("Debe seleccionar o crear una carpeta donde se guardaran los archivos de la aplicacion.");
-        builder.setPositiveButton("Ok", (dialog, which) -> {
+    public void requestCreateSelectAppDir(boolean conAlertDialog) {
+        if(conAlertDialog) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Informacion");
+            builder.setMessage("Debe seleccionar o crear una carpeta donde se guardaran los archivos de la aplicacion.");
+            builder.setPositiveButton("Ok", (dialog, which) -> {
+                launchActivityForResult();
+                dialog.cancel();
+            });
+            builder.create().show();
+        }else {
             launchActivityForResult();
-            dialog.cancel();
-        });
-        builder.create().show();
+        }
     }
 
     private void launchActivityForResult(){
@@ -125,8 +130,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void showFileChooser(BDImporter.CallFromImporter caller) {
-        this.caller = caller;
+    public void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         //intent.setType("text/csv");
@@ -144,24 +148,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_PERMISSION_SELECT_DIR
-                && resultCode == Activity.RESULT_OK) {
+        if(resultCode == Activity.RESULT_OK){
             Uri uri;
-            if (data != null) {
-                uri = data.getData();
-                MySharedPreferences.storeUriExtSharedDir(this,uri.toString());
-                takePersistableUriPermission(uri);
-            }
-        }
-        if (resultCode == MainActivity.RESULT_OK && requestCode == SELEC_FILE_SALVA) {
-            Log.d("importando","onActivityResult trigger");
-            Uri uri;
-            Log.d("importando","Data es null: "+(data==null));
-            if (data != null) {
-                uri = data.getData();
-                Log.d("importando","Importando uri: "+uri.toString());
-                BDImporter bdImporter = new BDImporter(this,this,caller);
-                bdImporter.importar(uri);
+            switch (requestCode){
+                case REQUEST_CODE_PERMISSION_SELECT_DIR:
+                    if (data != null) {
+                        uri = data.getData();
+                        MySharedPreferences.storeUriExtSharedDir(this,uri.toString());
+                        takePersistableUriPermission(uri);
+                        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                        if(fragment instanceof FragmentAjustes){
+                            BDImporter.CallFromImporter caller = (BDImporter.CallFromImporter)fragment;
+                            caller.refreshUI();
+                        }
+                    }
+                    break;
+                case SELEC_FILE_SALVA:
+                    if (data != null) {
+                        uri = data.getData();
+                        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                        if(fragment instanceof FragmentAjustes){
+                            BDImporter.CallFromImporter caller = (BDImporter.CallFromImporter)fragment;
+                            BDImporter bdImporter = new BDImporter(this,this,caller);
+                            bdImporter.importar(uri);
+                        }
+
+                    }
+                    break;
             }
         }
     }
@@ -237,7 +250,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public MisConstantes.Estado getEstadoFragmentReservar() {
-        //if(estadoFragmentReservar==null){return MisConstantes.Estado.NUEVO;}
         return estadoFragmentReservar;
     }
 

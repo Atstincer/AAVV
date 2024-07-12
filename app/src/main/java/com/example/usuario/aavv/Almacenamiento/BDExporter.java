@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Ajustes.FragmentAjustes.MyCallBack;
-import com.example.usuario.aavv.Ajustes.SalvaBDStorageAccess;
+import com.example.usuario.aavv.StorageAccess.SalvaBDStorageAccess;
 import com.example.usuario.aavv.Excursiones.Excursion;
 import com.example.usuario.aavv.Excursiones.ExcursionBDHandler;
 import com.example.usuario.aavv.Hoteles.Hotel;
@@ -51,7 +51,9 @@ public class BDExporter {
                 SalvaBDStorageAccess salvaBDStorageAccess = new SalvaBDStorageAccess(context, DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
                 DocumentFile file = salvaBDStorageAccess.getFile();
                 if(file==null || !file.exists()){
-                    activity.runOnUiThread(myCallBack::requestCreateSelectAppDir);
+                    activity.runOnUiThread(() -> {
+                        myCallBack.requestCreateSelectAppDir(true);
+                    });
                     return;
                 }
 
@@ -98,6 +100,17 @@ public class BDExporter {
             fileWriter.write((String.valueOf(MySharedPreferences.getIncluirPrecioCUP(context))).getBytes());//incluir precio en cup
             fileWriter.write(("|").getBytes());
             fileWriter.write((String.valueOf(MySharedPreferences.getTasaCUP(context))).getBytes());//tasa de cambio
+
+            fileWriter.write(("|").getBytes());
+            fileWriter.write(MySharedPreferences.getDefaultMailAdress(context).getBytes());//mail repVenta
+            fileWriter.write(("|").getBytes());
+            String carpeta = MySharedPreferences.getUriExtSharedDir(context);
+            if(!carpeta.isEmpty()){
+                fileWriter.write(MySharedPreferences.getUriExtSharedDir(context).getBytes());//carpeta app
+            }else {
+                fileWriter.write("null".getBytes());//carpeta app
+            }
+
             fileWriter.write(("\n").getBytes());
         }catch (Exception e){
             Log.e("exportando","Error exportando configuracion.",e);

@@ -8,6 +8,9 @@
         app:showAsAction="ifRoom|collapseActionView"/>
 
     <item android:id="@+id/menu_item_excel_reporte_venta"
-        android:title="Excel reporte de venta" />
+        android:title="Excel" />
+
+    <item android:id="@+id/menu_item_excel_mail"
+        android:title="Excel/Mail" />
 
 </menu>

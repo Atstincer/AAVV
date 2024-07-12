@@ -1,4 +1,4 @@
-package com.example.usuario.aavv.Reservas;
+package com.example.usuario.aavv.StorageAccess;
 
 
 import android.content.Context;
@@ -12,7 +12,7 @@ public class VentaTTOOStorageAccess extends StorageAccessAbstractClass {
     private final String agencia;
     private final String hasta;
 
-    protected VentaTTOOStorageAccess(Context ctx, String desde, String hasta, String agencia) {
+    public VentaTTOOStorageAccess(Context ctx, String desde, String hasta, String agencia) {
         super(ctx, desde);
         this.hasta = hasta;
         this.agencia = agencia;
@@ -42,11 +42,13 @@ public class VentaTTOOStorageAccess extends StorageAccessAbstractClass {
         if(file!=null && file.exists()){
             file.delete();
         }
-        return documentFile.createFile("application/vnd.ms-excel",getFileName());
+        this.file = documentFile.createFile("application/vnd.ms-excel",getFileName());
+        return this.file;
     }
 
     @Override
     public String getFileName() {
+        if(file!=null && file.exists()){return file.getName();}
         return fecha.replace("/","") + "-" + hasta.replace("/","") + " " + agencia;
     }
 

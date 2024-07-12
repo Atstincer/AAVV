@@ -7,21 +7,19 @@ import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
-import com.example.usuario.aavv.Reservas.RepVentaStorageAccess;
+import com.example.usuario.aavv.StorageAccess.RepVentaStorageAccess;
 import com.example.usuario.aavv.Reservas.Reserva;
-import com.example.usuario.aavv.Reservas.VentaTTOOStorageAccess;
+import com.example.usuario.aavv.StorageAccess.VentaTTOOStorageAccess;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;

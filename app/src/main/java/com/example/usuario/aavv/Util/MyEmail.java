@@ -15,7 +15,6 @@ public class MyEmail {
     private String [] para;
     private String asunto,cuerpo;
 
-
     public MyEmail(String[] para, String asunto, String cuerpo) {
         this.para = para;
         this.asunto = asunto;
@@ -27,13 +26,18 @@ public class MyEmail {
         intent.putExtra(Intent.EXTRA_EMAIL,email.getPara());
         intent.putExtra(Intent.EXTRA_SUBJECT, email.getAsunto());
         intent.putExtra(Intent.EXTRA_TEXT, email.getCuerpo());
-        //intent.setType("message/rfc822");
         intent.setData(Uri.parse("mailto:"));
-        if (intent.resolveActivity(ctx.getPackageManager()) != null) {
-            ctx.startActivity(intent);
-        } else {
-            Toast.makeText(ctx, "No hay aplicación que soporte esta acción", Toast.LENGTH_SHORT).show();
-        }
+        ctx.startActivity(intent);
+    }
+
+    public static void setUpEmail(Context ctx, MyEmail email,Uri uri){
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_EMAIL,email.getPara());
+        intent.putExtra(Intent.EXTRA_SUBJECT, email.getAsunto());
+        intent.setType("application/excel");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        ctx.startActivity(Intent.createChooser(intent, "Compartir con:"));
     }
 
     private String [] getPara() {

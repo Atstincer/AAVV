@@ -1,4 +1,4 @@
-package com.example.usuario.aavv.Ajustes;
+package com.example.usuario.aavv.StorageAccess;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -10,7 +10,7 @@ import com.example.usuario.aavv.Util.MisConstantes;
 
 public class SalvaBDStorageAccess extends StorageAccessAbstractClass {
 
-    private DocumentFile file;
+    //private DocumentFile file;
 
     public SalvaBDStorageAccess(Context ctx, String fecha) {
         super(ctx, fecha);
@@ -21,7 +21,7 @@ public class SalvaBDStorageAccess extends StorageAccessAbstractClass {
 
     @Override
     public String getFileName() {
-        if(file!=null){return file.getName();}
+        if(file!=null  && file.exists()){return file.getName();}
         return "BD"+ DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).replace("/","");
     }
 

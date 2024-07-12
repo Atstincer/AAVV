@@ -3,10 +3,8 @@ package com.example.usuario.aavv.Reservas;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,12 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.R;
+import com.example.usuario.aavv.StorageAccess.VentaTTOOStorageAccess;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyExcel;
 import com.example.usuario.aavv.Util.Util;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -319,7 +317,7 @@ public class FragmentVentaTTOO extends Fragment {
             return;
         }
         if(!Util.hasPermissionGranted(getContext())){
-            myCallBack.requestCreateSelectAppDir();
+            myCallBack.requestCreateSelectAppDir(true);
             return;
         }
         String desde = tvFechaDesde.getText().toString();
@@ -332,7 +330,7 @@ public class FragmentVentaTTOO extends Fragment {
                     myCallBack.showSnackBar("Excel generado correctamente: "+ventaTTOOStorageAccess.getFileName()+ ".xls");
                 }else {
                     getActivity().runOnUiThread(()->{
-                        myCallBack.requestCreateSelectAppDir();
+                        myCallBack.requestCreateSelectAppDir(true);
                     });
                 }
             } catch (Exception e) {
@@ -365,6 +363,6 @@ public class FragmentVentaTTOO extends Fragment {
         void setLastHasta(String lastHasta);
         String getLastDesde();
         String getLastHasta();
-        void requestCreateSelectAppDir();
+        void requestCreateSelectAppDir(boolean conAlertDialog);
     }
 }

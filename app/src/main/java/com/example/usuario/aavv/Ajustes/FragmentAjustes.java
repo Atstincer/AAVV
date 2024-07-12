@@ -1,6 +1,9 @@
 package com.example.usuario.aavv.Ajustes;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,10 +39,11 @@ import com.example.usuario.aavv.Util.MisConstantes;
 public class FragmentAjustes extends Fragment implements BDImporter.CallFromImporter {
 
     public static final String TAG = "FragmentAjustes";
-    private LinearLayout layoutEditarNombreVendedor,layoutEditarTelefonoVendedor,layoutEditarAgenciaVendedor;
-    private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor, etTasaCUP;
-    private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor;
-    private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor;
+    private LinearLayout layoutEditarNombreVendedor,layoutEditarTelefonoVendedor,layoutEditarAgenciaVendedor, layoutEditarMailAdress,
+            layoutDefaultMailAdress;
+    private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor, etTasaCUP, etMailAdress;
+    private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor, tvDefaultMailAdress, tvDirectorioApp;
+    private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor, btnAddMailAdress;
     private RadioGroup radioGroup;
     private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia;
     private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio, cbIncluirPrecioCUP;
@@ -53,7 +57,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         setHasOptionsMenu(true);
         bindComponents(view);
         setItUp();
-        showInfo();
+        showInfoGeneral();
         return view;
     }
 
@@ -84,6 +88,12 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         cbPredecirPrecio = view.findViewById(R.id.cb_predecir_precio);
         cbIncluirPrecioCUP = view.findViewById(R.id.cb_incluir_precio_cup);
         etTasaCUP = view.findViewById(R.id.et_tasa_cup);
+        layoutEditarMailAdress = view.findViewById(R.id.layout_editar_default_email);
+        etMailAdress = view.findViewById(R.id.et_default_mail);
+        tvDefaultMailAdress = view.findViewById(R.id.tv_defaul_email);
+        btnAddMailAdress = view.findViewById(R.id.btn_add_default_mail);
+        tvDirectorioApp = view.findViewById(R.id.tv_defaul_directory);
+        layoutDefaultMailAdress = view.findViewById(R.id.layout_default_email);
     }
 
     private void setItUp(){
@@ -154,9 +164,33 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
 
             }
         });
+
+        tvDefaultMailAdress.setOnClickListener(view -> {
+            layoutDefaultMailAdress.setVisibility(View.GONE);
+            layoutEditarMailAdress.setVisibility(View.VISIBLE);
+            etMailAdress.setText(MySharedPreferences.getDefaultMailAdress(getContext()));
+        });
+
+        btnAddMailAdress.setOnClickListener(view ->{
+            if(!etMailAdress.getText().toString().isEmpty()){
+                MySharedPreferences.storeDefaultMailAdress(getContext(),etMailAdress.getText().toString());
+                showDefaultMailAdress();
+            }
+        });
+        tvDirectorioApp.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("Desea seleccionar una nueva carpeta para guardar los archivos de la aplicacion?");
+            builder.setPositiveButton("Si", (dialog, which) -> {
+                myCallBack.requestCreateSelectAppDir(false);
+            });
+            builder.setNegativeButton("Cancelar",((dialog, which) -> {
+                dialog.dismiss();
+            }));
+            builder.create().show();
+        });
     }
 
-    private void showInfo(){
+    private void showInfoGeneral(){
         showInfoVendedor();
         if(MySharedPreferences.getFragmentInicio(getContext())==MisConstantes.INICIAR_HOME_PAGE){
             rbHomePage.setChecked(true);
@@ -174,11 +208,26 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }else {
             etTasaCUP.setText("");
         }
+        showDefaultMailAdress();
+        if(!MySharedPreferences.getUriExtSharedDir(getContext()).isEmpty()){
+            Uri uri = Uri.parse(MySharedPreferences.getUriExtSharedDir(getContext()));
+            /*Log.d("URI","toString: "+uri.toString());
+            Log.d("URI","getPath: "+uri.getPath());
+            Log.d("URI","getEncodedPath: "+uri.getEncodedPath());
+            Log.d("URI","getLastPathSegment: "+uri.getLastPathSegment());
+            Log.d("URI","getScheme: "+uri.getScheme());*/
+            String [] segments = uri.getLastPathSegment().split("[:]");
+            if(segments.length > 1){
+                tvDirectorioApp.setText(segments[1]);
+            }else {
+                tvDirectorioApp.setText(uri.getLastPathSegment());
+            }
+        }
     }
 
     @Override
     public void refreshUI(){
-        showInfo();
+        showInfoGeneral();
     }
 
     private void udEstadoETTasa(){
@@ -215,6 +264,18 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }
     }
 
+    private void showDefaultMailAdress(){
+        if(MySharedPreferences.getDefaultMailAdress(getContext()).isEmpty()){
+            layoutEditarMailAdress.setVisibility(View.VISIBLE);
+            layoutDefaultMailAdress.setVisibility(View.GONE);
+        }else {
+            layoutEditarMailAdress.setVisibility(View.GONE);
+            tvDefaultMailAdress.setText(MySharedPreferences.getDefaultMailAdress(getContext()));
+            layoutDefaultMailAdress.setVisibility(View.VISIBLE);
+        }
+    }
+
+
     private void exportarBD(){
         BDExporter bdExporter = new BDExporter(getContext(),getActivity(),myCallBack);
         bdExporter.exportar();
@@ -232,7 +293,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         if(item.getItemId() == R.id.menu_item_exportar_bd){
             exportarBD();
         } else if(item.getItemId() == R.id.menu_item_importar_bd){
-            myCallBack.showFileChooser(this);
+            myCallBack.showFileChooser();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -241,8 +302,8 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     public interface MyCallBack{
         void udUI(String tag);
         void showSnackBar(String mensaje);
-        void requestCreateSelectAppDir();
-        void showFileChooser(BDImporter.CallFromImporter caller);
+        void requestCreateSelectAppDir(boolean conAlertDialog);
+        void showFileChooser();
     }
 
 }

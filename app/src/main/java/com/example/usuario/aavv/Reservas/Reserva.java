@@ -38,10 +38,10 @@ public class Reserva {
                 "Hotel: " + reserva.getHotel() + "\n" +
                 "Habitación: " + reserva.getNoHab();
         if(formato == INFO_REPORTE_VENTA) {
-            if (!reserva.getIdioma().isEmpty()) {
+            if (reserva.getIdioma()!=null && !reserva.getIdioma().isEmpty()) {
                 text += "\nIdioma: " + reserva.getIdioma();
             }
-            if (!reserva.getObservaciones().isEmpty()) {
+            if (reserva.getObservaciones()!=null && !reserva.getObservaciones().isEmpty()) {
                 text += "\nObservaciones: " + reserva.getObservaciones();
             }
         } else if(formato == INFO_LIQUIDACION){
