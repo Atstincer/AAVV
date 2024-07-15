@@ -100,17 +100,20 @@ public class BDExporter {
             fileWriter.write((String.valueOf(MySharedPreferences.getIncluirPrecioCUP(context))).getBytes());//incluir precio en cup
             fileWriter.write(("|").getBytes());
             fileWriter.write((String.valueOf(MySharedPreferences.getTasaCUP(context))).getBytes());//tasa de cambio
-
             fileWriter.write(("|").getBytes());
-            fileWriter.write(MySharedPreferences.getDefaultMailAdress(context).getBytes());//mail repVenta
-            fileWriter.write(("|").getBytes());
+            String mails = MySharedPreferences.getMails(context);
+            if(!mails.isEmpty()) {
+                fileWriter.write(mails.getBytes());//mail repVenta
+            }else {
+                fileWriter.write("null".getBytes());
+            }
+            /*fileWriter.write(("|").getBytes());
             String carpeta = MySharedPreferences.getUriExtSharedDir(context);
             if(!carpeta.isEmpty()){
                 fileWriter.write(MySharedPreferences.getUriExtSharedDir(context).getBytes());//carpeta app
             }else {
                 fileWriter.write("null".getBytes());//carpeta app
-            }
-
+            }*/
             fileWriter.write(("\n").getBytes());
         }catch (Exception e){
             Log.e("exportando","Error exportando configuracion.",e);

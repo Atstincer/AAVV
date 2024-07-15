@@ -2,7 +2,6 @@ package com.example.usuario.aavv.Ajustes;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,12 +23,16 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.BDExporter;
 import com.example.usuario.aavv.Almacenamiento.BDImporter;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.MisConstantes;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -40,9 +43,9 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
 
     public static final String TAG = "FragmentAjustes";
     private LinearLayout layoutEditarNombreVendedor,layoutEditarTelefonoVendedor,layoutEditarAgenciaVendedor, layoutEditarMailAdress,
-            layoutDefaultMailAdress;
+            layoutDefaultMails;
     private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor, etTasaCUP, etMailAdress;
-    private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor, tvDefaultMailAdress, tvDirectorioApp;
+    private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor, tvDirectorioApp; //tvDefaultMailAdress
     private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor, btnAddMailAdress;
     private RadioGroup radioGroup;
     private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia;
@@ -89,11 +92,11 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         cbIncluirPrecioCUP = view.findViewById(R.id.cb_incluir_precio_cup);
         etTasaCUP = view.findViewById(R.id.et_tasa_cup);
         layoutEditarMailAdress = view.findViewById(R.id.layout_editar_default_email);
+        layoutDefaultMails = view.findViewById(R.id.layout_default_email);
         etMailAdress = view.findViewById(R.id.et_default_mail);
-        tvDefaultMailAdress = view.findViewById(R.id.tv_defaul_email);
+//        tvDefaultMailAdress = view.findViewById(R.id.tv_defaul_email);
         btnAddMailAdress = view.findViewById(R.id.btn_add_default_mail);
         tvDirectorioApp = view.findViewById(R.id.tv_defaul_directory);
-        layoutDefaultMailAdress = view.findViewById(R.id.layout_default_email);
     }
 
     private void setItUp(){
@@ -165,16 +168,20 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             }
         });
 
-        tvDefaultMailAdress.setOnClickListener(view -> {
+        /*tvDefaultMailAdress.setOnClickListener(view -> {
             layoutDefaultMailAdress.setVisibility(View.GONE);
             layoutEditarMailAdress.setVisibility(View.VISIBLE);
             etMailAdress.setText(MySharedPreferences.getDefaultMailAdress(getContext()));
-        });
+        });*/
 
         btnAddMailAdress.setOnClickListener(view ->{
-            if(!etMailAdress.getText().toString().isEmpty()){
-                MySharedPreferences.storeDefaultMailAdress(getContext(),etMailAdress.getText().toString());
-                showDefaultMailAdress();
+            String mail = etMailAdress.getText().toString();
+            if(isValid(mail)){
+                MySharedPreferences.addNewMail(getContext(),mail);
+                addMailView(mail);
+                etMailAdress.setText("");
+            }else {
+                Toast.makeText(getContext(),"Mail no es valido",Toast.LENGTH_SHORT).show();
             }
         });
         tvDirectorioApp.setOnClickListener(view -> {
@@ -188,6 +195,13 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             }));
             builder.create().show();
         });
+    }
+
+    private boolean isValid(String emailStr) {
+//        String otherPatter = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
+        return Pattern.compile("^(.+)@(\\S+)$")
+                .matcher(emailStr)
+                .matches();
     }
 
     private void showInfoGeneral(){
@@ -208,7 +222,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }else {
             etTasaCUP.setText("");
         }
-        showDefaultMailAdress();
+        showDefaultMails();
         if(!MySharedPreferences.getUriExtSharedDir(getContext()).isEmpty()){
             Uri uri = Uri.parse(MySharedPreferences.getUriExtSharedDir(getContext()));
             /*Log.d("URI","toString: "+uri.toString());
@@ -264,14 +278,54 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }
     }
 
-    private void showDefaultMailAdress(){
-        if(MySharedPreferences.getDefaultMailAdress(getContext()).isEmpty()){
+    private void showDefaultMails(){
+        /*if(MySharedPreferences.getDefaultMailAdress(getContext()).isEmpty()){
             layoutEditarMailAdress.setVisibility(View.VISIBLE);
             layoutDefaultMailAdress.setVisibility(View.GONE);
         }else {
             layoutEditarMailAdress.setVisibility(View.GONE);
-            tvDefaultMailAdress.setText(MySharedPreferences.getDefaultMailAdress(getContext()));
+            //tvDefaultMailAdress.setText(MySharedPreferences.getDefaultMailAdress(getContext()));
             layoutDefaultMailAdress.setVisibility(View.VISIBLE);
+        }*/
+        layoutDefaultMails.removeAllViews();
+        if(!MySharedPreferences.getMails(getContext()).isEmpty()){
+            for(String mail:MySharedPreferences.getArrayOfMails(getContext())){
+                addMailView(mail);
+            }
+        }
+    }
+
+    private void addMailView(String mail){
+        TextView textView = new TextView(getContext());
+        textView.setTextColor(getResources().getColor(R.color.colorAccent));
+        textView.setText(mail);
+        layoutDefaultMails.addView(textView);
+        textView.setOnClickListener(view -> {
+            confirmarEliminar((TextView)view);
+        });
+    }
+
+    private void confirmarEliminar(TextView textView){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Seguro que desea eliminar '"+textView.getText().toString()+"'");
+        builder.setPositiveButton("Eliminar", (dialog, which) -> {
+            eliminarMail(textView);
+        });
+        builder.setNegativeButton("Cancelar",((dialog, which) -> {
+            dialog.dismiss();
+        }));
+        builder.create().show();
+    }
+
+    private void eliminarMail(TextView textView){
+        if(layoutDefaultMails.getChildCount()==0){return;}
+        String mail = textView.getText().toString();
+        for (int i = 0; i < layoutDefaultMails.getChildCount(); i++) {
+            TextView tv = (TextView) layoutDefaultMails.getChildAt(i);
+            if(tv.getText().toString().equals(mail)){
+                layoutDefaultMails.removeView(layoutDefaultMails.getChildAt(i));
+                MySharedPreferences.removeMail(getContext(),mail);
+            }
         }
     }
 

@@ -2,8 +2,8 @@ package com.example.usuario.aavv.Almacenamiento;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
-import static android.content.Context.MODE_APPEND;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -22,7 +22,7 @@ public class MySharedPreferences {
     private static final String KEY_INCLUIR_PRECIO_CUP = "incluir_precio_cup";
     private static final String KEY_TASA_CUP = "tasa_cup";
     private static final String KEY_URI_SHARED_DIR = "uri_shared_dir";
-    private static final String KEY_DEFAULT_MAIL = "default_mail";
+    private static final String KEY_DEFAULT_MAILS = "default_mail";
 
 
 
@@ -134,15 +134,69 @@ public class MySharedPreferences {
         editor.apply();
     }
 
-    public static String getDefaultMailAdress(Context ctx){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
-        return preferences.getString(KEY_DEFAULT_MAIL,"");
+    public static void addNewMail(Context ctx, String newMail){
+        String mailAdressTodas;
+        if(!getMails(ctx).isEmpty()) {
+            mailAdressTodas = getMails(ctx) + ";" + newMail;
+        }else {
+            mailAdressTodas = newMail;
+        }
+        storeMails(ctx,mailAdressTodas);
     }
 
-    public static void storeDefaultMailAdress(Context ctx,String mailAdress){
-        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+    public static void addMailsIfDoesntExits(Context ctx,String mails){
+        String[] mailsStored = getArrayOfMails(ctx);
+        if(mailsStored.length==0){
+            storeMails(ctx,mails);
+        }else {
+            String[] newMails = mails.split("[;]");
+            for(String newMail:newMails){
+                boolean found = false;
+                for(String storedMail:mailsStored){
+                    if(newMail.equals(storedMail)){
+                        found = true;
+                    }
+                }
+                if(!found){
+                    MySharedPreferences.addNewMail(ctx,newMail);
+                }
+            }
+        }
+    }
+
+    public static void storeMails(Context ctx, String mails) {
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO, MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(KEY_DEFAULT_MAIL,mailAdress);
+        editor.putString(KEY_DEFAULT_MAILS, mails);
         editor.apply();
     }
+
+    public static String getMails(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getString(KEY_DEFAULT_MAILS,"");
+    }
+
+    public static String[] getArrayOfMails(Context ctx){
+        String mails = getMails(ctx);
+        if(!mails.isEmpty()){
+            return mails.split("[;]");
+        }else {
+            return new String[]{mails};
+        }
+    }
+
+    public static void removeMail(Context ctx,String mailToRemove){
+        Log.d("SHP","mailToRemove: "+mailToRemove);
+        StringBuilder builder = new StringBuilder();
+        for(String mail:getArrayOfMails(ctx)){
+            Log.d("SHP","mails in Array: "+mail);
+            if(!mail.equals(mailToRemove)){
+                Log.d("SHP","no coincide mail: "+mail);
+                builder.append(mail);
+                builder.append(";");
+            }
+        }
+        storeMails(ctx,builder.toString());
+    }
+
 }

@@ -117,13 +117,13 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
             Toast.makeText(getContext(),"No existen reservas para reportar",Toast.LENGTH_SHORT).show();
             return;
         }
-        MyEmail.setUpEmail(getContext(),new MyEmail(new String[]{MySharedPreferences.getDefaultMailAdress(getContext())},
+        MyEmail.setUpEmail(getContext(),new MyEmail(MySharedPreferences.getArrayOfMails(getContext()),
                 "Venta "+ tvFecha.getText().toString(),getCuerpoMail()));
     }
 
     private void enviarMailVentaDelDia(Uri uri){
         MyEmail.setUpEmail(getContext(),
-                new MyEmail(new String[]{MySharedPreferences.getDefaultMailAdress(getContext())},
+                new MyEmail(MySharedPreferences.getArrayOfMails(getContext()),
                         "Venta "+ tvFecha.getText().toString(),""),
                 uri);
     }
@@ -208,9 +208,10 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.menu_item_enviar_mail_venta_del_dia) {
+        /*if (itemId == R.id.menu_item_enviar_mail_venta_del_dia) {
             enviarMailVentaDelDia();
-        } else if (itemId == R.id.menu_item_excel_reporte_venta) {
+        } else */
+        if (itemId == R.id.menu_item_excel_reporte_venta) {
             generarExcelReporteDeVenta(false);
         }else if(itemId == R.id.menu_item_excel_mail){
             generarExcelReporteDeVenta(true);

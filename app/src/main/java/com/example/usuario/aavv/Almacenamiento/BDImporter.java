@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -305,11 +306,11 @@ public class BDImporter {
             }
 
             if(hasValue(str[8])) {//mail repVenta
-                MySharedPreferences.storeDefaultMailAdress(context,str[8]);
+                MySharedPreferences.addMailsIfDoesntExits(context,str[8]);
             }
-            if(hasValue(str[9])) {//carpeta de la app
+            /*if(hasValue(str[9])) {//carpeta de la app
                 MySharedPreferences.storeUriExtSharedDir(context,str[9]);
-            }
+            }*/
         }catch (Exception e){
             Log.e("Importando","Error salvando la configuracion",e);
         }
@@ -377,4 +378,5 @@ public class BDImporter {
     public interface CallFromImporter{
         void refreshUI();
     }
+
 }

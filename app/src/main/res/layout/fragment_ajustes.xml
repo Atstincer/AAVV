@@ -261,6 +261,31 @@
             android:text="Reporte de ventas" />
 
         <LinearLayout
+            android:id="@+id/layout_default_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <!--TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="enviar a:"/>
+
+
+            <TextView
+                android:id="@+id/tv_defaul_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/colorAccent"
+                android:text="Default mail adress" /-->
+
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_editar_default_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -283,30 +308,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/layout_default_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="enviar a:"/>
-
-
-            <TextView
-                android:id="@+id/tv_defaul_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:textColor="@color/colorAccent"
-                android:text="Default mail adress" />
-
-
-        </LinearLayout>
 
 
 
