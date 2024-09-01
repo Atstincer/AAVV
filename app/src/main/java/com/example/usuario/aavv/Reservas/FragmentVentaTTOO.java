@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.StorageAccess.VentaTTOOStorageAccess;
 import com.example.usuario.aavv.Util.DateHandler;
@@ -44,7 +45,7 @@ public class FragmentVentaTTOO extends Fragment {
 
     private LinearLayout layoutInfo;
     private AppCompatSpinner spinnerAgencias;
-    private TextView tvFechaDesde, tvFechaHasta, tvInfoVenta;
+    private TextView tvFechaDesde, tvFechaHasta, tvInfoVenta, tvFiltrandoPor;
     private RecyclerView rvReservas;
 
     private ReservaRVAdapter rvAdapter;
@@ -77,6 +78,7 @@ public class FragmentVentaTTOO extends Fragment {
         tvFechaHasta = view.findViewById(R.id.tv_fecha_hasta);
         tvInfoVenta = view.findViewById(R.id.tv_info_venta);
         rvReservas = view.findViewById(R.id.rv_reservas);
+        tvFiltrandoPor = view.findViewById(R.id.tv_filtrando_por);
     }
 
     private void setItUp(){
@@ -127,6 +129,12 @@ public class FragmentVentaTTOO extends Fragment {
 
             }
         });
+        int tipoFecha = MySharedPreferences.getTipoFechaFiltrar(getContext());
+        if(tipoFecha == MisConstantes.Filtrar.FECHA_EXCURSION.ordinal()){
+            tvFiltrandoPor.setText("Según fecha excursión");
+        }else if(tipoFecha == MisConstantes.Filtrar.FECHA_CONFECCION.ordinal()){
+            tvFiltrandoPor.setText("Según fecha venta");
+        }
         showInfo();
     }
 
@@ -207,24 +215,37 @@ public class FragmentVentaTTOO extends Fragment {
     }
 
     private List<Reserva> getReservasFromDB(String agencia){
-        String query;
-        String [] args;
+        String query = "";
+        String [] args = new String[]{};
         String desdeDBFormat = DateHandler.formatDateToStoreInDB(tvFechaDesde.getText().toString());
         String hastaDBFormat = DateHandler.formatDateToStoreInDB(tvFechaHasta.getText().toString());
         String cxcStr = String.valueOf(Reserva.ESTADO_CANCELADO);
         if(agencia.equals(TODAS)){
-            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND "+
-                    ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=? OR "+
-                    ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND "+
-                    ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
-            args = new String[]{desdeDBFormat,hastaDBFormat,cxcStr,desdeDBFormat,hastaDBFormat,cxcStr};
+            if(MySharedPreferences.getTipoFechaFiltrar(getContext()) == MisConstantes.Filtrar.FECHA_EXCURSION.ordinal()) {
+                query = "SELECT * FROM " + ReservaBDHandler.TABLE_NAME + " WHERE " + ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL + ">=? AND " +
+                        ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL + "<=? AND " + ReservaBDHandler.CAMPO_ESTADO + "!=? OR " +
+                        ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL + " IS NULL AND " + ReservaBDHandler.CAMPO_FECHA_EJECUCION + ">=? AND " +
+                        ReservaBDHandler.CAMPO_FECHA_EJECUCION + "<=? AND " + ReservaBDHandler.CAMPO_ESTADO + "!=?";
+                args = new String[]{desdeDBFormat, hastaDBFormat, cxcStr, desdeDBFormat, hastaDBFormat, cxcStr};
+            }else if(MySharedPreferences.getTipoFechaFiltrar(getContext()) == MisConstantes.Filtrar.FECHA_CONFECCION.ordinal()){
+                query = "SELECT * FROM " + ReservaBDHandler.TABLE_NAME + " WHERE " + ReservaBDHandler.CAMPO_FECHA_CONFECCION + ">=? AND " +
+                        ReservaBDHandler.CAMPO_FECHA_CONFECCION + "<=? AND " + ReservaBDHandler.CAMPO_ESTADO + "!=?";
+                args = new String[]{desdeDBFormat, hastaDBFormat, cxcStr};
+            }
         }else {
-            query = "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+">=? AND "+
-                    ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+"<=? AND "+ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+
-                    ReservaBDHandler.CAMPO_ESTADO+"!=? OR "+ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL+" IS NULL AND "+
-                    ReservaBDHandler.CAMPO_FECHA_EJECUCION+">=? AND "+ReservaBDHandler.CAMPO_FECHA_EJECUCION+"<=? AND "+
-                    ReservaBDHandler.CAMPO_AGENCIA+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"!=?";
-            args = new String[]{desdeDBFormat,hastaDBFormat,agencia,cxcStr,desdeDBFormat,hastaDBFormat,agencia,cxcStr};
+            if(MySharedPreferences.getTipoFechaFiltrar(getContext()) == MisConstantes.Filtrar.FECHA_EXCURSION.ordinal()) {
+                query = "SELECT * FROM " + ReservaBDHandler.TABLE_NAME + " WHERE " + ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL + ">=? AND " +
+                        ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL + "<=? AND " + ReservaBDHandler.CAMPO_AGENCIA + "=? AND " +
+                        ReservaBDHandler.CAMPO_ESTADO + "!=? OR " + ReservaBDHandler.CAMPO_FECHA_EJECUCION_ORIGINAL + " IS NULL AND " +
+                        ReservaBDHandler.CAMPO_FECHA_EJECUCION + ">=? AND " + ReservaBDHandler.CAMPO_FECHA_EJECUCION + "<=? AND " +
+                        ReservaBDHandler.CAMPO_AGENCIA + "=? AND " + ReservaBDHandler.CAMPO_ESTADO + "!=?";
+                args = new String[]{desdeDBFormat, hastaDBFormat, agencia, cxcStr, desdeDBFormat, hastaDBFormat, agencia, cxcStr};
+            }else if(MySharedPreferences.getTipoFechaFiltrar(getContext()) == MisConstantes.Filtrar.FECHA_CONFECCION.ordinal()){
+                query = "SELECT * FROM " + ReservaBDHandler.TABLE_NAME + " WHERE " + ReservaBDHandler.CAMPO_FECHA_CONFECCION + ">=? AND " +
+                        ReservaBDHandler.CAMPO_FECHA_CONFECCION + "<=? AND " + ReservaBDHandler.CAMPO_AGENCIA + "=? AND " +
+                        ReservaBDHandler.CAMPO_ESTADO + "!=?";
+                args = new String[]{desdeDBFormat, hastaDBFormat, agencia, cxcStr};
+            }
         }
         return Reserva.getSoloActivas(ReservaBDHandler.getReservasFromDB(getContext(),query,args));
     }

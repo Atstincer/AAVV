@@ -6,6 +6,8 @@ import android.util.Log;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import com.example.usuario.aavv.Util.MisConstantes;
+
 /**
  * Created by usuario on 1/11/2022.
  */
@@ -23,6 +25,7 @@ public class MySharedPreferences {
     private static final String KEY_TASA_CUP = "tasa_cup";
     private static final String KEY_URI_SHARED_DIR = "uri_shared_dir";
     private static final String KEY_DEFAULT_MAILS = "default_mail";
+    private static final String KEY_TIPO_FECHA_A_FILTRAR = "tipo_fecha_filtrar";
 
 
 
@@ -149,12 +152,13 @@ public class MySharedPreferences {
         if(mailsStored.length==0){
             storeMails(ctx,mails);
         }else {
-            String[] newMails = mails.split("[;]");
+            String[] newMails = mails.split(";");
             for(String newMail:newMails){
                 boolean found = false;
                 for(String storedMail:mailsStored){
-                    if(newMail.equals(storedMail)){
+                    if (newMail.equals(storedMail)) {
                         found = true;
+                        break;
                     }
                 }
                 if(!found){
@@ -197,6 +201,18 @@ public class MySharedPreferences {
             }
         }
         storeMails(ctx,builder.toString());
+    }
+
+    public static int getTipoFechaFiltrar(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getInt(KEY_TIPO_FECHA_A_FILTRAR, MisConstantes.Filtrar.FECHA_EXCURSION.ordinal());
+    }
+
+    public static void storeTipoFechaFiltrar(Context ctx,int tipoFecha){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(KEY_TIPO_FECHA_A_FILTRAR,tipoFecha);
+        editor.apply();
     }
 
 }

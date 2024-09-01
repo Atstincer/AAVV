@@ -11,6 +11,11 @@ public class MisConstantes {
     public static int INICIAR_EXCURSIONES_SALIENDO = 2;
 
 
+    public enum Filtrar{
+        FECHA_CONFECCION,
+        FECHA_EXCURSION
+    }
+
     public enum Estado{
         EDITAR,
         NUEVO

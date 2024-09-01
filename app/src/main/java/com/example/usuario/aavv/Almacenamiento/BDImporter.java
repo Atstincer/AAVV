@@ -39,6 +39,7 @@ public class BDImporter {
     }
 
     public void importar(Uri uri){
+        callBack.starLoading();
         new Thread(()->{
             TipoDato tipoDato = TipoDato.RESERVAS;
             List<Reserva> reservaList = new ArrayList<>();
@@ -99,11 +100,13 @@ public class BDImporter {
                     storeHotelesEnBD(hotelList);
                 }
                 activity.runOnUiThread(()->{
+                    callBack.endLoading();
                     callBack.refreshUI();
                     Toast.makeText(context,"Archivo importado correctamente",Toast.LENGTH_SHORT).show();
                 });
                 Log.d("Importando","Importado correctamente: "+reservaList.size()+" reservas en la lista.");
             }catch (Exception e){
+                callBack.endLoading();
                 Log.e("Importando","Error en importCSVInfo",e);
             }
         }).start();
@@ -308,9 +311,9 @@ public class BDImporter {
             if(hasValue(str[8])) {//mail repVenta
                 MySharedPreferences.addMailsIfDoesntExits(context,str[8]);
             }
-            /*if(hasValue(str[9])) {//carpeta de la app
-                MySharedPreferences.storeUriExtSharedDir(context,str[9]);
-            }*/
+            if(hasValue(str[9])){//fecha a filtrar
+                MySharedPreferences.storeTipoFechaFiltrar(context,Integer.parseInt(str[9]));
+            }
         }catch (Exception e){
             Log.e("Importando","Error salvando la configuracion",e);
         }
@@ -377,6 +380,8 @@ public class BDImporter {
 
     public interface CallFromImporter{
         void refreshUI();
+        void starLoading();
+        void endLoading();
     }
 
 }

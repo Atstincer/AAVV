@@ -1,351 +1,379 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/MargenesMyApp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Información del vendedor" />
-
-        <LinearLayout
-            android:id="@+id/layout_editar_nombre_vendedor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/et_nombre_vendedor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Nombre" />
-
-            <Button
-                android:id="@+id/btn_nombre_vendedor"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:text="Ok" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_nombre_vendedor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:text="Nombre vendedor" />
-
-
-        <LinearLayout
-            android:id="@+id/layout_editar_telefono_vendedor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/et_telefono_vendedor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Teléfono" />
-
-            <Button
-                android:id="@+id/btn_telefono_vendedor"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:text="Ok" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_telefono_vendedor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:text="Teléfono vendedor" />
-
-
-        <LinearLayout
-            android:id="@+id/layout_editar_agencia_vendedor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/et_agencia_vendedor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Agencia" />
-
-            <Button
-                android:id="@+id/btn_agencia_vendedor"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginStart="5dp"
-                android:text="Ok" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_agencia_vendedor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:text="Agencia" />
+        android:layout_height="match_parent"
+        style="@style/MargenesMyApp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/cardview_dark_background"
-            android:orientation="vertical" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Inicio de la App" />
-
-        <RadioGroup
-            android:id="@+id/rg_fragment_inicio"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/rb_iniciar_home_page"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="home page" />
+                android:text="Información del vendedor" />
 
-            <RadioButton
-                android:id="@+id/rb_iniciar_liquidacion"
+            <LinearLayout
+                android:id="@+id/layout_editar_nombre_vendedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_nombre_vendedor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Nombre" />
+
+                <Button
+                    android:id="@+id/btn_nombre_vendedor"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:text="Ok" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_nombre_vendedor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="liquidación" />
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:text="Nombre vendedor" />
 
-            <RadioButton
-                android:id="@+id/rb_iniciar_reservas"
+
+            <LinearLayout
+                android:id="@+id/layout_editar_telefono_vendedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_telefono_vendedor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Teléfono" />
+
+                <Button
+                    android:id="@+id/btn_telefono_vendedor"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:text="Ok" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_telefono_vendedor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="reservas del día" />
-
-        </RadioGroup>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/cardview_dark_background"
-            android:orientation="vertical" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reservar" />
-
-        <CheckBox
-            android:id="@+id/cb_predecir_precio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="predecir precio" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="la función predecir precio está desactivada en modo editar" />
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:text="Teléfono vendedor" />
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/cardview_dark_background"
-            android:orientation="vertical" />
+            <LinearLayout
+                android:id="@+id/layout_editar_agencia_vendedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Liquidaciones" />
+                <EditText
+                    android:id="@+id/et_agencia_vendedor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Agencia" />
 
-        <CheckBox
-            android:id="@+id/cb_incluir_devolucion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="incluir devoluciones en la liquidación del día" />
+                <Button
+                    android:id="@+id/btn_agencia_vendedor"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:text="Ok" />
 
-        <CheckBox
-            android:id="@+id/cb_incluir_precio_cup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="incluir equivalente en CUP" />
+            </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_agencia_vendedor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:text="Agencia" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/black"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inicio de la App" />
+
+            <RadioGroup
+                android:id="@+id/rg_fragment_inicio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rb_iniciar_home_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="home page" />
+
+                <RadioButton
+                    android:id="@+id/rb_iniciar_liquidacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="liquidación" />
+
+                <RadioButton
+                    android:id="@+id/rb_iniciar_reservas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="reservas del día" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/black"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reservar" />
+
+            <CheckBox
+                android:id="@+id/cb_predecir_precio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="predecir precio" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="la función predecir precio está desactivada en modo editar" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/black"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Liquidaciones" />
+
+            <CheckBox
+                android:id="@+id/cb_incluir_devolucion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="incluir devoluciones en la liquidación del día" />
+
+            <CheckBox
+                android:id="@+id/cb_incluir_precio_cup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="incluir equivalente en CUP" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1 USD =" />
+
+                    <EditText
+                        android:id="@+id/et_tasa_cup"
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:inputType="numberDecimal"
+                        android:gravity="center"
+                        android:hint="0.0"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="CUP" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/black"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enviar reporte de ventas a:" />
+
+            <LinearLayout
+                android:id="@+id/layout_default_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:orientation="vertical"/>
+
+
+            <LinearLayout
+                android:id="@+id/layout_editar_default_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_default_mail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Direccion email" />
+
+                <Button
+                    android:id="@+id/btn_add_default_mail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="Agregar" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Filtrar ventas del período:"/>
+
+            <RadioGroup
+                android:id="@+id/rg_fecha_filtrar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rb_fecha_excursion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="fecha excursión"/>
+
+                <RadioButton
+                    android:id="@+id/rb_fecha_confeccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="fecha venta"/>
+
+            </RadioGroup>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/black"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Almacenamiento" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1 USD =" />
-
-                <EditText
-                    android:id="@+id/et_tasa_cup"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:inputType="numberDecimal"
-                    android:gravity="center"
-                    android:hint="0.0"/>
+                    android:text="Carpeta de la app:"/>
 
                 <TextView
+                    android:id="@+id/tv_defaul_directory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/colorAccent"
                     android:layout_marginStart="5dp"
-                    android:text="CUP" />
+                    android:text="Carpeta de la app" />
 
             </LinearLayout>
 
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/cardview_dark_background"
-            android:orientation="vertical" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reporte de ventas" />
-
-        <LinearLayout
-            android:id="@+id/layout_default_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical">
-
-            <!--TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="enviar a:"/>
-
-
-            <TextView
-                android:id="@+id/tv_defaul_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:textColor="@color/colorAccent"
-                android:text="Default mail adress" /-->
-
-
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/layout_editar_default_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:orientation="horizontal">
+    </ScrollView>
 
-            <EditText
-                android:id="@+id/et_default_mail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Direccion email" />
+    <FrameLayout
+        android:id="@+id/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
 
-            <Button
-                android:id="@+id/btn_add_default_mail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="Agregar" />
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center" />
 
-        </LinearLayout>
+    </FrameLayout>
 
+</RelativeLayout>
 
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/cardview_dark_background"
-            android:orientation="vertical" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Almacenamiento" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Carpeta de la app:"/>
-
-            <TextView
-                android:id="@+id/tv_defaul_directory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
-                android:layout_marginStart="5dp"
-                android:text="Carpeta de la app" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
