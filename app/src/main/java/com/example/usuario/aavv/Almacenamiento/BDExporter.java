@@ -21,6 +21,7 @@ import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BDExporter {
@@ -35,16 +36,46 @@ public class BDExporter {
         this.activity = activity;
     }
 
-    public void exportar(){
+    public void exportar(Boolean[] whatToExport){
+        /*
+           0     cbConfiguracion.isChecked(),
+           1     cbVenta.isChecked(),
+           2     cbHoteles.isChecked(),
+           3     cbAgencias.isChecked(),
+           4     cbExcursiones.isChecked()
+         */
+        if(!somenThingSelected(whatToExport)){return;}
         new Thread(() -> {
-            List<Reserva> reservasList = ReservaBDHandler.getAllReservasFromDB(context);
-            List<Excursion> excursionList = ExcursionBDHandler.getAllExcursionesfromDB(context);
-            List<TTOO> agenciasList = TTOOBDHandler.getAllTTOOfromDB(context);
-            List<Hotel> hotelList = HotelBDHandler.getAllHotelesfromDB(context);
-            if(reservasList.isEmpty() && excursionList.isEmpty() && agenciasList.isEmpty() && hotelList.isEmpty()){
+            boolean isThereDataToExport = false;
+            List<Reserva> reservasList = new ArrayList<>();
+            List<Hotel> hotelList = new ArrayList<>();
+            List<TTOO> agenciasList = new ArrayList<>();
+            List<Excursion> excursionList = new ArrayList<>();
+
+            if(whatToExport[0]){ isThereDataToExport = true;}
+
+            if(whatToExport[1]) {
+                reservasList = ReservaBDHandler.getAllReservasFromDB(context);
+                if(!reservasList.isEmpty()){isThereDataToExport = true;}
+            }
+            if(whatToExport[2]){
+                hotelList = HotelBDHandler.getAllHotelesfromDB(context);
+                if(!hotelList.isEmpty()){isThereDataToExport = true;}
+            }
+            if(whatToExport[3]){
+                agenciasList = TTOOBDHandler.getAllTTOOfromDB(context);
+                if(!agenciasList.isEmpty()){isThereDataToExport = true;}
+            }
+            if(whatToExport[4]){
+                excursionList = ExcursionBDHandler.getAllExcursionesfromDB(context);
+                if(!excursionList.isEmpty()){isThereDataToExport = true;}
+            }
+
+            if(!isThereDataToExport){
                 activity.runOnUiThread(() -> Toast.makeText(context,"No hay registros para exportar.",Toast.LENGTH_SHORT).show());
                 return;
             }
+
             FileOutputStream fileOutputStream;
             ParcelFileDescriptor csvFile;
             try {
@@ -60,18 +91,20 @@ public class BDExporter {
                 csvFile = context.getContentResolver().openFileDescriptor(file.getUri(), "w");
                 fileOutputStream = new FileOutputStream(csvFile.getFileDescriptor());
 
-                addConfig(fileOutputStream);
-                if(!reservasList.isEmpty()) {
+                if(whatToExport[0]) {
+                    addConfig(fileOutputStream);
+                }
+                if(whatToExport[1] && !reservasList.isEmpty()) {
                     addResservasToExport(fileOutputStream,reservasList);
                 }
-                if(!excursionList.isEmpty()){
-                    addExcursionesToExport(fileOutputStream,excursionList);
+                if(whatToExport[2] && !hotelList.isEmpty()){
+                    addHotelesToExport(fileOutputStream,hotelList);
                 }
-                if(!agenciasList.isEmpty()){
+                if(whatToExport[3] && !agenciasList.isEmpty()){
                     addAgenciasToExport(fileOutputStream,agenciasList);
                 }
-                if(!hotelList.isEmpty()){
-                    addHotelesToExport(fileOutputStream,hotelList);
+                if(whatToExport[4] && !excursionList.isEmpty()){
+                    addExcursionesToExport(fileOutputStream,excursionList);
                 }
                 fileOutputStream.close();
                 csvFile.close();
@@ -80,6 +113,13 @@ public class BDExporter {
                 Log.d("Exportando","Error creando salva: "+e.getMessage());
             }
         }).start();
+    }
+
+    private Boolean somenThingSelected(Boolean[] whatToExport){
+        for(Boolean item: whatToExport){
+            if(item){return true;}
+        }
+        return false;
     }
 
     private void addConfig(FileOutputStream fileWriter){

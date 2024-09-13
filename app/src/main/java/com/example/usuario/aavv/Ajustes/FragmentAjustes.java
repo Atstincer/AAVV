@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.BDExporter;
 import com.example.usuario.aavv.Almacenamiento.BDImporter;
+import com.example.usuario.aavv.Almacenamiento.DialogFragmentExporter;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.MisConstantes;
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
  * Created by usuario on 9/08/2023.
  */
 
-public class FragmentAjustes extends Fragment implements BDImporter.CallFromImporter {
+public class FragmentAjustes extends Fragment implements BDImporter.CallFromImporter, DialogFragmentExporter.MyCallBack {
 
     public static final String TAG = "FragmentAjustes";
     private LinearLayout layoutEditarNombreVendedor,layoutEditarTelefonoVendedor,layoutEditarAgenciaVendedor,
@@ -344,10 +345,16 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }
     }
 
+    private void showDialogExporter(){
+        DialogFragmentExporter dialog = new DialogFragmentExporter();
+        dialog.setTargetFragment(this,0);
+        dialog.show(getChildFragmentManager(),DialogFragmentExporter.TAG);
+    }
 
-    private void exportarBD(){
+    @Override
+    public void exportarBD(Boolean[] whatToExport){
         BDExporter bdExporter = new BDExporter(getContext(),getActivity(),myCallBack);
-        bdExporter.exportar();
+        bdExporter.exportar(whatToExport);
     }
 
     @Override
@@ -360,7 +367,8 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_item_exportar_bd){
-            exportarBD();
+            //exportarBD();
+            showDialogExporter();
         } else if(item.getItemId() == R.id.menu_item_importar_bd){
             myCallBack.showFileChooser();
         }

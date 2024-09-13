@@ -36,7 +36,7 @@ public class SalvaBDStorageAccess extends StorageAccessAbstractClass {
     public DocumentFile getFile() {
         DocumentFile documentFile = getProperDirectory();
         if(documentFile==null || !documentFile.exists()){return null;}
-        file = documentFile.createFile("text/csv",getFileName());
+        file = documentFile.createFile("text/csv",getFileName()+".csv");
         return file;
     }
 }

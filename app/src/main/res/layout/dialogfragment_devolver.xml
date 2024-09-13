@@ -13,7 +13,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:orientation="horizontal">
 
             <TextView
@@ -25,7 +24,7 @@
                 android:id="@+id/tv_fecha_dev"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:text="Fecha" />
 
         </LinearLayout>
