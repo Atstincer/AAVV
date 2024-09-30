@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
@@ -22,7 +24,9 @@ import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.Util;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 
@@ -37,7 +41,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 //    private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
 
     private LinearLayout layoutInfo;
-    private TextView tvFechaLiquidacion, tvInfo;
+    private TextView tvDesde, tvHasta, tvInfo;
     private RecyclerView rvReservas;
     private ReservaRVAdapter adapter;
     private FloatingActionButton btnAddReserva;
@@ -64,7 +68,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void bindComponents(View view){
         layoutInfo = view.findViewById(R.id.layout_info);
-        tvFechaLiquidacion = view.findViewById(R.id.tv_fecha_confeccion_fliquidacion);
+        tvDesde = view.findViewById(R.id.tv_desde_fliquidacion);
+        tvHasta = view.findViewById(R.id.tv_hasta_fliquidacion);
         tvInfo = view.findViewById(R.id.tv_info_venta);
         rvReservas = view.findViewById(R.id.rv_reservas_fliquidacion);
         btnAddReserva = view.findViewById(R.id.btn_add_reserva);
@@ -72,11 +77,17 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void setItUp(){
         myCallBack.udUI(FragmentLiquidacion.TAG);
-        if(myCallBack.getLastFechaLiq()==null) {
-            tvFechaLiquidacion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
-            myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
+        if(myCallBack.getDesdeLiq()==null) {
+            tvDesde.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            myCallBack.setDesdeLiq(tvDesde.getText().toString());
         }else {
-            tvFechaLiquidacion.setText(myCallBack.getLastFechaLiq());
+            tvDesde.setText(myCallBack.getDesdeLiq());
+        }
+        if(myCallBack.getHastaLiq()==null) {
+            tvHasta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+            myCallBack.setHastaLiq(tvHasta.getText().toString());
+        }else {
+            tvHasta.setText(myCallBack.getHastaLiq());
         }
         udReservaList();
         udTvInfo();
@@ -100,22 +111,47 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             }
         });
 
-        tvFechaLiquidacion.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaLiquidacion, () -> {
-            myCallBack.setLastFechaLiq(tvFechaLiquidacion.getText().toString());
+        tvDesde.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvDesde, () -> {
+            myCallBack.setDesdeLiq(tvDesde.getText().toString());
+            udUI();
+        }));
+
+        tvHasta.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvHasta, () -> {
+            myCallBack.setHastaLiq(tvHasta.getText().toString());
             udUI();
         }));
 
         layoutInfo.setOnLongClickListener(view -> {
-            Util.copyToClipBoard(getContext(),"Venta del "+ tvFechaLiquidacion.getText().toString()+"\n"+tvInfo.getText().toString());
+            String info;
+            String desde = tvDesde.getText().toString();
+            String hasta = tvHasta.getText().toString();
+            if(desde.equals(hasta)){
+                info = "Venta del "+ desde +"\n"+tvInfo.getText().toString();
+            } else {
+                info = "Venta\ndesde: "+ desde + "\thasta: " + hasta +"\n\n"+tvInfo.getText().toString();
+            }
+
+            Util.copyToClipBoard(getContext(),info);
             return true;
         });
 
         btnAddReserva.setOnClickListener(view -> addReserva());
     }
 
+    private boolean areDatesValid(){
+        String desde = tvDesde.getText().toString();
+        String hasta = tvHasta.getText().toString();
+        return desde.equals(hasta) || DateHandler.areDatesInOrder(desde, hasta);
+    }
+
     private void udUI(){
-        udReservaList();
-        udTvInfo();
+        if(areDatesValid()){
+            udReservaList();
+            udTvInfo();
+        }else {
+            reservaList = new ArrayList<>();
+            tvInfo.setText("Las fechas no son correctas");
+        }
         adapter.setReservaList(Reserva.toObjectList(reservaList));
     }
 
@@ -123,18 +159,18 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         String text;
         if(!reservaList.isEmpty()) {
             double[] infoTotal = getTotales();
-            text = "Totales: " + String.valueOf((int)(infoTotal[0])) + " pax  " + String.valueOf(infoTotal[1]) + " usd";
+            text = "Totales: " + (int)(infoTotal[0]) + " pax  " + infoTotal[1] + " usd";
             if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
                 text += " ("+infoTotal[1]*MySharedPreferences.getTasaCUP(getContext())+" cup)";
             }
             if(infoTotal[2]>0){
-                text += "\nDevoluciones: "+String.valueOf(infoTotal[2])+" usd";
+                text += "\nDevoluciones: " + infoTotal[2] + " usd";
                 if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
                     text += " ("+infoTotal[2]*MySharedPreferences.getTasaCUP(getContext())+" cup)";
                 }
-                text += "\nTotal sin dev: "+String.valueOf(infoTotal[1]-infoTotal[2])+" usd";
-                if(MySharedPreferences.getIncluirPrecioCUP(getContext())&&MySharedPreferences.getTasaCUP(getContext())>0){
-                    text += " ("+(infoTotal[1]-infoTotal[2])*MySharedPreferences.getTasaCUP(getContext())+" cup)";
+                text += "\nTotal sin dev: " + (infoTotal[1]-infoTotal[2]) +" usd";
+                if(MySharedPreferences.getIncluirPrecioCUP(getContext()) && MySharedPreferences.getTasaCUP(getContext())>0){
+                    text += " (" + (infoTotal[1] - infoTotal[2]) * MySharedPreferences.getTasaCUP(getContext()) + " cup)";
                 }
             }
         } else {
@@ -148,72 +184,92 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         double cantPax = 0;
         double devoluciones = 0;
         for(Reserva reserva:reservaList){
-            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
-                    reserva.getEstado()==Reserva.ESTADO_CANCELADO && reserva.getFechaCancelacion()!=null &&
-                            !reserva.getFechaCancelacion().equals(tvFechaLiquidacion.getText().toString())) {
+            if(reserva.getEstado()==Reserva.ESTADO_ACTIVO) {
                 total += reserva.getPrecio();
-                cantPax += + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                cantPax += reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
             }else if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
-                if(reserva.getFechaConfeccion().equals(reserva.getFechaDevolucion())) {
-                    cantPax += + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_CONFECCION){
                     total += reserva.getPrecio();
-                    devoluciones += reserva.getImporteDevuelto();
-                } else if(reserva.getFechaConfeccion().equals(tvFechaLiquidacion.getText().toString())){
-                    total += reserva.getPrecio();
-                    cantPax = cantPax + reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
-                } else if(reserva.getFechaDevolucion().equals(tvFechaLiquidacion.getText().toString())) {
+                    cantPax += reserva.getAdultos() + reserva.getMenores() + reserva.getInfantes() + reserva.getAcompanantes();
+                } else if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION){
                     devoluciones += reserva.getImporteDevuelto();
                 }
             }
         }
-        //return String.valueOf(cantPax) + " pax  " + String.valueOf(total) + " usd";
         return new double[]{cantPax,total, devoluciones};
     }
 
     private void udReservaList(){
-        String fechaLiqBD = DateHandler.formatDateToStoreInDB(tvFechaLiquidacion.getText().toString());
+        reservaList = new ArrayList<>();
+        List<Reserva> devoluciones = new ArrayList<>();
+        String desdeDB = DateHandler.formatDateToStoreInDB(tvDesde.getText().toString());
+        String hastaDB = DateHandler.formatDateToStoreInDB(tvHasta.getText().toString());
+        reservaList.addAll(ReservaBDHandler.getReservasFromDB(getContext(),
+                "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+">=? AND "
+                        + ReservaBDHandler.CAMPO_FECHA_CONFECCION+"<=?",
+                new String[]{desdeDB, hastaDB}));
         if(MySharedPreferences.getIncluirDevEnLiquidacion(getContext())){
-            reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
-                    "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=? OR " +
-                    ReservaBDHandler.CAMPO_FECHA_DEVOLUCION+"=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
-                    new String[]{fechaLiqBD,fechaLiqBD,String.valueOf(Reserva.ESTADO_DEVUELTO)});
-        }else {
-            reservaList = ReservaBDHandler.getReservasFromDB(getContext(),
-                    "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_CONFECCION+"=?",
-                    new String[]{fechaLiqBD});
+            devoluciones.addAll(ReservaBDHandler.getReservasFromDB(getContext(),
+                    "SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE "+ReservaBDHandler.CAMPO_FECHA_DEVOLUCION+">=? " +
+                            "AND "+ReservaBDHandler.CAMPO_FECHA_DEVOLUCION+"<=? AND "+ReservaBDHandler.CAMPO_ESTADO+"=?",
+                    new String[]{desdeDB,hastaDB,String.valueOf(Reserva.ESTADO_DEVUELTO)}));
         }
-        Collections.sort(reservaList,Reserva.ordenarPorTE);
+        if(!reservaList.isEmpty()){
+            for(Reserva reserva: reservaList){
+                reserva.setCriterioSeleccion(Reserva.Criterio_Seleccion.FECHA_CONFECCION);
+            }
+            Collections.sort(reservaList,Reserva.ordenarPorTE);
+        }
+        if(!devoluciones.isEmpty()){
+            for(Reserva reserva: devoluciones){
+                reserva.setCriterioSeleccion(Reserva.Criterio_Seleccion.FECHA_DEVOLUCION);
+            }
+            Collections.sort(devoluciones,Reserva.ordenarPorTE);
+            reservaList.addAll(devoluciones);
+        }
     }
 
 
     private void copiarInfo(){
+        String desde = tvDesde.getText().toString();
+        String hasta = tvHasta.getText().toString();
         StringBuilder sb = new StringBuilder();
-        sb.append("Venta del día: ");
-        sb.append(tvFechaLiquidacion.getText().toString());
+        if(desde.equals(hasta)){
+            sb.append("Venta del día: ");
+            sb.append(desde);
+        } else {
+            sb.append("Venta\ndesde:");
+            sb.append(desde);
+            sb.append("\thasta:");
+            sb.append(hasta);
+        }
         sb.append("\n\n");
         sb.append(tvInfo.getText().toString());
         for (Reserva reserva:reservaList){
-            if(reserva.getEstado() == Reserva.ESTADO_ACTIVO ||
-                    reserva.getEstado() == Reserva.ESTADO_DEVUELTO &&
-                            !tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())) {
+            if(reserva.getEstado() == Reserva.ESTADO_ACTIVO) {
                 sb.append("\n\n");
                 sb.append(Reserva.toString(getContext(),reserva, Reserva.INFO_LIQUIDACION));
             }else if(reserva.getEstado() == Reserva.ESTADO_CANCELADO){
                 sb.append("\n\nTE: ");
                 sb.append(reserva.getNoTE());
                 sb.append("    CANCELADO");
-            } else if(reserva.getEstado() == Reserva.ESTADO_DEVUELTO && tvFechaLiquidacion.getText().toString().equals(reserva.getFechaDevolucion())){
-                if(reserva.getPrecio()==reserva.getImporteDevuelto()) {
-                    sb.append("\n\nTE: ");
-                    sb.append(reserva.getNoTE());
-                    sb.append("    DEVOLUCION TOTAL");
-                }else if(reserva.getPrecio() > reserva.getImporteDevuelto()) {
-                    sb.append("\n\nTE: ");
-                    sb.append(reserva.getNoTE());
-                    sb.append("    DEVOLUCION PARCIAL");
+            } else if(reserva.getEstado() == Reserva.ESTADO_DEVUELTO){
+                if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_CONFECCION){
+                    sb.append("\n\n");
+                    sb.append(Reserva.toString(getContext(),reserva, Reserva.INFO_LIQUIDACION));
+                } else if (reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION){
+                    if(reserva.getPrecio() == reserva.getImporteDevuelto()) {
+                        sb.append("\n\nTE: ");
+                        sb.append(reserva.getNoTE());
+                        sb.append("    DEVOLUCION TOTAL");
+                    }else if(reserva.getPrecio() > reserva.getImporteDevuelto()) {
+                        sb.append("\n\nTE: ");
+                        sb.append(reserva.getNoTE());
+                        sb.append("    DEVOLUCION PARCIAL");
+                        sb.append("\nImporte devuelto: -");
+                        sb.append(reserva.getImporteDevuelto());
+                    }
                 }
-                sb.append("\nImporte devuelto: -");
-                sb.append(reserva.getImporteDevuelto());
             }
         }
         Util.copyToClipBoard(getContext(),sb.toString());
@@ -241,23 +297,33 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void addReserva(){
         if(reservaList.isEmpty()){
-            myCallBack.setUpFragmentReservar("",tvFechaLiquidacion.getText().toString());
+            myCallBack.setUpFragmentReservar("",tvDesde.getText().toString());
             return;
         }
-        Reserva lastReserva = reservaList.get(reservaList.size()-1);
-        if(lastReserva.getEstado()==Reserva.ESTADO_DEVUELTO && lastReserva.getFechaDevolucion().equals(tvFechaLiquidacion.getText().toString())
-                && !lastReserva.getFechaConfeccion().equals(tvFechaLiquidacion.getText().toString())){
-            myCallBack.setUpFragmentReservar("",tvFechaLiquidacion.getText().toString());
-        }else {
-            myCallBack.setUpFragmentReservar(lastReserva.getNoTE(),tvFechaLiquidacion.getText().toString());
+        Reserva lastReserva = getLastReservaActiva();
+        if(lastReserva.getFechaConfeccion() == null || lastReserva.getFechaConfeccion().isEmpty()){
+            myCallBack.setUpFragmentReservar("",tvDesde.getText().toString());
+        } else {
+            myCallBack.setUpFragmentReservar(lastReserva.getNoTE(),lastReserva.getFechaConfeccion());
         }
+    }
+
+    private Reserva getLastReservaActiva(){
+        for(int i = reservaList.size() - 1; i >= 0; i--){
+            if(reservaList.get(i).getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_CONFECCION){
+                return reservaList.get(i);
+            }
+        }
+        return new Reserva();
     }
 
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(String id);
         void setUpFragmentReservar(String lastTE, String fechaLiquidacion);
-        void setLastFechaLiq(String lastFechaLiq);
-        String getLastFechaLiq();
+        void setDesdeLiq(String fechaDesdeLiq);
+        void setHastaLiq(String fechaHastaLiq);
+        String getDesdeLiq();
+        String getHastaLiq();
     }
 }

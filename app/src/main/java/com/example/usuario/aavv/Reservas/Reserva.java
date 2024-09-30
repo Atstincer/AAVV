@@ -26,8 +26,10 @@ public class Reserva {
     private int adultos, menores, infantes, acompanante, estado;
     private double precio, importeDevuelto;
     private boolean incluirEnRepVenta;
+    private Criterio_Seleccion criterioSeleccion;
 
     public Reserva() {
+        criterioSeleccion = Criterio_Seleccion.DESCONOCIDO;
     }
 
     public static String toString(Context ctx, Reserva reserva, int formato){
@@ -58,8 +60,7 @@ public class Reserva {
     }
 
     static List<Object> toObjectList(List<Reserva> list){
-        List<Object> objects = new ArrayList<>(list);
-        return objects;
+        return new ArrayList<>(list);
     }
 
     //no extended 2+2+1 free
@@ -116,6 +117,14 @@ public class Reserva {
 
     public void setIncluirEnRepVenta(boolean incluirEnRepVenta) {
         this.incluirEnRepVenta = incluirEnRepVenta;
+    }
+
+    public Criterio_Seleccion getCriterioSeleccion() {
+        return criterioSeleccion;
+    }
+
+    public void setCriterioSeleccion(Criterio_Seleccion criterioSeleccion) {
+        this.criterioSeleccion = criterioSeleccion;
     }
 
     public String getFechaCancelacion() {
@@ -354,5 +363,9 @@ public class Reserva {
             return reserva1.getHotel().toLowerCase().compareTo(reserva2.getHotel().toLowerCase());
         }
     };
+
+    public enum Criterio_Seleccion{
+        DESCONOCIDO, FECHA_CONFECCION, FECHA_DEVOLUCION
+    }
 
 }

@@ -2,12 +2,16 @@ package com.example.usuario.aavv.Util;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -31,7 +35,7 @@ public class DateHandler {
 
     public static String formatDateToShow(String date){
         if(date == null){return date;}
-        if(date.equals("")){return "";}
+        if(date.isEmpty()){return "";}
         return date.substring(8) + "/" + date.substring(5,7) + "/" + date.substring(0,4);
     }
 
@@ -76,16 +80,32 @@ public class DateHandler {
         try {
             Date date1 = sdf.parse(firstDate);
             Date date2 = sdf.parse(secondDate);
+            assert date1 != null;
             return date1.before(date2);
         }catch (Exception e){
-            System.out.println("Exception capturada parseando fechas: "+e.getMessage());
+            Log.e("fechas","Error parseando fechas: " + e.getMessage());
         }
         return false;
     }
 
+    /*public static boolean isDateInRange(String desde, String hasta, String fecha){
+        if(desde.equals(fecha) || hasta.equals(fecha)){ return true; }
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try{
+            Date desdeDate = sdf.parse(desde);
+            Date hastaDate = sdf.parse(hasta);
+            Date fechaDate = sdf.parse(fecha);
+            assert fechaDate != null;
+            return fechaDate.after(desdeDate) && fechaDate.before(hastaDate);
+        } catch (Exception e){
+            Log.e("fechas","Error parseando fechas: " + e.getMessage());
+        }
+        return false;
+    }*/
+
     public static void showDatePicker(Context ctx, final TextView textView, final DatePickerCallBack callBack) {
         String tv_str = "";
-        if(textView.getText().toString().equals("")||textView.getText().toString().length()<10){
+        if(textView.getText().toString().isEmpty() ||textView.getText().toString().length()<10){
             tv_str = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR);
         }else {
             tv_str = textView.getText().toString();
@@ -94,12 +114,9 @@ public class DateHandler {
         int month = Integer.parseInt(tv_str.substring(3, 5)) - 1;
         int day = Integer.parseInt(tv_str.substring(0, 2));
 
-        new DatePickerDialog(ctx, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                textView.setText(DateHandler.formatDateToShow(day,month+1,year));
-                callBack.dateSelected();
-            }
+        new DatePickerDialog(ctx, (datePicker, year1, month1, day1) -> {
+            textView.setText(DateHandler.formatDateToShow(day1, month1 +1, year1));
+            callBack.dateSelected();
         }, year, month, day).show();
     }
 

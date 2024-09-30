@@ -68,19 +68,23 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         View v = inflater.inflate(R.layout.fragment_reservar, container, false);
         bindComponents(v);
         if(getArguments()!=null){
-            if(getArguments().getString("fechaLiq") != null && !getArguments().getString("fechaLiq").isEmpty()) {
-                tvFechaConfeccion.setText(getArguments().getString("fechaLiq"));
+            String fechaLiq = getArguments().getString("fechaLiq");
+            String lastTE = getArguments().getString("lastTE");
+            if(fechaLiq != null && !fechaLiq.isEmpty()) {
+                tvFechaConfeccion.setText(fechaLiq);
             }
-            if(getArguments().getString("lastTE") != null && !getArguments().getString("lastTE").isEmpty()){
-                getReadyForNextTE(getArguments().getString("lastTE"));
+            if(lastTE != null && !lastTE.isEmpty()){
+                getReadyForNextTE(lastTE);
             }
         }
         if(savedInstanceState!=null){
-            if(savedInstanceState.getString("fechaConf")!=null){
-                tvFechaConfeccion.setText(savedInstanceState.getString("fechaConf"));
+            String fechaConf = savedInstanceState.getString("fechaConf");
+            String fechaEjec = savedInstanceState.getString("fechaEjec");
+            if(fechaConf != null){
+                tvFechaConfeccion.setText(fechaConf);
             }
-            if(savedInstanceState.getString("fechaEjec")!=null){
-                tvFechaEjecucion.setText(savedInstanceState.getString("fechaEjec"));
+            if(fechaEjec != null){
+                tvFechaEjecucion.setText(fechaEjec);
             }
         }
         setItUP();
@@ -143,7 +147,6 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
                 "Catamarán MJ exclusivo", "Jeep safari"};
         excursionesList = ExcursionBDHandler.getAllExcursionesfromDB(getContext());
 
-        //ArrayAdapter adapterExcursiones = new ArrayAdapter<>(getContext(),R.layout.my_simple_dropdown_item_1line,excursiones);
         actvNombreExcursion.setThreshold(1);
         if (!excursionesList.isEmpty()) {
             actvNombreExcursion.setAdapter(new ArrayAdapter<>(getContext(), R.layout.my_simple_dropdown_item_1line, excursionesList));
@@ -223,9 +226,11 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void setUpNuevoMode() {
-        tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        if(tvFechaConfeccion.getText().toString().equals("Fecha")) {
+            tvFechaConfeccion.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        }
         checkBoxIncluirRepVenta.setChecked(true);
-        tvFechaRepVenta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        tvFechaRepVenta.setText(tvFechaConfeccion.getText().toString());
         tvEstado.setText("");
         btn.setText("Registrar");
     }
@@ -366,11 +371,12 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
 
     private void getReadyForNextTE(String teAnterior) {
         limpiarCampos();
-        if(getNextTE(teAnterior)!=null && !getNextTE(teAnterior).isEmpty()){
-            etNumeroTE.setText(getNextTE(teAnterior));
+        String nextTE = getNextTE(teAnterior);
+        if(nextTE != null && !nextTE.isEmpty()){
+            etNumeroTE.setText(nextTE);
         }
         checkBoxIncluirRepVenta.setChecked(true);
-        tvFechaRepVenta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
+        tvFechaRepVenta.setText(tvFechaConfeccion.getText().toString());
         actvNombreExcursion.requestFocus();
     }
 

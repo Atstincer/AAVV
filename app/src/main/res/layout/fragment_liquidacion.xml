@@ -24,19 +24,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Fecha Liq." />
+                        android:text="desde:" />
 
                     <TextView
-                        android:id="@+id/tv_fecha_confeccion_fliquidacion"
+                        android:id="@+id/tv_desde_fliquidacion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
+                        android:text="Fecha" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="hasta:" />
+
+                    <TextView
+                        android:id="@+id/tv_hasta_fliquidacion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="Fecha" />
 

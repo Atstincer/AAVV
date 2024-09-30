@@ -175,7 +175,7 @@ public class FragmentVentaTTOO extends Fragment {
                 Collections.sort(reservasDelPeriodo,
                         Comparator.comparing(reserva -> reserva.getAgencia().toLowerCase()));
             }else {
-                Collections.sort(reservasDelPeriodo, (reserva1, reserva2) -> reserva1.getAgencia().toLowerCase().compareTo(reserva2.getAgencia().toLowerCase()));
+                Collections.sort(reservasDelPeriodo, Comparator.comparing(reserva -> reserva.getAgencia().toLowerCase()));
             }
             List<String> nuevasAgencias = new ArrayList<>();
             for (Reserva reserva : reservasDelPeriodo) {

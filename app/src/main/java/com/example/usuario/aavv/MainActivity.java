@@ -36,15 +36,14 @@ import com.example.usuario.aavv.Util.MisConstantes;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentTouroperadores.MyCallBack, FragmentReservar.MyCallBack,
         FragmentReservasSaliendoElDia.MyCallBack, FragmentAjustes.MyCallBack, FragmentLiquidacion.MyCallBack, FragmentVentaTTOO.MyCallBack,
-        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, ReservaRVAdapter.MyMainActivity,
-        FragmentRepVenta.MyCallBack{
+        FragmentHoteles.MyCallBack, FragmentExcursion.MyCallBack, FragmentExcursiones.MyCallBack, FragmentRepVenta.MyCallBack{
 
     private final int REQUEST_CODE_PERMISSION_SELECT_DIR = 200;
     private final int SELEC_FILE_SALVA = 201;
 
     private MisConstantes.Estado estadoFragmentReservar;
     private boolean hasStarted;
-    private String lastFechaLiq, lastFechaEjec, lastDesde, lastHasta, lastFechaRepVenta;
+    private String fechaDesdeLiq, fechaHastaLiq, lastFechaEjec, lastDesde, lastHasta, lastFechaRepVenta;
 
     private CoordinatorLayout coordinatorLayout;
 //    private BDImporter.CallFromImporter caller;
@@ -57,7 +56,8 @@ public class MainActivity extends AppCompatActivity
                 estadoFragmentReservar = MisConstantes.Estado.valueOf(savedInstanceState.getString("estadoFragReservar"));
             }
             hasStarted = savedInstanceState.getBoolean("hasStarted");
-            lastFechaLiq = savedInstanceState.getString("lastFechaLiq");
+            fechaDesdeLiq = savedInstanceState.getString("fechaDesdeLiq");
+            fechaHastaLiq = savedInstanceState.getString("fechaHastaLiq");
             lastFechaEjec = savedInstanceState.getString("lastFechaEjec");
             lastDesde = savedInstanceState.getString("lastDesde");
             lastHasta = savedInstanceState.getString("lastHasta");
@@ -190,7 +190,8 @@ public class MainActivity extends AppCompatActivity
             outState.putString("estadoFragReservar", estadoFragmentReservar.name());
         }
         outState.putBoolean("hasStarted",hasStarted);
-        outState.putString("lastFechaLiq",lastFechaLiq);
+        outState.putString("fechaDesdeLiq",fechaDesdeLiq);
+        outState.putString("fechaHastaLiq",fechaHastaLiq);
         outState.putString("lastFechaEjec",lastFechaEjec);
         outState.putString("lastDesde",lastDesde);
         outState.putString("lastHasta",lastHasta);
@@ -209,13 +210,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void setLastFechaLiq(String lastFechaLiq) {
-        this.lastFechaLiq = lastFechaLiq;
+    public void setDesdeLiq(String fechaDesdeLiq) {
+        this.fechaDesdeLiq = fechaDesdeLiq;
     }
 
     @Override
-    public String getLastFechaLiq() {
-        return lastFechaLiq;
+    public void setHastaLiq(String fechaHastaLiq) {
+        this.fechaHastaLiq = fechaHastaLiq;
+    }
+
+    @Override
+    public String getDesdeLiq() {
+        return fechaDesdeLiq;
+    }
+
+    @Override
+    public String getHastaLiq() {
+        return fechaHastaLiq;
     }
 
     @Override

@@ -10,27 +10,57 @@
         android:id="@+id/layout_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginRight="20dp"
-        android:layout_marginEnd="20dp">
+        android:layout_marginEnd="20dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ventas del día.." />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_fecha_confeccion_fliquidacion"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="desde" />
+
+                <TextView
+                    android:id="@+id/tv_desde_fliquidacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="fecha" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:text="fecha confeccion" />
+                android:orientation="vertical"
+                android:layout_marginStart="30dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="hasta" />
+
+                <TextView
+                    android:id="@+id/tv_hasta_fliquidacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="fecha" />
+
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
@@ -55,7 +85,7 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_add_reserva"
             style="@style/my_fab_add"
-            app:fabSize="normal"/>
+            app:fabSize="normal" />
 
     </RelativeLayout>
 

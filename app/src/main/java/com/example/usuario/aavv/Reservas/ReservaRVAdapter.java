@@ -26,22 +26,20 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final int RESERVA_VIEW = 0, EXCURSION_VIEW = 1;
 
     private List<Object> reservaList;
-    private MyCallBack myCallBack;
-    private MyMainActivity myMainActivity;
-    private Context context;
-    private Modo modo;
+    private final MyCallBack myCallBack;
+    private final Context context;
+    private final Modo modo;
 
-    ReservaRVAdapter(Context ctx,List<Object> reservaList, Modo modo,MyCallBack myCallBack) {
+    ReservaRVAdapter(Context ctx, List<Object> reservaList, Modo modo, MyCallBack myCallBack) {
         context = ctx;
         this.reservaList = reservaList;
         this.modo = modo;
         this.myCallBack = myCallBack;
-        myMainActivity = (MyMainActivity)context;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(reservaList.get(position) instanceof Excursion){
+        if (reservaList.get(position) instanceof Excursion) {
             return EXCURSION_VIEW;
         }
         return RESERVA_VIEW;
@@ -49,197 +47,191 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == EXCURSION_VIEW){
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_titulo_excursion,parent,false);
+        if (viewType == EXCURSION_VIEW) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_titulo_excursion, parent, false);
             return new ViewHolderExcursion(v);
         }
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_reserva,parent,false);
-        return new ViewHolderReserva(context,v,modo,myCallBack);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_item_reserva, parent, false);
+        return new ViewHolderReserva(context, v, modo, myCallBack);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if(getItemViewType(position)==EXCURSION_VIEW){
+        if (getItemViewType(position) == EXCURSION_VIEW) {
             ((ViewHolderExcursion) holder).bindHolder(position);
-        }else if(getItemViewType(position)==RESERVA_VIEW){
+        } else if (getItemViewType(position) == RESERVA_VIEW) {
             ((ViewHolderReserva) holder).bindHolder(position);
         }
     }
 
-//    @Override
-//    public void onBindViewHolder(ViewHolder holder, int position) {
-//        holder.bindHolder(position);
-//    }
 
     @Override
     public int getItemCount() {
         return reservaList.size();
     }
 
-    void setReservaList(List<Object> lista){
+    void setReservaList(List<Object> lista) {
         reservaList = lista;
         notifyDataSetChanged();
     }
 
-    private class ViewHolderReserva extends RecyclerView.ViewHolder{
+    private class ViewHolderReserva extends RecyclerView.ViewHolder {
 
-        private TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs, tvIdioma, tvPrecio, tvEstado, tvPrecioCUP;
-        private Modo modo;
-
-        private Context ctx;
+        private final TextView tvTE, tvFechaEjecucion, tvExcursion, tvHotel, tvHab, tvCantPax, tvObs,
+                tvIdioma, tvPrecio, tvEstado, tvPrecioCUP;
+        private final Modo modo;
+        private final Context ctx;
 
         ViewHolderReserva(final Context ctx, View itemView, Modo modo, final MyCallBack myCallBack) {
             super(itemView);
             this.ctx = ctx;
             this.modo = modo;
-            tvTE = (TextView)itemView.findViewById(R.id.tv_te_cv);
-            tvEstado = (TextView)itemView.findViewById(R.id.tv_estado);
-            tvFechaEjecucion = (TextView)itemView.findViewById(R.id.tv_fecha_ejecucion_cv);
-            tvExcursion = (TextView)itemView.findViewById(R.id.tv_nombre_excursion_cv);
-            tvHotel = (TextView)itemView.findViewById(R.id.tv_hotel_cv);
-            tvHab = (TextView)itemView.findViewById(R.id.tv_hab_cv);
-            tvCantPax = (TextView)itemView.findViewById(R.id.tv_cant_pax_cv);
-            tvObs = (TextView)itemView.findViewById(R.id.tv_obs_cv);
-            tvIdioma = (TextView)itemView.findViewById(R.id.tv_idioma_cv);
-            tvPrecio = (TextView)itemView.findViewById(R.id.tv_precio_cv);
-            tvPrecioCUP = (TextView)itemView.findViewById(R.id.tv_precio_cup_cv);
+            tvTE = itemView.findViewById(R.id.tv_te_cv);
+            tvEstado = itemView.findViewById(R.id.tv_estado);
+            tvFechaEjecucion = itemView.findViewById(R.id.tv_fecha_ejecucion_cv);
+            tvExcursion = itemView.findViewById(R.id.tv_nombre_excursion_cv);
+            tvHotel = itemView.findViewById(R.id.tv_hotel_cv);
+            tvHab = itemView.findViewById(R.id.tv_hab_cv);
+            tvCantPax = itemView.findViewById(R.id.tv_cant_pax_cv);
+            tvObs = itemView.findViewById(R.id.tv_obs_cv);
+            tvIdioma = itemView.findViewById(R.id.tv_idioma_cv);
+            tvPrecio = itemView.findViewById(R.id.tv_precio_cv);
+            tvPrecioCUP = itemView.findViewById(R.id.tv_precio_cup_cv);
 
-            itemView.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view) {
-                    myCallBack.itemClicked(getAdapterPosition());
-                }
-            });
+            itemView.setOnClickListener(view -> myCallBack.itemClicked(getAdapterPosition()));
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    Util.copyToClipBoard(ctx,Reserva.toString(ctx,(Reserva) reservaList.get(getAdapterPosition()),Reserva.INFO_REPORTE_VENTA));
-                    return true;
-                }
+            itemView.setOnLongClickListener(view -> {
+                Util.copyToClipBoard(ctx, Reserva.toString(ctx, (Reserva) reservaList.get(getAdapterPosition()), Reserva.INFO_REPORTE_VENTA));
+                return true;
             });
         }
 
-        void bindHolder(int position){
+        void bindHolder(int position) {
             Reserva reserva = (Reserva) reservaList.get(position);
-            String te = "TE "+ reserva.getNoTE();
+            String te = "TE " + reserva.getNoTE();
             tvTE.setText(te);
-            if(reserva.getEstado()!=Reserva.ESTADO_ACTIVO){
-                if(reserva.getEstado()==Reserva.ESTADO_CANCELADO){
-                    tvEstado.setText("CANCELADO");
-                }else if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
+            switch (reserva.getEstado()) {
+                case Reserva.ESTADO_ACTIVO:
+                    tvEstado.setText("");
+                    break;
+                case Reserva.ESTADO_DEVUELTO:
                     tvEstado.setText("DEVUELTO");
-                }
-            }else {
-                tvEstado.setText("");
+                    break;
+                case Reserva.ESTADO_CANCELADO:
+                    tvEstado.setText("CANCELADO");
+                    break;
             }
-            if(reserva.getFechaOriginalEjecucion()==null || reserva.getFechaOriginalEjecucion().equals("")) {
+            if (reserva.getFechaOriginalEjecucion() == null || reserva.getFechaOriginalEjecucion().isEmpty()) {
                 tvFechaEjecucion.setText(reserva.getFechaEjecucion());
-            }else {
-                if(modo == Modo.POR_AGENCIA) {
+            } else {
+                if (modo == Modo.POR_AGENCIA) {
                     tvFechaEjecucion.setText(reserva.getFechaOriginalEjecucion());
-                }else {
+                } else {
                     tvFechaEjecucion.setText(reserva.getFechaEjecucion());
                 }
             }
-            showInfoIfExist(tvExcursion,reserva.getExcursion());
-            showInfoIfExist(tvHotel,reserva.getHotel());
-            showInfoIfExist(tvHab,reserva.getNoHab());
+            showInfoIfExist(tvExcursion, reserva.getExcursion());
+            showInfoIfExist(tvHotel, reserva.getHotel());
+            showInfoIfExist(tvHab, reserva.getNoHab());
             String cantPax = "";
-            if(!reserva.getCantPaxs(false).equals("")){
+            if (!reserva.getCantPaxs(false).isEmpty()) {
                 cantPax = "pax: " + reserva.getCantPaxs(false);
             }
-            showInfoIfExist(tvCantPax,cantPax);
-            showInfoIfExist(tvIdioma,reserva.getIdioma());
+            showInfoIfExist(tvCantPax, cantPax);
+            showInfoIfExist(tvIdioma, reserva.getIdioma());
             tvObs.setText(reserva.getObservaciones());
             tvPrecio.setText(String.valueOf(reserva.getPrecio()));
-            tvPrecio.setTextColor(ContextCompat.getColor(ctx,android.R.color.holo_green_dark));
-            if(reserva.getPrecio()==0){
-                tvPrecio.setTextColor(ContextCompat.getColor(ctx,R.color.atencion));
+            tvPrecio.setTextColor(ContextCompat.getColor(ctx, android.R.color.holo_green_dark));
+            if (reserva.getPrecio() == 0) {
+                tvPrecio.setTextColor(ContextCompat.getColor(ctx, R.color.atencion));
             }
             tvPrecioCUP.setVisibility(View.GONE);
 
-            if(this.modo == Modo.GENERAL){
-                //oculta precio, si observaciones si dice algo
-                tvPrecio.setVisibility(View.GONE);
-                showObsIfExist();
-            }else if(this.modo == Modo.EXC_SALIENDO_EL_DIA){
-                tvFechaEjecucion.setVisibility(View.GONE);
-                tvPrecio.setVisibility(View.GONE);
-                showObsIfExist();
-            }else if(this.modo == Modo.POR_AGENCIA){
-                tvObs.setText("");
-                if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
-                    double saldo = reserva.getPrecio()-reserva.getImporteDevuelto();
-                    tvPrecio.setText(String.valueOf(saldo));
-                }
-            }else if(this.modo == Modo.LIQUIDACION) {
-                if(MySharedPreferences.getIncluirPrecioCUP(ctx)&&MySharedPreferences.getTasaCUP(ctx)>0){
-                    tvPrecioCUP.setVisibility(View.VISIBLE);
-                    String precioCUP = "("+String.valueOf(reserva.getPrecio()*MySharedPreferences.getTasaCUP(ctx))+")";
-                    tvPrecioCUP.setText(precioCUP);
-                }
-                if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
-                    if(myMainActivity.getLastFechaLiq() != null
-                            && myMainActivity.getLastFechaLiq().equals(reserva.getFechaDevolucion())) {
-                        tvPrecio.setTextColor(ContextCompat.getColor(ctx, R.color.atencion));
-                        String importe = "-" + String.valueOf(reserva.getImporteDevuelto());
-                        tvPrecio.setText(importe);
-                        if(MySharedPreferences.getIncluirPrecioCUP(ctx)&&
-                                MySharedPreferences.getTasaCUP(ctx)>0){
-                            String importeCUP = "(-"+String.valueOf(reserva.getImporteDevuelto()*MySharedPreferences.getTasaCUP(ctx))+")";
-                            tvPrecioCUP.setText(importeCUP);
+            switch (this.modo){
+                case GENERAL:
+                    //oculta precio, si observaciones si dice algo
+                    tvPrecio.setVisibility(View.GONE);
+                    showObsIfExist();
+                    break;
+                case EXC_SALIENDO_EL_DIA:
+                    tvFechaEjecucion.setVisibility(View.GONE);
+                    tvPrecio.setVisibility(View.GONE);
+                    showObsIfExist();
+                    break;
+                case POR_AGENCIA:
+                    tvObs.setText("");
+                    if (reserva.getEstado() == Reserva.ESTADO_DEVUELTO) {
+                        double saldo = reserva.getPrecio() - reserva.getImporteDevuelto();
+                        tvPrecio.setText(String.valueOf(saldo));
+                    }
+                    break;
+                case LIQUIDACION:
+                    if (MySharedPreferences.getIncluirPrecioCUP(ctx) && MySharedPreferences.getTasaCUP(ctx) > 0) {
+                        tvPrecioCUP.setVisibility(View.VISIBLE);
+                        String precioCUP = "(" + (reserva.getPrecio() * MySharedPreferences.getTasaCUP(ctx)) + ")";
+                        tvPrecioCUP.setText(precioCUP);
+                    }
+                    if (reserva.getEstado() == Reserva.ESTADO_DEVUELTO) {
+                        if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION){
+                            tvPrecio.setTextColor(ContextCompat.getColor(ctx, R.color.atencion));
+                            String importe = "-" + reserva.getImporteDevuelto();
+                            tvPrecio.setText(importe);
+                            if (MySharedPreferences.getIncluirPrecioCUP(ctx) &&
+                                    MySharedPreferences.getTasaCUP(ctx) > 0) {
+                                String importeCUP = "(-" + (reserva.getImporteDevuelto() * MySharedPreferences.getTasaCUP(ctx)) + ")";
+                                tvPrecioCUP.setText(importeCUP);
+                            }
+                        } else if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_CONFECCION){
+                            tvEstado.setVisibility(View.GONE);
                         }
                     }
-                }
-            }else if(this.modo == Modo.REP_VENTA){
-                tvPrecio.setVisibility(View.GONE);
-                showObsIfExist();
+                    break;
+                case REP_VENTA:
+                    tvPrecio.setVisibility(View.GONE);
+                    showObsIfExist();
+                    break;
             }
+
         }
 
-        private void showInfoIfExist(TextView tv,String info){
-            if(info==null || info.isEmpty()){
+        private void showInfoIfExist(TextView tv, String info) {
+            if (info == null || info.isEmpty()) {
                 tv.setVisibility(View.GONE);
-            }else {
+            } else {
                 tv.setVisibility(View.VISIBLE);
                 tv.setText(info);
             }
         }
 
-        private void showObsIfExist(){
-            if(tvObs.getText().toString().equals("")){
+        private void showObsIfExist() {
+            if (tvObs.getText().toString().equals("")) {
                 tvObs.setVisibility(View.GONE);
-            }else {
+            } else {
                 tvObs.setVisibility(View.VISIBLE);
             }
         }
     }
 
-    private class ViewHolderExcursion extends RecyclerView.ViewHolder{
+    private class ViewHolderExcursion extends RecyclerView.ViewHolder {
 
         private TextView tvNombre;
 
         ViewHolderExcursion(View itemView) {
             super(itemView);
-            tvNombre = (TextView)itemView.findViewById(R.id.tv_titulo_excursion);
+            tvNombre = itemView.findViewById(R.id.tv_titulo_excursion);
         }
 
-        void bindHolder(int position){
+        void bindHolder(int position) {
             Excursion excursion = (Excursion) reservaList.get(position);
             tvNombre.setText(excursion.getNombre());
         }
     }
 
-    interface MyCallBack{
+    interface MyCallBack {
         void itemClicked(int position);
     }
 
-    public interface MyMainActivity{
-        String getLastFechaLiq();
-    }
-
-    enum Modo{
+    enum Modo {
         GENERAL,
         LIQUIDACION,
         POR_AGENCIA,
