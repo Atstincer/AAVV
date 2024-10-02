@@ -101,15 +101,28 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
                         String.valueOf(1),
                         DateHandler.formatDateToStoreInDB(tvFecha.getText().toString()),
                         String.valueOf(Reserva.ESTADO_CANCELADO)});
-        if(reservaList==null){reservaList = new ArrayList<>();}
-        if(!reservaList.isEmpty()){reservaList.clear();}
+        reservaList = new ArrayList<>();
         for (Reserva reserva: resultadoBruto){
             if(reserva.getEstado()==Reserva.ESTADO_ACTIVO ||
                     reserva.getEstado()==Reserva.ESTADO_DEVUELTO && reserva.isDevParcial()){
+                reserva.setCriterioSeleccion(Reserva.Criterio_Seleccion.FECHA_REP_VENTA);
                 reservaList.add(reserva);
             }
         }
         Collections.sort(reservaList,Reserva.ordenarPorTE);
+        if(MySharedPreferences.getIncluirDevEnRepVenta(getContext())){
+            List<Reserva> devoluciones = ReservaBDHandler.getReservasFromDB(getContext(),
+                    "SELECT * FROM " + ReservaBDHandler.TABLE_NAME + " WHERE " +
+                            ReservaBDHandler.CAMPO_FECHA_DEVOLUCION + " =?",
+                    new String[]{DateHandler.formatDateToStoreInDB(tvFecha.getText().toString())});
+            if(!devoluciones.isEmpty()){
+                for(Reserva reserva: devoluciones){
+                    reserva.setCriterioSeleccion(Reserva.Criterio_Seleccion.FECHA_DEVOLUCION);
+                }
+                Collections.sort(devoluciones,Reserva.ordenarPorTE);
+                reservaList.addAll(devoluciones);
+            }
+        }
     }
 
     private void enviarMailVentaDelDia(){

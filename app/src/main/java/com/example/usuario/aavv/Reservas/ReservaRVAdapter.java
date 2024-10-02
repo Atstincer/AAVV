@@ -181,6 +181,11 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                 String importeCUP = "(-" + (reserva.getImporteDevuelto() * MySharedPreferences.getTasaCUP(ctx)) + ")";
                                 tvPrecioCUP.setText(importeCUP);
                             }
+                            if(reserva.getObsDevolucion() != null &&
+                                    !reserva.getObsDevolucion().isEmpty()){
+                                tvObs.setText(reserva.getObsDevolucion());
+                                tvObs.setVisibility(View.VISIBLE);
+                            }
                         } else if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_CONFECCION){
                             tvEstado.setVisibility(View.GONE);
                         }
@@ -188,7 +193,16 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     break;
                 case REP_VENTA:
                     tvPrecio.setVisibility(View.GONE);
-                    showObsIfExist();
+                    if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_REP_VENTA) {
+                        showObsIfExist();
+                    } else if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION){
+                        if(reserva.getObsDevolucion() != null && !reserva.getObsDevolucion().isEmpty()){
+                            tvObs.setText(reserva.getObsDevolucion());
+                            tvObs.setVisibility(View.VISIBLE);
+                        } else {
+                            tvObs.setVisibility(View.GONE);
+                        }
+                    }
                     break;
             }
 
@@ -204,7 +218,7 @@ public class ReservaRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         private void showObsIfExist() {
-            if (tvObs.getText().toString().equals("")) {
+            if (tvObs.getText().toString().isEmpty()) {
                 tvObs.setVisibility(View.GONE);
             } else {
                 tvObs.setVisibility(View.VISIBLE);

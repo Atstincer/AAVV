@@ -18,7 +18,8 @@ public class MySharedPreferences {
     private static final String KEY_NOMBRE_VENDEDOR = "nombre_vendedor";
     private static final String KEY_TELEFONO_VENDEDOR = "telefono_vendedor";
     private static final String KEY_AGENCIA_VENDEDOR = "agencia_vendedor";
-    private static final String KEY_INCLUIR_DEV = "incluir_dev_en_liq";
+    private static final String KEY_INCLUIR_DEV_EN_LIQ = "incluir_dev_en_liq";
+    private static final String KEY_INCLUIR_DEV_EN_REPVENTA = "incluir_dev_en_repventa";
     private static final String KEY_FRAGMENT_INICIO = "fragment_inicio";
     private static final String KEY_PREDECIR_PRECIO = "predecir precio";
     private static final String KEY_INCLUIR_PRECIO_CUP = "incluir_precio_cup";
@@ -67,13 +68,25 @@ public class MySharedPreferences {
 
     public static boolean getIncluirDevEnLiquidacion(Context ctx){
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
-        return preferences.getBoolean(KEY_INCLUIR_DEV,false);
+        return preferences.getBoolean(KEY_INCLUIR_DEV_EN_LIQ,true);
     }
 
     public static void storeIncluirDevEnLiquidacion(Context ctx,boolean incluir){
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(KEY_INCLUIR_DEV,incluir);
+        editor.putBoolean(KEY_INCLUIR_DEV_EN_LIQ,incluir);
+        editor.apply();
+    }
+
+    public static boolean getIncluirDevEnRepVenta(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getBoolean(KEY_INCLUIR_DEV_EN_REPVENTA,true);
+    }
+
+    public static void storeIncluirDevEnRepVenta(Context ctx,boolean incluir){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_INCLUIR_DEV_EN_REPVENTA,incluir);
         editor.apply();
     }
 

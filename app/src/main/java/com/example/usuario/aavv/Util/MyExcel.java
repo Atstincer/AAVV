@@ -388,52 +388,96 @@ public class MyExcel {
         switch (modelo){
             case REPORTE_VENTA:
                 for (int i = 0; i < listaReservas.size(); i++) {
+                    Reserva reserva = listaReservas.get(i);
+
                     // Create a New Row for every new entry in list
                     Row rowData = sheet.createRow(ROW_INDEX);
 
                     // Create Cells for each row
                     cell = rowData.createCell(0);//TE
-                    cell.setCellValue(listaReservas.get(i).getNoTE());
+                    cell.setCellValue(reserva.getNoTE());
                     cell.setCellStyle(centerStyle);
 
-                    cell = rowData.createCell(1);//Opcionales
-                    cell.setCellValue(listaReservas.get(i).getExcursion());
-                    cell.setCellStyle(wrappedStyle);
+                    if(reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_REP_VENTA){
+                        cell = rowData.createCell(1);//Opcionales
+                        cell.setCellValue(reserva.getExcursion());
+                        cell.setCellStyle(wrappedStyle);
 
-                    cell = rowData.createCell(2);//Fecha
-                    cell.setCellValue(listaReservas.get(i).getFechaEjecucion());
-                    cell.setCellStyle(centerStyle);
+                        cell = rowData.createCell(2);//Fecha
+                        cell.setCellValue(reserva.getFechaEjecucion());
+                        cell.setCellStyle(centerStyle);
 
-                    cell = rowData.createCell(3);//Adultos
-                    int value = listaReservas.get(i).getAdultos();
-                    if(value == 0 && listaReservas.get(i).getAcompanantes() != 0){
-                        value = listaReservas.get(i).getAcompanantes();
+                        cell = rowData.createCell(3);//Adultos
+                        int value = reserva.getAdultos();
+                        if(value == 0 && reserva.getAcompanantes() > 0){
+                            value = reserva.getAcompanantes();
+                        }
+                        cell.setCellValue(value);
+                        cell.setCellStyle(centerStyle);
+
+                        int menores = reserva.getMenores() + reserva.getInfantes();
+                        cell = rowData.createCell(4);//Menores
+                        cell.setCellValue(menores);
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(5);//Idioma
+                        cell.setCellValue(reserva.getIdioma());
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(6);//Hotel
+                        cell.setCellValue(reserva.getHotel());
+                        cell.setCellStyle(wrappedStyle);
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(7);//Hab
+                        cell.setCellValue(reserva.getNoHab());
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(8);//Observaciones
+                        cell.setCellValue(reserva.getObservaciones());
+                        cell.setCellStyle(wrappedStyle);
+                    } else if (reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION) {
+                        cell = rowData.createCell(1);//Opcionales
+                        cell.setCellValue("Devolución");
+                        cell.setCellStyle(wrappedStyle);
+
+                        cell = rowData.createCell(2);//Fecha
+                        cell.setCellValue(reserva.getFechaDevolucion());
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(3);//Adultos
+                        /*int value = reserva.getAdultos();
+                        if(value == 0 && reserva.getAcompanantes() > 0){
+                            value = reserva.getAcompanantes();
+                        }
+                        cell.setCellValue(value);*/
+                        cell.setCellStyle(centerStyle);
+
+                        //int menores = reserva.getMenores() + reserva.getInfantes();
+                        cell = rowData.createCell(4);//Menores
+                        //cell.setCellValue(menores);
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(5);//Idioma
+                        //cell.setCellValue(reserva.getIdioma());
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(6);//Hotel
+                        //cell.setCellValue(reserva.getHotel());
+                        cell.setCellStyle(wrappedStyle);
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(7);//Hab
+                        //cell.setCellValue(reserva.getNoHab());
+                        cell.setCellStyle(centerStyle);
+
+                        cell = rowData.createCell(8);//Observaciones
+                        String obs = reserva.getObsDevolucion();
+                        if(obs != null && !obs.isEmpty()) {
+                            cell.setCellValue(obs);
+                        }
+                        cell.setCellStyle(wrappedStyle);
                     }
-                    cell.setCellValue(value);
-                    cell.setCellStyle(centerStyle);
-
-                    int menores = listaReservas.get(i).getMenores() + listaReservas.get(i).getInfantes();
-                    cell = rowData.createCell(4);//Menores
-                    cell.setCellValue(menores);
-                    cell.setCellStyle(centerStyle);
-
-                    cell = rowData.createCell(5);//Idioma
-                    cell.setCellValue(listaReservas.get(i).getIdioma());
-                    cell.setCellStyle(centerStyle);
-
-                    cell = rowData.createCell(6);//Hotel
-                    cell.setCellValue(listaReservas.get(i).getHotel());
-                    cell.setCellStyle(wrappedStyle);
-                    cell.setCellStyle(centerStyle);
-
-                    cell = rowData.createCell(7);//Hab
-                    cell.setCellValue(listaReservas.get(i).getNoHab());
-                    cell.setCellStyle(centerStyle);
-
-                    cell = rowData.createCell(8);//Observaciones
-                    cell.setCellValue(listaReservas.get(i).getObservaciones());
-                    cell.setCellStyle(wrappedStyle);
-
                     ROW_INDEX ++;
                 }
                 break;

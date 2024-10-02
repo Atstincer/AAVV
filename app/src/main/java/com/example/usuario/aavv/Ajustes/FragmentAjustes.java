@@ -51,9 +51,8 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor, btnAddMailAdress;
     private RadioGroup rgPaginaInicio, rgFechaFiltrar;
     private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia, rbFechaExcursion, rbFechaConfecion;
-    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio, cbIncluirPrecioCUP;
+    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio, cbIncluirPrecioCUP, cbIncluirDevEnRepVenta;
     private FrameLayout layoutLoading;
-//    private ProgressBar progressBar;
 
     private MyCallBack myCallBack;
 
@@ -91,21 +90,19 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         rbHomePage = view.findViewById(R.id.rb_iniciar_home_page);
         rbLiquidacion = view.findViewById(R.id.rb_iniciar_liquidacion);
         rbExcDelDia = view.findViewById(R.id.rb_iniciar_reservas);
-        cbIncluirDevEnLiq = view.findViewById(R.id.cb_incluir_devolucion);
+        cbIncluirDevEnLiq = view.findViewById(R.id.cb_incluir_dev_liquidacion);
         cbPredecirPrecio = view.findViewById(R.id.cb_predecir_precio);
         cbIncluirPrecioCUP = view.findViewById(R.id.cb_incluir_precio_cup);
         etTasaCUP = view.findViewById(R.id.et_tasa_cup);
-//        layoutEditarMailAdress = view.findViewById(R.id.layout_editar_default_email);
         layoutDefaultMails = view.findViewById(R.id.layout_default_email);
         etMailAdress = view.findViewById(R.id.et_default_mail);
-//        tvDefaultMailAdress = view.findViewById(R.id.tv_defaul_email);
         btnAddMailAdress = view.findViewById(R.id.btn_add_default_mail);
         tvDirectorioApp = view.findViewById(R.id.tv_defaul_directory);
         rgFechaFiltrar = view.findViewById(R.id.rg_fecha_filtrar);
         rbFechaConfecion = view.findViewById(R.id.rb_fecha_confeccion);
         rbFechaExcursion = view.findViewById(R.id.rb_fecha_excursion);
         layoutLoading = view.findViewById(R.id.layout_loading);
-//        progressBar = view.findViewById(R.id.progress_bar);
+        cbIncluirDevEnRepVenta = view.findViewById(R.id.cb_incluir_dev_repventa);
     }
 
     private void setItUp(){
@@ -161,6 +158,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             MySharedPreferences.storeIncluirPrecioCUP(getContext(),compoundButton.isChecked());
             udEstadoETTasa();
         });
+
         etTasaCUP.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -186,7 +184,8 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             }
         });
 
-          btnAddMailAdress.setOnClickListener(view ->{
+        cbIncluirDevEnRepVenta.setOnCheckedChangeListener((compoundButton, b) -> MySharedPreferences.storeIncluirDevEnRepVenta(getContext(),compoundButton.isChecked()));
+        btnAddMailAdress.setOnClickListener(view ->{
             String mail = etMailAdress.getText().toString();
             if(isValid(mail)){
                 MySharedPreferences.addNewMail(getContext(),mail);
@@ -241,6 +240,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }else {
             etTasaCUP.setText("");
         }
+        cbIncluirDevEnRepVenta.setChecked(MySharedPreferences.getIncluirDevEnRepVenta(getContext()));
         showDefaultMails();
         if(!MySharedPreferences.getUriExtSharedDir(getContext()).isEmpty()){
             Uri uri = Uri.parse(MySharedPreferences.getUriExtSharedDir(getContext()));

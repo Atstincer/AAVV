@@ -44,6 +44,7 @@ public class ReservaBDHandler {
     static String CAMPO_HISTORIAL = "historial";
     static String CAMPO_INCLUIR_REP_VENTA = "incluirRepVenta";
     private static String CAMPO_OBSERVACIONES = "observaciones";
+    static String CAMPO_OBS_DEVOLUCION = "obsDevolucion";
 
 
     public static ContentValues getContentValues(Reserva reserva){
@@ -84,6 +85,9 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_OBSERVACIONES,reserva.getObservaciones());
         values.put(CAMPO_HISTORIAL,reserva.getHistorial());
         values.put(CAMPO_INCLUIR_REP_VENTA,reserva.incluirEnRepVenta());
+        if(reserva.getObsDevolucion() != null && !reserva.getObsDevolucion().isEmpty()){
+            values.put(CAMPO_OBS_DEVOLUCION, reserva.getObsDevolucion());
+        }
         return values;
     }
 
@@ -116,7 +120,7 @@ public class ReservaBDHandler {
         if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
             reserva.setFechaDevolucion(DateHandler.formatDateToShow(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_FECHA_DEVOLUCION))));
             if(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO))!=null &&
-                    !cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO)).equals("")) {
+                    !cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO)).isEmpty()) {
                 reserva.setImporteDevuelto(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO))));
             }
         }
@@ -129,6 +133,7 @@ public class ReservaBDHandler {
         }else if(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_INCLUIR_REP_VENTA))==0){
             reserva.setIncluirEnRepVenta(false);
         }
+        reserva.setObsDevolucion(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_OBS_DEVOLUCION)));
         return reserva;
     }
 
@@ -160,19 +165,6 @@ public class ReservaBDHandler {
         return reservasList;
     }
 
-    public static Reserva getReservaFromDB(Context ctx, long id){
-        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
-        SQLiteDatabase db = admin.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM "+ReservaBDHandler.TABLE_NAME+" WHERE id=?",new String[]{String.valueOf(id)});
-        if(cursor.moveToFirst()){
-            Reserva reserva = getReserva(cursor);
-            cursor.close();
-            return reserva;
-        }
-        cursor.close();
-        return new Reserva();
-    }
-
     public static Reserva getReservaFromDB(Context ctx, String numeroTE){
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(ctx,AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getReadableDatabase();
@@ -186,6 +178,4 @@ public class ReservaBDHandler {
         cursor.close();
         return new Reserva();
     }
-
-
 }

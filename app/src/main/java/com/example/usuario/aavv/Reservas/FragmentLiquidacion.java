@@ -38,8 +38,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     public static final String TAG = "FragmentLiquidacion";
 
-//    private final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
-
     private LinearLayout layoutInfo;
     private TextView tvDesde, tvHasta, tvInfo;
     private RecyclerView rvReservas;
@@ -238,9 +236,9 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             sb.append("Venta del día: ");
             sb.append(desde);
         } else {
-            sb.append("Venta\ndesde:");
+            sb.append("Venta\ndesde: ");
             sb.append(desde);
-            sb.append("\thasta:");
+            sb.append("\thasta: ");
             sb.append(hasta);
         }
         sb.append("\n\n");

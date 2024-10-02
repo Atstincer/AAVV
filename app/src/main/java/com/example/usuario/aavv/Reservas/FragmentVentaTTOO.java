@@ -348,7 +348,7 @@ public class FragmentVentaTTOO extends Fragment {
             try {
                 VentaTTOOStorageAccess ventaTTOOStorageAccess = new VentaTTOOStorageAccess(getContext(),desde,hasta,agencia);
                 if(MyExcel.generarExcelReporteVentaPorAgencia(ventaTTOOStorageAccess,listaReservas,getImporteTotal(agencia))){
-                    myCallBack.showSnackBar("Excel generado correctamente: "+ventaTTOOStorageAccess.getFileName()+ ".xls");
+                    myCallBack.showSnackBar("Excel generado correctamente: "+ventaTTOOStorageAccess.getFileName());
                 }else {
                     getActivity().runOnUiThread(()->{
                         myCallBack.requestCreateSelectAppDir(true);

@@ -53,13 +53,23 @@
             android:id="@+id/et_importe_devolver"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:gravity="center"
             android:hint="0.00"
             android:inputType="numberDecimal" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Observaciones:"/>
+
+    <EditText
+        android:id="@+id/et_obs_dev"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,7 +88,6 @@
             android:id="@+id/btn_dfdevolver_devolver"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
             android:text="Devolver" />

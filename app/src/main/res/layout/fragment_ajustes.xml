@@ -203,7 +203,7 @@
                 android:text="Liquidaciones" />
 
             <CheckBox
-                android:id="@+id/cb_incluir_devolucion"
+                android:id="@+id/cb_incluir_dev_liquidacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="incluir devoluciones en la liquidación del día" />
@@ -259,7 +259,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Enviar reporte de ventas a:" />
+                android:text="Reportes de venta" />
+
+            <CheckBox
+                android:id="@+id/cb_incluir_dev_repventa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="incluir devoluciones" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enviar a:" />
 
             <LinearLayout
                 android:id="@+id/layout_default_email"

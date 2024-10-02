@@ -219,47 +219,47 @@ public class BDExporter {
             String firstRow = ReservaBDHandler.TABLE_NAME+"\n";
             fileWriter.write((firstRow).getBytes());
             for(Reserva reserva:reservas){
-                writeInFile(fileWriter,reserva.getNoTE());
+                writeInFile(fileWriter,reserva.getNoTE());//0
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,formatStringToExport(reserva.getExcursion()));
+                writeInFile(fileWriter,formatStringToExport(reserva.getExcursion()));//1
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getAgencia());
+                writeInFile(fileWriter,reserva.getAgencia());//2
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getNoHab());
+                writeInFile(fileWriter,reserva.getNoHab());//3
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getCliente());
+                writeInFile(fileWriter,reserva.getCliente());//4
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getHotel());
+                writeInFile(fileWriter,reserva.getHotel());//5
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getFechaConfeccion());
+                writeInFile(fileWriter,reserva.getFechaConfeccion());//6
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getFechaEjecucion());
+                writeInFile(fileWriter,reserva.getFechaEjecucion());//7
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getFechaOriginalEjecucion());
+                writeInFile(fileWriter,reserva.getFechaOriginalEjecucion());//8
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.incluirEnRepVenta()));
+                writeInFile(fileWriter,String.valueOf(reserva.incluirEnRepVenta()));//9
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getFechaReporteVenta());
+                writeInFile(fileWriter,reserva.getFechaReporteVenta());//10
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getAdultos()));
+                writeInFile(fileWriter,String.valueOf(reserva.getAdultos()));//11
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getMenores()));
+                writeInFile(fileWriter,String.valueOf(reserva.getMenores()));//12
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getInfantes()));
+                writeInFile(fileWriter,String.valueOf(reserva.getInfantes()));//13
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getAcompanantes()));
+                writeInFile(fileWriter,String.valueOf(reserva.getAcompanantes()));//14
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getIdioma());
+                writeInFile(fileWriter,reserva.getIdioma());//15
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getPrecio()));
+                writeInFile(fileWriter,String.valueOf(reserva.getPrecio()));//16
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getEstado()));
+                writeInFile(fileWriter,String.valueOf(reserva.getEstado()));//17
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getFechaDevolucion());
+                writeInFile(fileWriter,reserva.getFechaDevolucion());//18
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getFechaCancelacion());
+                writeInFile(fileWriter,reserva.getFechaCancelacion());//19
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,String.valueOf(reserva.getImporteDevuelto()));
+                writeInFile(fileWriter,String.valueOf(reserva.getImporteDevuelto()));//20
                 fileWriter.write(("|").getBytes());
                 if(reserva.getHistorial()!=null) {//21
                     fileWriter.write((formatStringToExport(reserva.getHistorial())).getBytes());
@@ -267,11 +267,13 @@ public class BDExporter {
                     fileWriter.write(("").getBytes());
                 }
                 fileWriter.write(("|").getBytes());
-                if(reserva.getObservaciones()==null || reserva.getObservaciones().isEmpty()){//22
+                writeInFile(fileWriter,reserva.getObsDevolucion());//22
+                fileWriter.write(("|").getBytes());
+                if(reserva.getObservaciones()==null || reserva.getObservaciones().isEmpty()){//23
                     fileWriter.write(("null").getBytes());
                 }else {
                     String observaciones = formatStringToExport(reserva.getObservaciones());
-                    fileWriter.write((observaciones).getBytes());
+                    fileWriter.write(observaciones.getBytes());
                 }
                 fileWriter.write(("\n").getBytes());
             }

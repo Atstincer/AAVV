@@ -187,7 +187,10 @@ public class BDImporter {
                 reserva.setHistorial(formatStringToImport(str[21]));
             }
             if(hasValue(str[22])){
-                reserva.setObservaciones(formatStringToImport(str[22]));
+                reserva.setObsDevolucion(str[22]);
+            }
+            if(hasValue(str[23])){
+                reserva.setObservaciones(formatStringToImport(str[23]));
             }
             return reserva;
         }catch (Exception e){
