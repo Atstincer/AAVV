@@ -1,6 +1,9 @@
 package com.example.usuario.aavv.Reservas;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Util.DateHandler;
@@ -295,7 +299,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
 
     private void addReserva(){
         if(reservaList.isEmpty()){
-            myCallBack.setUpFragmentReservar("",tvDesde.getText().toString());
+            String lastTE = getLastTEFromDB();
+            myCallBack.setUpFragmentReservar(lastTE,tvDesde.getText().toString());
             return;
         }
         Reserva lastReserva = getLastReservaActiva();
@@ -304,6 +309,28 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         } else {
             myCallBack.setUpFragmentReservar(lastReserva.getNoTE(),lastReserva.getFechaConfeccion());
         }
+    }
+
+    @SuppressLint("Range")
+    private String getLastTEFromDB(){
+        String lastTE = "";
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(
+                getContext(),
+                AdminSQLiteOpenHelper.BD_NAME,
+                null,
+                AdminSQLiteOpenHelper.BD_VERSION
+        );
+        SQLiteDatabase db = admin.getReadableDatabase();
+        String query = "SELECT " + ReservaBDHandler.CAMPO_NUMERO_TE + " FROM " +
+                ReservaBDHandler.TABLE_NAME + " ORDER BY " +
+                ReservaBDHandler.CAMPO_FECHA_CONFECCION + " DESC, " +
+                ReservaBDHandler.CAMPO_NUMERO_TE + " DESC LIMIT 1";
+        Cursor cursor = db.rawQuery(query,null);
+        if(cursor.moveToFirst()){
+            lastTE = cursor.getString(0);
+        }
+        cursor.close();
+        return lastTE;
     }
 
     private Reserva getLastReservaActiva(){
