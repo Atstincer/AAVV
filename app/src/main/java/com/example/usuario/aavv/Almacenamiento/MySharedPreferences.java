@@ -27,6 +27,8 @@ public class MySharedPreferences {
     private static final String KEY_URI_SHARED_DIR = "uri_shared_dir";
     private static final String KEY_DEFAULT_MAILS = "default_mail";
     private static final String KEY_TIPO_FECHA_A_FILTRAR = "tipo_fecha_filtrar";
+    private static final String KEY_CIERRE_REGULAR = "cierre_regular";
+    private static final String KEY_DIA_CIERRE = "cierre_dia";
 
 
 
@@ -147,6 +149,30 @@ public class MySharedPreferences {
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(KEY_URI_SHARED_DIR,uri);
+        editor.apply();
+    }
+
+    public static boolean isCierreRegular(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getBoolean(KEY_CIERRE_REGULAR,true);
+    }
+
+    public static void storeCierreRegular(Context ctx,boolean regular){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_CIERRE_REGULAR,regular);
+        editor.apply();
+    }
+
+    public static int getDiaCierre(Context ctx){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        return preferences.getInt(KEY_DIA_CIERRE,0);
+    }
+
+    public static void storeDiaCierre(Context ctx,int dia){
+        SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(KEY_DIA_CIERRE, dia);
         editor.apply();
     }
 

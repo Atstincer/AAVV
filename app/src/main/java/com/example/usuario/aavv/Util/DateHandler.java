@@ -103,6 +103,35 @@ public class DateHandler {
         return false;
     }*/
 
+    public static String getDesdeLastMonth(int dia){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        int ultimoDiaDelMes = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int today = calendar.get(Calendar.DAY_OF_MONTH);
+        if(dia > ultimoDiaDelMes){
+            calendar.set(Calendar.DAY_OF_MONTH,1);
+            return sdf.format(calendar.getTime());
+        } else {
+            if(today <= dia){
+                calendar.add(Calendar.MONTH,-1);
+            }
+        }
+        calendar.set(Calendar.DAY_OF_MONTH, dia + 1);
+        return sdf.format(calendar.getTime());
+    }
+
+    public static String getHastaCurrentMonth(int dia){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        int ultimoDiaDelMes = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        if(dia > ultimoDiaDelMes){
+            calendar.set(Calendar.DAY_OF_MONTH,ultimoDiaDelMes);
+        } else {
+            calendar.set(Calendar.DAY_OF_MONTH, dia);
+        }
+        return sdf.format(calendar.getTime());
+    }
+
     public static void showDatePicker(Context ctx, final TextView textView, final DatePickerCallBack callBack) {
         String tv_str = "";
         if(textView.getText().toString().isEmpty() ||textView.getText().toString().length()<10){

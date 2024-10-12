@@ -21,7 +21,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -46,12 +45,13 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     public static final String TAG = "FragmentAjustes";
     private LinearLayout layoutEditarNombreVendedor,layoutEditarTelefonoVendedor,layoutEditarAgenciaVendedor,
             layoutDefaultMails; //layoutEditarMailAdress
-    private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor, etTasaCUP, etMailAdress;
+    private EditText etNombreVendedor, etTelefonoVendedor, etAgenciaVendedor, etTasaCUP, etMailAdress, etDiaCierre;
     private TextView tvNombreVendedor, tvTelefonoVendedor, tvAgenciaVendedor, tvDirectorioApp; //tvDefaultMailAdress
     private Button btnNombreVendedor, btnTelefonoVendedor,btnAgenciaVendedor, btnAddMailAdress;
     private RadioGroup rgPaginaInicio, rgFechaFiltrar;
     private RadioButton rbHomePage, rbLiquidacion, rbExcDelDia, rbFechaExcursion, rbFechaConfecion;
-    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio, cbIncluirPrecioCUP, cbIncluirDevEnRepVenta;
+    private CheckBox cbIncluirDevEnLiq, cbPredecirPrecio, cbIncluirPrecioCUP, cbIncluirDevEnRepVenta,
+            cbCierreRegular, cbCierreDiaEspecifico;
     private FrameLayout layoutLoading;
 
     private MyCallBack myCallBack;
@@ -103,6 +103,9 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         rbFechaExcursion = view.findViewById(R.id.rb_fecha_excursion);
         layoutLoading = view.findViewById(R.id.layout_loading);
         cbIncluirDevEnRepVenta = view.findViewById(R.id.cb_incluir_dev_repventa);
+        cbCierreRegular = view.findViewById(R.id.cb_cierre_mes_regular);
+        cbCierreDiaEspecifico = view.findViewById(R.id.cb_cierre_mes_dia);
+        etDiaCierre = view.findViewById(R.id.et_dia_cierre);
     }
 
     private void setItUp(){
@@ -152,8 +155,10 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             }
         });
 
-        cbIncluirDevEnLiq.setOnCheckedChangeListener((compoundButton, b) -> MySharedPreferences.storeIncluirDevEnLiquidacion(getContext(),compoundButton.isChecked()));
-        cbPredecirPrecio.setOnCheckedChangeListener((compoundButton, b) -> MySharedPreferences.storePredecirPrecio(getContext(),compoundButton.isChecked()));
+        cbIncluirDevEnLiq.setOnCheckedChangeListener((compoundButton, b) ->
+                MySharedPreferences.storeIncluirDevEnLiquidacion(getContext(),compoundButton.isChecked()));
+        cbPredecirPrecio.setOnCheckedChangeListener((compoundButton, b) ->
+                MySharedPreferences.storePredecirPrecio(getContext(),compoundButton.isChecked()));
         cbIncluirPrecioCUP.setOnCheckedChangeListener((compoundButton, b) -> {
             MySharedPreferences.storeIncluirPrecioCUP(getContext(),compoundButton.isChecked());
             udEstadoETTasa();
@@ -174,7 +179,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
                         MySharedPreferences.storeTasaCUP(getContext(),0);
                     }
                 }catch (Exception e){
-                    Log.e("ajustes","error textChangeListener etTasaCUP",e);
+                    Log.e("ajustes","error textChangeListener parseando etTasaCUP",e);
                 }
             }
 
@@ -184,15 +189,72 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             }
         });
 
-        cbIncluirDevEnRepVenta.setOnCheckedChangeListener((compoundButton, b) -> MySharedPreferences.storeIncluirDevEnRepVenta(getContext(),compoundButton.isChecked()));
+        etDiaCierre.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    int diaCierre = 0;
+                    if(!etDiaCierre.getText().toString().isEmpty()) {
+                        int dia = Integer.parseInt(etDiaCierre.getText().toString());
+                        /*if(dia > 0 && dia < 31){
+                            diaCierre = dia;
+                        }*/
+                        diaCierre = dia;
+                    }
+                    if(diaCierre == 0){
+                        MySharedPreferences.storeCierreRegular(getContext(), true);
+                    }
+                    MySharedPreferences.storeDiaCierre(getContext(), diaCierre);
+                    myCallBack.setLastDesde("");
+                    myCallBack.setLastHasta("");
+                }catch (Exception e){
+                    Log.e("ajustes","error textChangeListener parseando etDiaCierre",e);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        cbIncluirDevEnRepVenta.setOnCheckedChangeListener((compoundButton, b) ->
+                MySharedPreferences.storeIncluirDevEnRepVenta(getContext(),compoundButton.isChecked()));
         btnAddMailAdress.setOnClickListener(view ->{
             String mail = etMailAdress.getText().toString();
-            if(isValid(mail)){
+            if(isValidMail(mail)){
                 MySharedPreferences.addNewMail(getContext(),mail);
                 addMailView(mail);
                 etMailAdress.setText("");
             }else {
                 Toast.makeText(getContext(),"Mail no es valido",Toast.LENGTH_SHORT).show();
+            }
+        });
+        cbCierreRegular.setOnClickListener((view) -> {
+            boolean cierreRegularStored = MySharedPreferences.isCierreRegular(getContext());
+            if(!cierreRegularStored && cbCierreRegular.isChecked()){
+                MySharedPreferences.storeCierreRegular(getContext(),true);
+                cbCierreDiaEspecifico.setChecked(false);
+                etDiaCierre.setText("");
+                etDiaCierre.setEnabled(false);
+            }else if(cierreRegularStored){
+                cbCierreRegular.setChecked(true);
+            }
+        });
+        cbCierreDiaEspecifico.setOnClickListener((view) -> {
+            boolean cierreRegularStored = MySharedPreferences.isCierreRegular(getContext());
+            if(cierreRegularStored && cbCierreDiaEspecifico.isChecked()){
+                MySharedPreferences.storeCierreRegular(getContext(),false);
+                cbCierreRegular.setChecked(false);
+                etDiaCierre.setEnabled(true);
+                etDiaCierre.requestFocus();
+            }else if(!cierreRegularStored){
+                cbCierreDiaEspecifico.setChecked(true);
             }
         });
         tvDirectorioApp.setOnClickListener(view -> {
@@ -208,7 +270,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         });
     }
 
-    private boolean isValid(String emailStr) {
+    private boolean isValidMail(String emailStr) {
 //        String otherPatter = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
         return Pattern.compile("^(.+)@(\\S+)$")
                 .matcher(emailStr)
@@ -229,8 +291,6 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         }else if(MySharedPreferences.getTipoFechaFiltrar(getContext()) == MisConstantes.Filtrar.FECHA_CONFECCION.ordinal()){
             rbFechaConfecion.setChecked(true);
         }
-
-
         cbIncluirDevEnLiq.setChecked(MySharedPreferences.getIncluirDevEnLiquidacion(getContext()));
         cbPredecirPrecio.setChecked(MySharedPreferences.getPredecirPrecio(getContext()));
         cbIncluirPrecioCUP.setChecked(MySharedPreferences.getIncluirPrecioCUP(getContext()));
@@ -250,6 +310,20 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             }else {
                 tvDirectorioApp.setText(uri.getLastPathSegment());
             }
+        }
+        if(MySharedPreferences.isCierreRegular(getContext()) ||
+                MySharedPreferences.getDiaCierre(getContext()) == 0){
+            cbCierreRegular.setChecked(true);
+            cbCierreDiaEspecifico.setChecked(false);
+            etDiaCierre.setText("");
+            etDiaCierre.setEnabled(false);
+        } else {
+            cbCierreRegular.setChecked(false);
+            cbCierreDiaEspecifico.setChecked(true);
+            etDiaCierre.setText(
+                    String.valueOf(MySharedPreferences.getDiaCierre(getContext()))
+            );
+            etDiaCierre.setEnabled(true);
         }
     }
 
@@ -324,12 +398,8 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     private void confirmarEliminar(TextView textView){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Seguro que desea eliminar '"+textView.getText().toString()+"'");
-        builder.setPositiveButton("Eliminar", (dialog, which) -> {
-            eliminarMail(textView);
-        });
-        builder.setNegativeButton("Cancelar",((dialog, which) -> {
-            dialog.dismiss();
-        }));
+        builder.setPositiveButton("Eliminar", (dialog, which) -> eliminarMail(textView));
+        builder.setNegativeButton("Cancelar",((dialog, which) -> dialog.dismiss()));
         builder.create().show();
     }
 
@@ -381,6 +451,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
         void showSnackBar(String mensaje);
         void requestCreateSelectAppDir(boolean conAlertDialog);
         void showFileChooser();
+        void setLastDesde(String lastDesde);
+        void setLastHasta(String lastHasta);
     }
-
 }

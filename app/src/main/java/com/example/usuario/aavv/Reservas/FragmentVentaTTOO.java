@@ -1,7 +1,6 @@
 package com.example.usuario.aavv.Reservas;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,7 +30,6 @@ import com.example.usuario.aavv.Util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,6 +40,8 @@ public class FragmentVentaTTOO extends Fragment {
 
     public static final String TAG = "FragmentVentaTTOO";
     private final String TODAS = "Todas";
+
+    private boolean desdeIsRegular;
 
     private LinearLayout layoutInfo;
     private AppCompatSpinner spinnerAgencias;
@@ -83,20 +83,12 @@ public class FragmentVentaTTOO extends Fragment {
 
     private void setItUp(){
         myCallBack.udUI(TAG);
-        if(myCallBack.getLastDesde()==null) {
-            String desde = "01" + DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).substring(2, 10);
-            tvFechaDesde.setText(desde);
-            myCallBack.setLastDesde(desde);
-        }else {
-            tvFechaDesde.setText(myCallBack.getLastDesde());
-        }
-        if(myCallBack.getLastHasta()==null) {
-            //tvFechaHasta.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
-            tvFechaHasta.setText(DateHandler.getLastDayOfMonth(MisConstantes.FormatoFecha.MOSTRAR));
-            myCallBack.setLastHasta(tvFechaHasta.getText().toString());
-        }else {
-            tvFechaHasta.setText(myCallBack.getLastHasta());
-        }
+        figureOutDesde();
+        figureOutHasta();
+
+        Log.d("fechas","Cierre regular: " + MySharedPreferences.isCierreRegular(getContext()));
+        Log.d("fechas","Dia cierre: " + MySharedPreferences.getDiaCierre(getContext()));
+
         layoutInfo.setOnLongClickListener(view -> {
             String texto = "Agencia: "+spinnerAgencias.getSelectedItem().toString()+"\n" +
                     "Desde: "+tvFechaDesde.getText().toString()+"\n" +
@@ -138,6 +130,47 @@ public class FragmentVentaTTOO extends Fragment {
         showInfo();
     }
 
+    private void figureOutDesde(){
+        String desde;
+        if(myCallBack.getLastDesde() != null && !myCallBack.getLastDesde().isEmpty()){
+            desde = myCallBack.getLastDesde();
+        } else if(MySharedPreferences.isCierreRegular(getContext())){
+            desde = "01" + DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).substring(2, 10);
+            desdeIsRegular = true;
+        } else {
+            int diaCierre = MySharedPreferences.getDiaCierre(getContext());
+            /*if(diaCierre > 0 && diaCierre < 31){
+                desde = DateHandler.getDesdeLastMonth(diaCierre);
+                desdeIsRegular = false;
+            } else {
+                desde = "01" + DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).substring(2, 10);
+                desdeIsRegular = true;
+            }*/
+            desde = DateHandler.getDesdeLastMonth(diaCierre);
+            desdeIsRegular = false;
+        }
+        tvFechaDesde.setText(desde);
+        myCallBack.setLastDesde(desde);
+    }
+
+    private void figureOutHasta(){
+        String hasta;
+        if(myCallBack.getLastHasta() != null && !myCallBack.getLastHasta().isEmpty()){
+            hasta = myCallBack.getLastHasta();
+        } else if(desdeIsRegular || MySharedPreferences.isCierreRegular(getContext())){
+            hasta = DateHandler.getLastDayOfMonth(MisConstantes.FormatoFecha.MOSTRAR);
+        } else {
+            int diaCierre = MySharedPreferences.getDiaCierre(getContext());
+            if(diaCierre > 0 && diaCierre < 31){
+                hasta = DateHandler.getHastaCurrentMonth(diaCierre);
+            } else {
+                hasta = DateHandler.getLastDayOfMonth(MisConstantes.FormatoFecha.MOSTRAR);
+            }
+        }
+        tvFechaHasta.setText(hasta);
+        myCallBack.setLastHasta(hasta);
+    }
+
     private void showInfo(){
         if(!tvFechaDesde.getText().toString().equals(tvFechaHasta.getText().toString())){
             if(!DateHandler.areDatesInOrder(tvFechaDesde.getText().toString(),tvFechaHasta.getText().toString())){
@@ -169,19 +202,20 @@ public class FragmentVentaTTOO extends Fragment {
 
     private void udListaAgencias(){
         List<Reserva> reservasDelPeriodo = getReservasFromDB(TODAS);
-        listaAgencias.clear();
+        listaAgencias = new ArrayList<>();
         if(!reservasDelPeriodo.isEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Collections.sort(reservasDelPeriodo,
                         Comparator.comparing(reserva -> reserva.getAgencia().toLowerCase()));
-            }else {
-                Collections.sort(reservasDelPeriodo, Comparator.comparing(reserva -> reserva.getAgencia().toLowerCase()));
-            }
+            }*/
             List<String> nuevasAgencias = new ArrayList<>();
             for (Reserva reserva : reservasDelPeriodo) {
                 if (!nuevasAgencias.contains(reserva.getAgencia())) {
                     nuevasAgencias.add(reserva.getAgencia());
                 }
+            }
+            if(!nuevasAgencias.isEmpty()){
+                Collections.sort(nuevasAgencias);
             }
             if(nuevasAgencias.size()>1){listaAgencias.add(TODAS);}
             listaAgencias.addAll(nuevasAgencias);

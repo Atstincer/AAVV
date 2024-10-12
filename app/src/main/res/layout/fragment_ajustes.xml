@@ -4,9 +4,9 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        style="@style/MargenesMyApp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="@style/MargenesMyApp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,8 +22,8 @@
                 android:id="@+id/layout_editar_nombre_vendedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:orientation="horizontal">
 
                 <EditText
@@ -37,8 +37,8 @@
                     android:id="@+id/btn_nombre_vendedor"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
                     android:text="Ok" />
 
             </LinearLayout>
@@ -47,8 +47,8 @@
                 android:id="@+id/tv_nombre_vendedor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:text="Nombre vendedor" />
 
@@ -57,8 +57,8 @@
                 android:id="@+id/layout_editar_telefono_vendedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
@@ -73,8 +73,8 @@
                     android:id="@+id/btn_telefono_vendedor"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
                     android:text="Ok" />
 
             </LinearLayout>
@@ -83,8 +83,8 @@
                 android:id="@+id/tv_telefono_vendedor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:text="Teléfono vendedor" />
 
@@ -93,8 +93,8 @@
                 android:id="@+id/layout_editar_agencia_vendedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
@@ -109,8 +109,8 @@
                     android:id="@+id/btn_agencia_vendedor"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
                     android:text="Ok" />
 
             </LinearLayout>
@@ -119,16 +119,16 @@
                 android:id="@+id/tv_agencia_vendedor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:text="Agencia" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@android:color/black"
                 android:orientation="vertical" />
 
@@ -166,8 +166,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@android:color/black"
                 android:orientation="vertical" />
 
@@ -192,8 +192,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@android:color/black"
                 android:orientation="vertical" />
 
@@ -234,9 +234,9 @@
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
-                        android:inputType="numberDecimal"
                         android:gravity="center"
-                        android:hint="0.0"/>
+                        android:hint="0.0"
+                        android:inputType="numberDecimal" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -251,8 +251,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@android:color/black"
                 android:orientation="vertical" />
 
@@ -277,7 +277,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:orientation="vertical"/>
+                android:orientation="vertical" />
 
 
             <LinearLayout
@@ -303,11 +303,19 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@android:color/black"
+                android:orientation="vertical" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Filtrar ventas del período:"/>
+                android:text="Filtrar ventas del período:" />
 
             <RadioGroup
                 android:id="@+id/rg_fecha_filtrar"
@@ -319,23 +327,62 @@
                     android:id="@+id/rb_fecha_excursion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="fecha excursión"/>
+                    android:text="fecha excursión" />
 
                 <RadioButton
                     android:id="@+id/rb_fecha_confeccion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="fecha venta"/>
+                    android:text="fecha venta" />
 
             </RadioGroup>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Establecer cierre" />
+
+            <CheckBox
+                android:id="@+id/cb_cierre_mes_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="inicio y fin de mes" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cb_cierre_mes_dia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="los días..." />
+
+                <EditText
+                    android:id="@+id/et_dia_cierre"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="center"
+                    android:hint="0"
+                    android:inputType="number" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="de cada mes" />
+
+            </LinearLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@android:color/black"
                 android:orientation="vertical" />
 
@@ -347,21 +394,21 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Carpeta de la app:"/>
+                    android:text="Carpeta de la app:" />
 
                 <TextView
                     android:id="@+id/tv_defaul_directory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccent"
                     android:layout_marginStart="5dp"
-                    android:text="Carpeta de la app" />
+                    android:text="Carpeta de la app"
+                    android:textColor="@color/colorAccent" />
 
             </LinearLayout>
 
@@ -379,9 +426,9 @@
 
         <ProgressBar
             android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            style="?android:attr/progressBarStyleLarge"
             android:layout_gravity="center" />
 
     </FrameLayout>
