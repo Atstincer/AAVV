@@ -317,6 +317,16 @@ public class BDImporter {
             if(hasValue(str[9])){//fecha a filtrar
                 MySharedPreferences.storeTipoFechaFiltrar(context,Integer.parseInt(str[9]));
             }
+            if(hasValue(str[10])){
+                if(str[10].equals("true")){
+                    MySharedPreferences.storeCierreRegular(context,true);
+                } else if(str[10].equals("false")){
+                    MySharedPreferences.storeCierreRegular(context,false);
+                }
+            }
+            if(hasValue(str[11])){
+                MySharedPreferences.storeDiaCierre(context,Integer.parseInt(str[11]));
+            }
         }catch (Exception e){
             Log.e("Importando","Error salvando la configuracion",e);
         }

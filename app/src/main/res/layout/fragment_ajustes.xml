@@ -358,7 +358,7 @@
                     android:id="@+id/cb_cierre_mes_dia"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="los días..." />
+                    android:text="los días" />
 
                 <EditText
                     android:id="@+id/et_dia_cierre"
@@ -369,11 +369,6 @@
                     android:gravity="center"
                     android:hint="0"
                     android:inputType="number" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="de cada mes" />
 
             </LinearLayout>
 

@@ -198,18 +198,23 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 try {
-                    int diaCierre = 0;
+                    //int diaCierre = 0;
                     if(!etDiaCierre.getText().toString().isEmpty()) {
                         int dia = Integer.parseInt(etDiaCierre.getText().toString());
-                        /*if(dia > 0 && dia < 31){
-                            diaCierre = dia;
-                        }*/
-                        diaCierre = dia;
-                    }
-                    if(diaCierre == 0){
+                        if(dia > 0 && dia <= 31){
+                            MySharedPreferences.storeDiaCierre(getContext(), dia);
+                            MySharedPreferences.storeCierreRegular(getContext(), false);
+                        } else {
+                            MySharedPreferences.storeDiaCierre(getContext(), 0);
+                            MySharedPreferences.storeCierreRegular(getContext(), true);
+                            if(dia != 0){
+                                Toast.makeText(getContext(),"Valor incorrecto",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        MySharedPreferences.storeDiaCierre(getContext(), 0);
                         MySharedPreferences.storeCierreRegular(getContext(), true);
                     }
-                    MySharedPreferences.storeDiaCierre(getContext(), diaCierre);
                     myCallBack.setLastDesde("");
                     myCallBack.setLastHasta("");
                 }catch (Exception e){

@@ -149,6 +149,10 @@ public class BDExporter {
             }
             fileWriter.write(("|").getBytes());
             fileWriter.write((String.valueOf(MySharedPreferences.getTipoFechaFiltrar(context))).getBytes());//fecha a filtrar
+            fileWriter.write(("|").getBytes());
+            fileWriter.write(String.valueOf(MySharedPreferences.isCierreRegular(context)).getBytes());//cierre regular?
+            fileWriter.write(("|").getBytes());
+            fileWriter.write(String.valueOf(MySharedPreferences.getDiaCierre(context)).getBytes());//dia cierre
             fileWriter.write(("\n").getBytes());
         }catch (Exception e){
             Log.e("exportando","Error exportando configuracion.",e);

@@ -146,7 +146,7 @@ public class FragmentVentaTTOO extends Fragment {
                 desde = "01" + DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR).substring(2, 10);
                 desdeIsRegular = true;
             }*/
-            desde = DateHandler.getDesdeLastMonth(diaCierre);
+            desde = DateHandler.getDesdeSegunPeriodo(diaCierre);
             desdeIsRegular = false;
         }
         tvFechaDesde.setText(desde);
@@ -162,7 +162,7 @@ public class FragmentVentaTTOO extends Fragment {
         } else {
             int diaCierre = MySharedPreferences.getDiaCierre(getContext());
             if(diaCierre > 0 && diaCierre < 31){
-                hasta = DateHandler.getHastaCurrentMonth(diaCierre);
+                hasta = DateHandler.getHastaSegunPeriodo(diaCierre);
             } else {
                 hasta = DateHandler.getLastDayOfMonth(MisConstantes.FormatoFecha.MOSTRAR);
             }

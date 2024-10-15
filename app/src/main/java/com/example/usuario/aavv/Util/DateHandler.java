@@ -3,15 +3,11 @@ package com.example.usuario.aavv.Util;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.util.Log;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -103,7 +99,7 @@ public class DateHandler {
         return false;
     }*/
 
-    public static String getDesdeLastMonth(int dia){
+    public static String getDesdeSegunPeriodo(int dia){
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
         int ultimoDiaDelMes = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -120,13 +116,17 @@ public class DateHandler {
         return sdf.format(calendar.getTime());
     }
 
-    public static String getHastaCurrentMonth(int dia){
+    public static String getHastaSegunPeriodo(int dia){
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy",Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
         int ultimoDiaDelMes = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int today = calendar.get(Calendar.DAY_OF_MONTH);
         if(dia > ultimoDiaDelMes){
             calendar.set(Calendar.DAY_OF_MONTH,ultimoDiaDelMes);
         } else {
+            if(dia < today){
+                calendar.add(Calendar.MONTH,1);
+            }
             calendar.set(Calendar.DAY_OF_MONTH, dia);
         }
         return sdf.format(calendar.getTime());
