@@ -40,6 +40,7 @@ import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -51,6 +52,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     public static final String TAG = "FragmentReservar";
 
     private String idSelectedReserva;
+    //private Reserva reservaSelected;
     private List<Excursion> excursionesList;
 
     private CheckBox checkBoxIncluirRepVenta;
@@ -218,6 +220,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     private void setUpEditarMoode() {
         if (getArguments() != null) {
             idSelectedReserva = getArguments().getString("id");
+            //reservaSelected = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
         }
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
 //        layoutRepVenta.setVisibility(View.VISIBLE);
@@ -243,6 +246,10 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(), AdminSQLiteOpenHelper.BD_NAME, null, AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" ACTUALIZADO";
+        Reserva reservaBD = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
+        if(!reserva.getObservaciones().equalsIgnoreCase(reservaBD.getObservaciones())){
+            msgHistorial += "\nobs: " + reserva.getObservaciones();
+        }
         reserva.addToHistorial(msgHistorial);
         ContentValues values = ReservaBDHandler.getContentValues(reserva);
         db.update(ReservaBDHandler.TABLE_NAME, values, ReservaBDHandler.CAMPO_NUMERO_TE+"=?",
@@ -257,6 +264,10 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         Reserva nuevaReserva = getNuevaReserva();
         nuevaReserva.setFechaOriginalEjecucion(nuevaReserva.getFechaEjecucion());
         String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" REGISTRADO";
+        if(nuevaReserva.getObservaciones() != null &&
+                !nuevaReserva.getObservaciones().isEmpty()){
+            msgHistorial += "\nobs: " + nuevaReserva.getObservaciones();
+        }
         nuevaReserva.addToHistorial(msgHistorial);
         registrar(nuevaReserva);
     }
@@ -361,7 +372,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
                 tvEstado.setText(msgDevuelto);
                 break;
         }
-        getActivity().invalidateOptionsMenu();
+        Objects.requireNonNull(getActivity()).invalidateOptionsMenu();
     }
 
     private void getReadyForNextTE() {
@@ -399,8 +410,8 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void predictPrice(Excursion excursion) {
-        if (excursion == null || myCallBack.getEstadoFragmentReservar()== MisConstantes.Estado.EDITAR ||
-                !MySharedPreferences.getPredecirPrecio(getContext())) {
+        if (excursion == null || myCallBack.getEstadoFragmentReservar() == MisConstantes.Estado.EDITAR ||
+                !MySharedPreferences.getPredecirPrecio(Objects.requireNonNull(getContext()))) {
             return;
         }
         float precioTotal = 0;
@@ -497,7 +508,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
 
     private Reserva getNuevaReserva() {
         Reserva reserva;
-        if(myCallBack.getEstadoFragmentReservar()== MisConstantes.Estado.EDITAR){
+        if(myCallBack.getEstadoFragmentReservar() == MisConstantes.Estado.EDITAR){
             reserva = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
         } else {
             reserva = new Reserva();
@@ -699,13 +710,15 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     private void showDialogDevolver(){
         DialogFragmentDevolver dialog = new DialogFragmentDevolver();
         dialog.setTargetFragment(this,0);
-        dialog.show(getChildFragmentManager(),DialogFragmentDevolver.TAG);
+        //dialog.show(getChildFragmentManager(),DialogFragmentDevolver.TAG);
+        dialog.show(getFragmentManager(),DialogFragmentDevolver.TAG);
     }
 
     private void showHistorial(){
         DialogFragmentHistorial dialog = new DialogFragmentHistorial();
         dialog.setTargetFragment(this,0);
-        dialog.show(getChildFragmentManager(),DialogFragmentHistorial.TAG);
+        //dialog.show(getChildFragmentManager(),DialogFragmentHistorial.TAG);
+        dialog.show(getFragmentManager(),DialogFragmentHistorial.TAG);
     }
 
     @Override

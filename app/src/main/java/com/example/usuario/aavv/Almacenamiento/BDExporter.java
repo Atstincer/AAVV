@@ -270,10 +270,10 @@ public class BDExporter {
                 }else {
                     fileWriter.write(("").getBytes());
                 }
+                /*fileWriter.write(("|").getBytes());
+                writeInFile(fileWriter,reserva.getObsDevolucion());*/
                 fileWriter.write(("|").getBytes());
-                writeInFile(fileWriter,reserva.getObsDevolucion());//22
-                fileWriter.write(("|").getBytes());
-                if(reserva.getObservaciones()==null || reserva.getObservaciones().isEmpty()){//23
+                if(reserva.getObservaciones()==null || reserva.getObservaciones().isEmpty()){//22
                     fileWriter.write(("null").getBytes());
                 }else {
                     String observaciones = formatStringToExport(reserva.getObservaciones());

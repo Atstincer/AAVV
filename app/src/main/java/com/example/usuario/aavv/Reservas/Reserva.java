@@ -22,7 +22,7 @@ public class Reserva {
     static final int INFO_LIQUIDACION = 4;
 
     private String noTE, excursion, agencia, noHab, cliente, hotel, fechaConfeccion, fechaEjecucion, fechaReporteVenta, fechaDevolucion,
-            fechaOriginalEjecucion, fechaCancelacion, idioma, Observaciones, historial, obsDevolucion;
+            fechaOriginalEjecucion, fechaCancelacion, idioma, Observaciones, historial;//obsDevolucion
     private int adultos, menores, infantes, acompanante, estado;
     private double precio, importeDevuelto;
     private boolean incluirEnRepVenta;
@@ -111,13 +111,13 @@ public class Reserva {
         return cantPaxs;
     }
 
-    public String getObsDevolucion() {
+    /*public String getObsDevolucion() {
         return obsDevolucion;
     }
 
     public void setObsDevolucion(String obsDevolucion) {
         this.obsDevolucion = obsDevolucion;
-    }
+    }*/
 
     public boolean incluirEnRepVenta() {
         return incluirEnRepVenta;

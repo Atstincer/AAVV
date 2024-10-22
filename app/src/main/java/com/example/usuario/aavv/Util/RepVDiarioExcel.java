@@ -155,7 +155,7 @@ public class RepVDiarioExcel extends MyExcel {
                 cell.setCellStyle(wrappedStyle);
 
                 cell = rowData.createCell(2);//Fecha
-                cell.setCellValue(reserva.getFechaDevolucion());
+                //cell.setCellValue(reserva.getFechaDevolucion());
                 cell.setCellStyle(centerStyle);
 
                 cell = rowData.createCell(3);//Adultos
@@ -175,10 +175,11 @@ public class RepVDiarioExcel extends MyExcel {
                 cell.setCellStyle(centerStyle);
 
                 cell = rowData.createCell(8);//Observaciones
-                String obs = reserva.getObsDevolucion();
+                cell.setCellValue(reserva.getObservaciones());
+                /*String obs = reserva.getObsDevolucion();
                 if(obs != null && !obs.isEmpty()) {
                     cell.setCellValue(obs);
-                }
+                }*/
                 cell.setCellStyle(wrappedStyle);
             }
         }

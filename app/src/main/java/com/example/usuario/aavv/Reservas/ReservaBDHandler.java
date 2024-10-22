@@ -20,31 +20,31 @@ import java.util.List;
 
 public class ReservaBDHandler {
 
-    public static String TABLE_NAME = "Reservas";
-    public static String CAMPO_NUMERO_TE = "TE";
-    private static String CAMPO_EXCURSION = "excursion";
-    static String CAMPO_AGENCIA = "agencia";
-    private static String CAMPO_NUMERO_HAB = "hab";
-    private static String CAMPO_CLIENTE = "cliente";
-    private static String CAMPO_HOTEL = "hotel";
-    static String CAMPO_FECHA_CONFECCION = "fechaConfeccion";
-    static String CAMPO_FECHA_EJECUCION = "fechaEjecucion";
-    static String CAMPO_FECHA_EJECUCION_ORIGINAL = "fechaOrigEjec";
-    static String CAMPO_FECHA_REPORTE_VENTA = "fechaRepVenta";
-    private static String CAMPO_ADULTOS = "adultos";
-    private static String CAMPO_MENORES = "menores";
-    private static String CAMPO_INFANTES = "infantes";
-    private static String CAMPO_ACOMPANANTES = "acompanantes";
-    private static String CAMPO_IDIOMA = "idioma";
-    private static String CAMPO_PRECIO = "precio";
-    static String CAMPO_ESTADO = "estado";
-    static String CAMPO_FECHA_DEVOLUCION = "fechaDevolucion";
-    static String CAMPO_FECHA_CANCELACION = "fechaCanc";
-    static String CAMPO_IMPORTE_DEVUELTO = "importeDevuelto";
-    static String CAMPO_HISTORIAL = "historial";
-    static String CAMPO_INCLUIR_REP_VENTA = "incluirRepVenta";
-    private static String CAMPO_OBSERVACIONES = "observaciones";
-    static String CAMPO_OBS_DEVOLUCION = "obsDevolucion";
+    public final static String TABLE_NAME = "Reservas";
+    public final static String CAMPO_NUMERO_TE = "TE";
+    private final static String CAMPO_EXCURSION = "excursion";
+    final static String CAMPO_AGENCIA = "agencia";
+    private final static String CAMPO_NUMERO_HAB = "hab";
+    private final static String CAMPO_CLIENTE = "cliente";
+    private final static String CAMPO_HOTEL = "hotel";
+    final static String CAMPO_FECHA_CONFECCION = "fechaConfeccion";
+    final static String CAMPO_FECHA_EJECUCION = "fechaEjecucion";
+    final static String CAMPO_FECHA_EJECUCION_ORIGINAL = "fechaOrigEjec";
+    final static String CAMPO_FECHA_REPORTE_VENTA = "fechaRepVenta";
+    private final static String CAMPO_ADULTOS = "adultos";
+    private final static String CAMPO_MENORES = "menores";
+    private final static String CAMPO_INFANTES = "infantes";
+    private final static String CAMPO_ACOMPANANTES = "acompanantes";
+    private final static String CAMPO_IDIOMA = "idioma";
+    private final static String CAMPO_PRECIO = "precio";
+    final static String CAMPO_ESTADO = "estado";
+    final static String CAMPO_FECHA_DEVOLUCION = "fechaDevolucion";
+    final static String CAMPO_FECHA_CANCELACION = "fechaCanc";
+    final static String CAMPO_IMPORTE_DEVUELTO = "importeDevuelto";
+    final static String CAMPO_HISTORIAL = "historial";
+    final static String CAMPO_INCLUIR_REP_VENTA = "incluirRepVenta";
+    private final static String CAMPO_OBSERVACIONES = "observaciones";
+    //static String CAMPO_OBS_DEVOLUCION = "obsDevolucion";
 
 
     public static ContentValues getContentValues(Reserva reserva){
@@ -85,9 +85,9 @@ public class ReservaBDHandler {
         values.put(ReservaBDHandler.CAMPO_OBSERVACIONES,reserva.getObservaciones());
         values.put(CAMPO_HISTORIAL,reserva.getHistorial());
         values.put(CAMPO_INCLUIR_REP_VENTA,reserva.incluirEnRepVenta());
-        if(reserva.getObsDevolucion() != null && !reserva.getObsDevolucion().isEmpty()){
+        /*if(reserva.getObsDevolucion() != null && !reserva.getObsDevolucion().isEmpty()){
             values.put(CAMPO_OBS_DEVOLUCION, reserva.getObsDevolucion());
-        }
+        }*/
         return values;
     }
 
@@ -133,7 +133,7 @@ public class ReservaBDHandler {
         }else if(cursor.getInt(cursor.getColumnIndex(ReservaBDHandler.CAMPO_INCLUIR_REP_VENTA))==0){
             reserva.setIncluirEnRepVenta(false);
         }
-        reserva.setObsDevolucion(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_OBS_DEVOLUCION)));
+        //reserva.setObsDevolucion(cursor.getString(cursor.getColumnIndex(ReservaBDHandler.CAMPO_OBS_DEVOLUCION)));
         return reserva;
     }
 
