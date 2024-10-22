@@ -8,23 +8,15 @@ import android.support.v4.provider.DocumentFile;
 
 import com.example.usuario.aavv.AbstractClasses.StorageAccessAbstractClass;
 
-public class RepVentaStorageAccess extends StorageAccessAbstractClass {
+public abstract class LiquidacionStorageAccess extends StorageAccessAbstractClass {
 
-    public RepVentaStorageAccess(Context ctx, String fecha) {
+    public LiquidacionStorageAccess(Context ctx, String fecha) {
         super(ctx, fecha);
     }
 
     @Override
     protected String getNameCarpetaPrincipal() {
-        return "Reportes de venta";
-    }
-
-    @Override
-    public String getFileName() {
-        if(file==null || !file.exists()){
-            return "RepV_"+fecha.replace("/","");
-        }
-        return file.getName();
+        return "Liquidaciones";
     }
 
     @Nullable

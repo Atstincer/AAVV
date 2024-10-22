@@ -25,7 +25,7 @@ import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.StorageAccess.VentaTTOOStorageAccess;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
-import com.example.usuario.aavv.Util.MyExcel;
+import com.example.usuario.aavv.Util.RepVAgenciaExcel;
 import com.example.usuario.aavv.Util.Util;
 
 import java.util.ArrayList;
@@ -381,7 +381,8 @@ public class FragmentVentaTTOO extends Fragment {
         new Thread(()->{
             try {
                 VentaTTOOStorageAccess ventaTTOOStorageAccess = new VentaTTOOStorageAccess(getContext(),desde,hasta,agencia);
-                if(MyExcel.generarExcelReporteVentaPorAgencia(ventaTTOOStorageAccess,listaReservas,getImporteTotal(agencia))){
+                RepVAgenciaExcel repVAgenciaExcel = new RepVAgenciaExcel(listaReservas, ventaTTOOStorageAccess);
+                if(repVAgenciaExcel.generarExcel()){
                     myCallBack.showSnackBar("Excel generado correctamente: "+ventaTTOOStorageAccess.getFileName());
                 }else {
                     getActivity().runOnUiThread(()->{

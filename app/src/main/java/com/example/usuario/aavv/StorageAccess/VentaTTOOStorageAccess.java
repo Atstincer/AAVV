@@ -60,5 +60,4 @@ public class VentaTTOOStorageAccess extends StorageAccessAbstractClass {
         return hasta;
     }
 
-
 }

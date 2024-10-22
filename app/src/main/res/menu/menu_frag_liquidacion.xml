@@ -4,4 +4,7 @@
     <item android:id="@+id/menu_item_copiar"
         android:title="Copiar info" />
 
+    <item android:id="@+id/menu_item_excel_liquidacion_gvt"
+        android:title="Excel (GVT)" />
+
 </menu>

@@ -23,7 +23,7 @@ import com.example.usuario.aavv.StorageAccess.RepVentaStorageAccess;
 import com.example.usuario.aavv.Util.DateHandler;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.MyEmail;
-import com.example.usuario.aavv.Util.MyExcel;
+import com.example.usuario.aavv.Util.RepVDiarioExcel;
 import com.example.usuario.aavv.Util.Util;
 
 import java.util.ArrayList;
@@ -189,7 +189,8 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
 
         new Thread(()->{
             try {
-                if(MyExcel.generarExcelReporteVenta(repVentaSA,reservaList)){
+                RepVDiarioExcel repVDiarioExcel = new RepVDiarioExcel(reservaList,repVentaSA);
+                if(repVDiarioExcel.generarExcel()){
                     if(enviarPorMail){
                         if(repVentaSA.getFile()!=null && repVentaSA.getFile().exists()) {
                             getActivity().runOnUiThread(()->{
@@ -206,7 +207,7 @@ public class FragmentRepVenta extends Fragment implements ReservaRVAdapter.MyCal
                     });
                 }
             } catch (Exception e) {
-                Log.e("excel","Error creando excel",e);
+                Log.e("excel","Error creando excel Reporte de Venta",e);
             }
         }).start();
     }

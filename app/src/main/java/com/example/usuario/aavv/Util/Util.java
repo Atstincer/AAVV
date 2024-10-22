@@ -15,6 +15,8 @@ import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 
 public class Util {
 
+    public static final String[] mesesDelAno = new String[]{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
+
     public static void copyToClipBoard(Context ctx, String text){
         ClipboardManager clipboardManager = (ClipboardManager)ctx.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("text",text);

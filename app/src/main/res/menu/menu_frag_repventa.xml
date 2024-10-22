@@ -11,6 +11,6 @@
         android:title="Excel" />
 
     <item android:id="@+id/menu_item_excel_mail"
-        android:title="Excel/Mail" />
+        android:title="Excel/Compartir" />
 
 </menu>

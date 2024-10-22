@@ -24,13 +24,14 @@ import android.widget.Toast;
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.R;
+import com.example.usuario.aavv.StorageAccess.LiquidacionGVTStorageAccess;
 import com.example.usuario.aavv.Util.DateHandler;
+import com.example.usuario.aavv.Util.LiquidacionGVTExcel;
 import com.example.usuario.aavv.Util.MisConstantes;
 import com.example.usuario.aavv.Util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 
@@ -278,21 +279,6 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if(menu!=null){menu.clear();}
-        inflater.inflate(R.menu.menu_frag_liquidacion,menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_item_copiar) {
-            copiarInfo();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void itemClicked(int position) {
         myCallBack.setUpFragmentReservar(reservaList.get(position).getNoTE());
     }
@@ -342,6 +328,49 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         return new Reserva();
     }
 
+    private void generarExcelLiqGVT(){
+        if(reservaList.isEmpty()){
+            Toast.makeText(getContext(),"Liquidación vacía",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(!Util.hasPermissionGranted(getContext())){
+            myCallBack.requestCreateSelectAppDir(true);
+            return;
+        }
+        LiquidacionGVTStorageAccess liqSA = new LiquidacionGVTStorageAccess(getContext(),tvHasta.getText().toString());
+        new Thread(() -> {
+            try {
+                LiquidacionGVTExcel liquidacionGVTExcel = new LiquidacionGVTExcel(reservaList,liqSA);
+                if(liquidacionGVTExcel.generarExcel()){
+                    myCallBack.showSnackBar("Excel generado correctamente: " + liqSA.getFileName());
+                }else {
+                    getActivity().runOnUiThread(()->{
+                        myCallBack.requestCreateSelectAppDir(true);
+                    });
+                }
+            } catch (Exception e) {
+                Log.e("excel","Error creando excel Liquidacion",e);
+            }
+        }).start();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if(menu!=null){menu.clear();}
+        inflater.inflate(R.menu.menu_frag_liquidacion,menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_item_copiar) {
+            copiarInfo();
+        } else if(item.getItemId() == R.id.menu_item_excel_liquidacion_gvt) {
+            generarExcelLiqGVT();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public interface MyCallBack{
         void udUI(String tag);
         void setUpFragmentReservar(String id);
@@ -350,5 +379,7 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
         void setHastaLiq(String fechaHastaLiq);
         String getDesdeLiq();
         String getHastaLiq();
+        void requestCreateSelectAppDir(boolean conAlertDialog);
+        void showSnackBar(String mensaje);
     }
 }
