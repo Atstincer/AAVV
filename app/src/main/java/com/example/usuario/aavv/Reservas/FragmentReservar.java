@@ -247,7 +247,8 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         SQLiteDatabase db = admin.getWritableDatabase();
         String msgHistorial = DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR)+" ACTUALIZADO";
         Reserva reservaBD = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
-        if(!reserva.getObservaciones().equalsIgnoreCase(reservaBD.getObservaciones())){
+        if(!reserva.getObservaciones().isEmpty() &&
+                !reserva.getObservaciones().equalsIgnoreCase(reservaBD.getObservaciones())){
             msgHistorial += "\nobs: " + reserva.getObservaciones();
         }
         reserva.addToHistorial(msgHistorial);
