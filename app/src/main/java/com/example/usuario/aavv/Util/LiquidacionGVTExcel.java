@@ -79,7 +79,7 @@ public class LiquidacionGVTExcel extends MyExcel {
     }
 
     private void addLogo(){
-        try{
+        /*try{
             //InputStream is = new FileInputStream("src/main/res/images/gvt_logo.jpg");
             InputStream is = ctx.getResources().openRawResource(R.raw.gvt_logo_invertido);
             byte[] bytes = IOUtils.toByteArray(is);
@@ -97,7 +97,7 @@ public class LiquidacionGVTExcel extends MyExcel {
             //picture.resize(2);
         } catch (Exception e){
             Log.e("Excel","Error añadiendo picture.",e);
-        }
+        }*/
     }
 
     @Override
