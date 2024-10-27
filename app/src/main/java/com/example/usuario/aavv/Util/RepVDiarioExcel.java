@@ -1,5 +1,7 @@
 package com.example.usuario.aavv.Util;
 
+import android.util.Log;
+
 import com.example.usuario.aavv.AbstractClasses.MyExcel;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
 import com.example.usuario.aavv.Reservas.Reserva;
@@ -149,6 +151,9 @@ public class RepVDiarioExcel extends MyExcel {
                 cell = rowData.createCell(8);//Observaciones
                 cell.setCellValue(reserva.getObservaciones());
                 cell.setCellStyle(wrappedStyle);
+                if(reserva.getObservaciones().length() >= 34){
+                    rowData.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));
+                }
             } else if (reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION) {
                 cell = rowData.createCell(1);//Opcionales
                 cell.setCellValue("Devolución");
@@ -176,10 +181,6 @@ public class RepVDiarioExcel extends MyExcel {
 
                 cell = rowData.createCell(8);//Observaciones
                 cell.setCellValue(reserva.getObservaciones());
-                /*String obs = reserva.getObsDevolucion();
-                if(obs != null && !obs.isEmpty()) {
-                    cell.setCellValue(obs);
-                }*/
                 cell.setCellStyle(wrappedStyle);
             }
         }

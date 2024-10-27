@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.example.usuario.aavv"
+    namespace "com.example.usuario.aavv"
     compileSdk 34
     defaultConfig {
         applicationId "com.example.usuario.aavv"

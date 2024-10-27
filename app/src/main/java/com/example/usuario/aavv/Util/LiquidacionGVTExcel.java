@@ -1,25 +1,15 @@
 package com.example.usuario.aavv.Util;
 
-import android.util.Log;
-
 import com.example.usuario.aavv.AbstractClasses.MyExcel;
 import com.example.usuario.aavv.Almacenamiento.MySharedPreferences;
-import com.example.usuario.aavv.R;
 import com.example.usuario.aavv.Reservas.Reserva;
 import com.example.usuario.aavv.StorageAccess.LiquidacionGVTStorageAccess;
 
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
-import org.apache.poi.util.IOUtils;
 
-import java.io.InputStream;
 import java.util.List;
 
 public class LiquidacionGVTExcel extends MyExcel {
