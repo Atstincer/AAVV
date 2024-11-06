@@ -423,7 +423,7 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     private void showDialogExporter(){
         DialogFragmentExporter dialog = new DialogFragmentExporter();
         dialog.setTargetFragment(this,0);
-        dialog.show(getChildFragmentManager(),DialogFragmentExporter.TAG);
+        dialog.show(getFragmentManager(),DialogFragmentExporter.TAG);
     }
 
     @Override
@@ -442,7 +442,6 @@ public class FragmentAjustes extends Fragment implements BDImporter.CallFromImpo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_item_exportar_bd){
-            //exportarBD();
             showDialogExporter();
         } else if(item.getItemId() == R.id.menu_item_importar_bd){
             myCallBack.showFileChooser();
