@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
@@ -25,7 +26,7 @@ public class DialogFragmentInfoTTOO extends DialogFragment {
     public static String TAG = "DialogFragmentInfoTTOO";
 
     private EditText etNombreTTOO;
-    //private Button btn;
+    private TextView tvEliminar;
 
     private long idTTOOSelected;
 
@@ -46,16 +47,23 @@ public class DialogFragmentInfoTTOO extends DialogFragment {
     }
 
     private void bindComponents(View v){
-        etNombreTTOO = (EditText) v.findViewById(R.id.et_nombre_ttoo);
-        Button btn = (Button) v.findViewById(R.id.btn_info_ttoo);
+        etNombreTTOO = v.findViewById(R.id.et_nombre_ttoo);
+        tvEliminar = v.findViewById(R.id.tv_eliminar);
+        Button btn = v.findViewById(R.id.btn_info_ttoo);
 
         idTTOOSelected = callBack.getTTOOId();
         if(idTTOOSelected ==0){
+            tvEliminar.setVisibility(View.GONE);
             btn.setText("Registrar");
         }else {
+            tvEliminar.setVisibility(View.VISIBLE);
             showInfoTTOO();
             btn.setText("Actualizar");
         }
+
+        tvEliminar.setOnClickListener((view)->{
+            eliminarAgencia();
+        });
 
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -74,6 +82,18 @@ public class DialogFragmentInfoTTOO extends DialogFragment {
         etNombreTTOO.setText(ttoo.getNombre());
     }
 
+    private void eliminarAgencia(){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(
+                getContext(),
+                AdminSQLiteOpenHelper.BD_NAME,
+                null,
+                AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TTOOBDHandler.TABLE_NAME + " WHERE id=?",
+                new String[]{String.valueOf(idTTOOSelected)});
+        done("Eliminado correctamente");
+    }
+
     private void registrar(){
         if(!isValid()){return;}
         TTOO ttoo = getInfo();
@@ -82,7 +102,11 @@ public class DialogFragmentInfoTTOO extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(TTOOBDHandler.CAMPO_NOMBRE,ttoo.getNombre());
         sq.insert(TTOOBDHandler.TABLE_NAME,null,values);
-        Toast.makeText(getContext(),"Registrado correctamente",Toast.LENGTH_SHORT).show();
+        done("Registrado correctamente");
+    }
+
+    private void done(String msg){
+        Toast.makeText(getContext(),msg,Toast.LENGTH_SHORT).show();
         callBack.infoChanged();
         dismiss();
     }
@@ -95,9 +119,7 @@ public class DialogFragmentInfoTTOO extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(TTOOBDHandler.CAMPO_NOMBRE,ttoo.getNombre());
         sq.update(TTOOBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(idTTOOSelected)});
-        Toast.makeText(getContext(),"Actualizado correctamente",Toast.LENGTH_SHORT).show();
-        callBack.infoChanged();
-        dismiss();
+        done("Actualizado correctamente");
     }
 
     private boolean isValid(){

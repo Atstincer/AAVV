@@ -1,5 +1,6 @@
 package com.example.usuario.aavv.Excursiones;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
 import com.example.usuario.aavv.R;
 
+import java.util.Objects;
+
 /**
  * Created by usuario on 1/10/2023.
  */
@@ -30,7 +33,7 @@ public class FragmentExcursion extends Fragment {
     public static final String TAG = "FragmentExcursion";
 
     private EditText etExcursion, etPrecioAdulto, etPrecioMenor, etPrecioAcompanante, etPrecioRango, etPaxHasta;
-    private TextView tvPaxAdicional;
+    private TextView tvPaxAdicional, tvEliminar;
     private RadioGroup radioGroup;
     private RadioButton rbPrecioPax,rbPrecioRango;
     private LinearLayout layoutPrecioRango;
@@ -62,44 +65,40 @@ public class FragmentExcursion extends Fragment {
     }
 
     private void bindComponents(View view){
-        etExcursion = (EditText)view.findViewById(R.id.et_excursion);
-        etPrecioAdulto = (EditText)view.findViewById(R.id.et_precio_adulto);
-        etPrecioMenor = (EditText)view.findViewById(R.id.et_precio_menor);
-        etPrecioAcompanante = (EditText)view.findViewById(R.id.et_precio_acompanante);
-        etPrecioRango = (EditText)view.findViewById(R.id.et_precio_rango);
-        etPaxHasta = (EditText)view.findViewById(R.id.et_pax_hasta);
-        tvPaxAdicional = (TextView)view.findViewById(R.id.tv_pax_adicional);
-        radioGroup = (RadioGroup)view.findViewById(R.id.rg_tipo_precio);
-        rbPrecioPax = (RadioButton)view.findViewById(R.id.rb_precio_pax);
-        rbPrecioRango = (RadioButton)view.findViewById(R.id.rb_precio_rango);
-        layoutPrecioRango = (LinearLayout)view.findViewById(R.id.layout_precio_rango);
-        checkBoxIdiomaNecesario = (CheckBox)view.findViewById(R.id.checkbox_idioma_necesario);
-        btn = (Button)view.findViewById(R.id.btn_fragment_excursion);
+        tvEliminar = view.findViewById(R.id.tv_eliminar);
+        etExcursion = view.findViewById(R.id.et_excursion);
+        etPrecioAdulto = view.findViewById(R.id.et_precio_adulto);
+        etPrecioMenor = view.findViewById(R.id.et_precio_menor);
+        etPrecioAcompanante = view.findViewById(R.id.et_precio_acompanante);
+        etPrecioRango = view.findViewById(R.id.et_precio_rango);
+        etPaxHasta = view.findViewById(R.id.et_pax_hasta);
+        tvPaxAdicional = view.findViewById(R.id.tv_pax_adicional);
+        radioGroup = view.findViewById(R.id.rg_tipo_precio);
+        rbPrecioPax = view.findViewById(R.id.rb_precio_pax);
+        rbPrecioRango = view.findViewById(R.id.rb_precio_rango);
+        layoutPrecioRango = view.findViewById(R.id.layout_precio_rango);
+        checkBoxIdiomaNecesario = view.findViewById(R.id.checkbox_idioma_necesario);
+        btn = view.findViewById(R.id.btn_fragment_excursion);
     }
 
     private void setItUp(){
         myCallBack.udUI(TAG);
         showHideLayout();
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                showHideLayout();
-            }
-        });
+        radioGroup.setOnCheckedChangeListener((radioGroup, i) -> showHideLayout());
         if(selectedExcursionID==0){
+            tvEliminar.setVisibility(View.GONE);
             btn.setText("Registrar");
         }else {
+            tvEliminar.setVisibility(View.VISIBLE);
             showInfoSelectedExcursion();
             btn.setText("Actualizar");
         }
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(selectedExcursionID==0) {
-                    registrar();
-                }else {
-                    actualizar();
-                }
+        tvEliminar.setOnClickListener(view -> showDialogConfirmEliminar());
+        btn.setOnClickListener(view -> {
+            if(selectedExcursionID==0) {
+                registrar();
+            }else {
+                actualizar();
             }
         });
     }
@@ -124,6 +123,29 @@ public class FragmentExcursion extends Fragment {
         ContentValues values = ExcursionBDHandler.getContentValues(excursion);
         db.update(ExcursionBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(selectedExcursionID)});
         Toast.makeText(getContext(),"Actualizado correctamente",Toast.LENGTH_SHORT).show();
+    }
+
+    private void showDialogConfirmEliminar(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Seguro que desea eliminar esta excursión?");
+        builder.setPositiveButton("Eliminar",((dialog, which) -> eliminarExc()));
+        builder.setNegativeButton("Cancelar",((dialog, which) -> {}));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void eliminarExc(){
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(
+                getContext(),
+                AdminSQLiteOpenHelper.BD_NAME,
+                null,
+                AdminSQLiteOpenHelper.BD_VERSION
+        );
+        SQLiteDatabase db = admin.getWritableDatabase();
+        db.execSQL("DELETE FROM " + ExcursionBDHandler.TABLE_NAME + " WHERE id=?",
+                new String[]{String.valueOf(selectedExcursionID)});
+        Toast.makeText(getContext(),"Eliminado correctamente",Toast.LENGTH_SHORT).show();
+        Objects.requireNonNull(getActivity()).onBackPressed();
     }
 
     private void showInfoSelectedExcursion(){
@@ -171,27 +193,27 @@ public class FragmentExcursion extends Fragment {
         }else if(radioGroup.getCheckedRadioButtonId() == R.id.rb_precio_rango){
             excursion.setTipoPrecio(Excursion.PRECIO_X_RANGO);
         }
-        if(etPaxHasta.getText().toString().equals("")){
+        if(etPaxHasta.getText().toString().isEmpty()){
             excursion.setRangoHasta(0);
         }else {
             excursion.setRangoHasta(Integer.parseInt(etPaxHasta.getText().toString()));
         }
-        if(etPrecioRango.getText().toString().equals("")){
+        if(etPrecioRango.getText().toString().isEmpty()){
             excursion.setPrecioRango(0);
         }else {
             excursion.setPrecioRango(Float.parseFloat(etPrecioRango.getText().toString()));
         }
-        if(etPrecioAdulto.getText().toString().equals("")){
+        if(etPrecioAdulto.getText().toString().isEmpty()){
             excursion.setPrecioAd(0);
         }else {
             excursion.setPrecioAd(Float.parseFloat(etPrecioAdulto.getText().toString()));
         }
-        if(etPrecioMenor.getText().toString().equals("")){
+        if(etPrecioMenor.getText().toString().isEmpty()){
             excursion.setPrecioMenor(0);
         }else {
             excursion.setPrecioMenor(Float.parseFloat(etPrecioMenor.getText().toString()));
         }
-        if(etPrecioAcompanante.getText().toString().equals("")){
+        if(etPrecioAcompanante.getText().toString().isEmpty()){
             excursion.setPrecioAcomp(0);
         }else {
             excursion.setPrecioAcomp(Float.parseFloat(etPrecioAcompanante.getText().toString()));
@@ -205,7 +227,7 @@ public class FragmentExcursion extends Fragment {
     }
 
     private boolean isValid(){
-        if(etExcursion.getText().toString().equals("")){
+        if(etExcursion.getText().toString().isEmpty()){
             Toast.makeText(getContext(),"Debe escribir un nombre",Toast.LENGTH_SHORT).show();
             return false;
         }

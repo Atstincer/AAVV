@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.usuario.aavv.Almacenamiento.AdminSQLiteOpenHelper;
@@ -25,7 +26,7 @@ public class DialogFragmentInfoHotel extends DialogFragment {
     public static String TAG = "DialogFragmentInfoHotel";
 
     private EditText etNombreHotel;
-    //private Button btn;
+    private TextView tvEliminar;
 
     private long idHotelSelected;
 
@@ -46,27 +47,44 @@ public class DialogFragmentInfoHotel extends DialogFragment {
     }
 
     private void bindComponents(View v){
-        etNombreHotel = (EditText) v.findViewById(R.id.et_nombre_hotel);
-        Button btn = (Button) v.findViewById(R.id.btn_info_hotel);
+        etNombreHotel = v.findViewById(R.id.et_nombre_hotel);
+        tvEliminar = v.findViewById(R.id.tv_eliminar);
+        Button btn = v.findViewById(R.id.btn_info_hotel);
 
         idHotelSelected = callBack.getHotelId();
         if(idHotelSelected ==0){
+            tvEliminar.setVisibility(View.GONE);
             btn.setText("Registrar");
         }else {
             showInfoHotel();
+            tvEliminar.setVisibility(View.VISIBLE);
             btn.setText("Actualizar");
         }
 
-        btn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                if(idHotelSelected ==0){
-                    registrar();
-                }else {
-                    actualizar();
-                }
+        tvEliminar.setOnClickListener((view)->{
+            eliminarHotel();
+        });
+
+        btn.setOnClickListener(view -> {
+            if(idHotelSelected ==0){
+                registrar();
+            }else {
+                actualizar();
             }
         });
+    }
+
+    private void eliminarHotel(){
+        if(idHotelSelected <= 0){return;}
+        AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(
+                getContext(),
+                AdminSQLiteOpenHelper.BD_NAME,
+                null,
+                AdminSQLiteOpenHelper.BD_VERSION);
+        SQLiteDatabase db = admin.getWritableDatabase();
+        db.execSQL("DELETE FROM " + HotelBDHandler.TABLE_NAME + " WHERE id=?",
+                new String[]{String.valueOf(idHotelSelected)});
+        done("Eliminado correctamente");
     }
 
     private void showInfoHotel(){
@@ -82,9 +100,7 @@ public class DialogFragmentInfoHotel extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(HotelBDHandler.CAMPO_NOMBRE,hotel.getNombre());
         bd.insert(HotelBDHandler.TABLE_NAME,null,values);
-        Toast.makeText(getContext(),"Registrado correctamente",Toast.LENGTH_SHORT).show();
-        callBack.infoChanged();
-        dismiss();
+        done("Registrado correctamente");
     }
 
     private void actualizar(){
@@ -95,7 +111,11 @@ public class DialogFragmentInfoHotel extends DialogFragment {
         ContentValues values = new ContentValues();
         values.put(HotelBDHandler.CAMPO_NOMBRE,hotel.getNombre());
         bd.update(HotelBDHandler.TABLE_NAME,values,"id=?",new String[]{String.valueOf(idHotelSelected)});
-        Toast.makeText(getContext(),"Actualizado correctamente",Toast.LENGTH_SHORT).show();
+        done("Actualizado correctamente");
+    }
+
+    private void done(String msg){
+        Toast.makeText(getContext(),msg,Toast.LENGTH_SHORT).show();
         callBack.infoChanged();
         dismiss();
     }

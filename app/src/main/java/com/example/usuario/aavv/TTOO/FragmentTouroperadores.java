@@ -25,9 +25,6 @@ public class FragmentTouroperadores extends Fragment implements DialogFragmentIn
 
     public static final String TAG = "FragmentTouroperadores";
 
-    //private FloatingActionButton btnAddTTOO;
-    //private RecyclerView rvTTOOs;
-
     private TTOORVAdapter adapter;
     private List<TTOO> ttooList;
     private long idTTOOSelected;
@@ -76,7 +73,8 @@ public class FragmentTouroperadores extends Fragment implements DialogFragmentIn
     private void showTTOODialog(){
         DialogFragmentInfoTTOO dialog = new DialogFragmentInfoTTOO();
         dialog.setTargetFragment(this,0);
-        dialog.show(getChildFragmentManager(),DialogFragmentInfoTTOO.TAG);
+        //dialog.show(getChildFragmentManager(),DialogFragmentInfoTTOO.TAG);
+        dialog.show(getFragmentManager(),DialogFragmentInfoTTOO.TAG);
     }
 
     @Override
@@ -92,7 +90,6 @@ public class FragmentTouroperadores extends Fragment implements DialogFragmentIn
 
     @Override
     public void itemClick(int position) {
-        //Toast.makeText(getContext(),"Click on item "+position,Toast.LENGTH_SHORT).show();
         idTTOOSelected = ttooList.get(position).getId();
         showTTOODialog();
     }

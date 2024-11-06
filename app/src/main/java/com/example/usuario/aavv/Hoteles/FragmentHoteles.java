@@ -87,7 +87,7 @@ public class FragmentHoteles extends Fragment implements DialogFragmentInfoHotel
     private void showHotelDialog(){
         DialogFragmentInfoHotel dialog = new DialogFragmentInfoHotel();
         dialog.setTargetFragment(this,0);
-        dialog.show(getChildFragmentManager(),DialogFragmentInfoHotel.TAG);
+        dialog.show(getFragmentManager(),DialogFragmentInfoHotel.TAG);
     }
 
     @Override
@@ -103,7 +103,6 @@ public class FragmentHoteles extends Fragment implements DialogFragmentInfoHotel
 
     @Override
     public void itemClick(int position) {
-        //Toast.makeText(getContext(),"Click on item "+position,Toast.LENGTH_SHORT).show();
         idHotelSelected = hotelesList.get(position).getId();
         showHotelDialog();
     }

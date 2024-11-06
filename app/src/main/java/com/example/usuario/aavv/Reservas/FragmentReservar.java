@@ -693,9 +693,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Seguro que desea eliminar esta reserva?");
         builder.setPositiveButton("Eliminar", (dialogInterface, i) -> eliminarReserva());
-        builder.setNegativeButton("Cancelar", (dialogInterface, i) -> {
-            //do nothing
-        });
+        builder.setNegativeButton("Cancelar", (dialogInterface, i) -> {});
         AlertDialog confirmationDialog = builder.create();
         confirmationDialog.show();
     }
