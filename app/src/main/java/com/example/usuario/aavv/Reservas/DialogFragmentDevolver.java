@@ -29,7 +29,7 @@ public class DialogFragmentDevolver extends DialogFragment {
     public static String TAG = "DialogFragmentDevolver";
 
     private TextView tvInfo, tvFechaDev;
-    private EditText etImporte;//etObs
+    private EditText etImporte, etObs;
 
     private MyCallBack myCallBack;
 
@@ -52,7 +52,7 @@ public class DialogFragmentDevolver extends DialogFragment {
         tvFechaDev = view.findViewById(R.id.tv_fecha_dev);
         tvInfo = view.findViewById(R.id.tv_info_dfdevolver);
         etImporte = view.findViewById(R.id.et_importe_devolver);
-        //etObs = view.findViewById(R.id.et_obs_dev);
+        etObs = view.findViewById(R.id.et_obs_dev);
         Button btnCancelar = view.findViewById(R.id.btn_dfdevolver_cancelar);
         Button btnDevolver = view.findViewById(R.id.btn_dfdevolver_devolver);
 
@@ -78,10 +78,10 @@ public class DialogFragmentDevolver extends DialogFragment {
         if(reserva.getEstado()==Reserva.ESTADO_DEVUELTO){
             tvFechaDev.setText(reserva.getFechaDevolucion());
             etImporte.setText(String.valueOf(reserva.getImporteDevuelto()));
-            /*if(reserva.getObsDevolucion() != null &&
-                    !reserva.getObsDevolucion().isEmpty()){
-                etObs.setText(reserva.getObsDevolucion());
-            }*/
+            if(reserva.getObservaciones() != null &&
+                    !reserva.getObservaciones().isEmpty()){
+                etObs.setText(reserva.getObservaciones());
+            }
         }else {
             tvFechaDev.setText(DateHandler.getToday(MisConstantes.FormatoFecha.MOSTRAR));
         }
@@ -106,25 +106,31 @@ public class DialogFragmentDevolver extends DialogFragment {
     }
 
     private void devolver(){
-        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),myCallBack.getIdReserva());
-        String msgHistorial = tvFechaDev.getText().toString()+" DEVUELTO ("+etImporte.getText().toString()+")";
-        reserva.addToHistorial(msgHistorial);
         AdminSQLiteOpenHelper admin = AdminSQLiteOpenHelper.getInstance(getContext(),AdminSQLiteOpenHelper.BD_NAME,null,AdminSQLiteOpenHelper.BD_VERSION);
         SQLiteDatabase db = admin.getWritableDatabase();
         ContentValues values = new ContentValues();
+        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),myCallBack.getIdReserva());
+        String msgHistorial = tvFechaDev.getText().toString()+" DEVUELTO ("+etImporte.getText().toString()+")";
+        if(!etObs.getText().toString().isEmpty()){
+            if(reserva.getObservaciones() == null ||
+                    !reserva.getObservaciones().equals(etObs.getText().toString())){
+                msgHistorial += "\nobs: " + etObs.getText().toString();
+            }
+        }
+        reserva.addToHistorial(msgHistorial);
         values.put(ReservaBDHandler.CAMPO_ESTADO,Reserva.ESTADO_DEVUELTO);
         values.put(ReservaBDHandler.CAMPO_FECHA_DEVOLUCION, DateHandler.formatDateToStoreInDB(tvFechaDev.getText().toString()));
         values.put(ReservaBDHandler.CAMPO_IMPORTE_DEVUELTO,etImporte.getText().toString());
+        values.put(ReservaBDHandler.CAMPO_OBSERVACIONES,etObs.getText().toString());
         values.put(ReservaBDHandler.CAMPO_HISTORIAL,reserva.getHistorial());
-        //values.put(ReservaBDHandler.CAMPO_OBS_DEVOLUCION,etObs.getText().toString());
         db.update(ReservaBDHandler.TABLE_NAME,values,ReservaBDHandler.CAMPO_NUMERO_TE+"=?",new String[]{myCallBack.getIdReserva()});
         Toast.makeText(getContext(),"Devolucion registrada correctamente",Toast.LENGTH_SHORT).show();
-        myCallBack.udInfoEstado();
+        myCallBack.onDevuelto();
         dismiss();
     }
 
     public interface MyCallBack{
         String getIdReserva();
-        void udInfoEstado();
+        void onDevuelto();
     }
 }

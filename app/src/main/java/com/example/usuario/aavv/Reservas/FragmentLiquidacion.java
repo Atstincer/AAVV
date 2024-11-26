@@ -33,6 +33,7 @@ import com.example.usuario.aavv.Util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -241,10 +242,8 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
             sb.append("Venta del día: ");
             sb.append(desde);
         } else {
-            sb.append("Venta\ndesde: ");
-            sb.append(desde);
-            sb.append("\thasta: ");
-            sb.append(hasta);
+            sb.append("Venta\ndesde: ").append(desde);
+            sb.append("\nhasta: ").append(hasta);
         }
         sb.append("\n\n");
         sb.append(tvInfo.getText().toString());
@@ -261,21 +260,21 @@ public class FragmentLiquidacion extends Fragment implements ReservaRVAdapter.My
                     sb.append("\n\n");
                     sb.append(Reserva.toString(getContext(),reserva, Reserva.INFO_LIQUIDACION));
                 } else if (reserva.getCriterioSeleccion() == Reserva.Criterio_Seleccion.FECHA_DEVOLUCION){
+                    sb.append("\n\nTE: ");
+                    sb.append(reserva.getNoTE());
                     if(reserva.getPrecio() == reserva.getImporteDevuelto()) {
-                        sb.append("\n\nTE: ");
-                        sb.append(reserva.getNoTE());
                         sb.append("    DEVOLUCION TOTAL");
                     }else if(reserva.getPrecio() > reserva.getImporteDevuelto()) {
-                        sb.append("\n\nTE: ");
-                        sb.append(reserva.getNoTE());
                         sb.append("    DEVOLUCION PARCIAL");
-                        sb.append("\nImporte devuelto: -");
-                        sb.append(reserva.getImporteDevuelto());
+                    }
+                    sb.append("\nImporte devuelto usd: -").append(reserva.getImporteDevuelto());
+                    if(reserva.getObservaciones() != null && !reserva.getObservaciones().isEmpty()){
+                        sb.append("\n").append(reserva.getObservaciones());
                     }
                 }
             }
         }
-        Util.copyToClipBoard(getContext(),sb.toString());
+        Util.copyToClipBoard(Objects.requireNonNull(getContext()),sb.toString());
     }
 
     @Override

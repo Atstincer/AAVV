@@ -94,7 +94,7 @@ public class MySharedPreferences {
 
     public static int getFragmentInicio(Context ctx){
         SharedPreferences preferences = ctx.getSharedPreferences(NAME_ARCHIVO,MODE_PRIVATE);
-        return preferences.getInt(KEY_FRAGMENT_INICIO,0);
+        return preferences.getInt(KEY_FRAGMENT_INICIO,1);
     }
 
     public static void storeFragmentInicio(Context ctx,int fragment){

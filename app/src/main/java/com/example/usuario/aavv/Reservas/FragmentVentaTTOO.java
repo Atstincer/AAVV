@@ -31,6 +31,7 @@ import com.example.usuario.aavv.Util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by usuario on 13/08/2023.
@@ -86,14 +87,14 @@ public class FragmentVentaTTOO extends Fragment {
         figureOutDesde();
         figureOutHasta();
 
-        Log.d("fechas","Cierre regular: " + MySharedPreferences.isCierreRegular(getContext()));
-        Log.d("fechas","Dia cierre: " + MySharedPreferences.getDiaCierre(getContext()));
+        //Log.d("fechas","Cierre regular: " + MySharedPreferences.isCierreRegular(getContext()));
+        //Log.d("fechas","Dia cierre: " + MySharedPreferences.getDiaCierre(getContext()));
 
         layoutInfo.setOnLongClickListener(view -> {
             String texto = "Agencia: "+spinnerAgencias.getSelectedItem().toString()+"\n" +
                     "Desde: "+tvFechaDesde.getText().toString()+"\n" +
                     "Hasta: "+tvFechaHasta.getText().toString()+"\n\n" + tvInfoVenta.getText().toString();
-            Util.copyToClipBoard(getContext(),texto);
+            Util.copyToClipBoard(Objects.requireNonNull(getContext()),texto);
             return true;
         });
         tvFechaDesde.setOnClickListener(view -> DateHandler.showDatePicker(getContext(), tvFechaDesde, () -> {

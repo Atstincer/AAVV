@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.usuario.aavv.R;
+import com.example.usuario.aavv.Util.Util;
+
+import java.util.Objects;
 
 /**
  * Created by user on 3/23/2024.
@@ -43,7 +46,6 @@ public class DialogFragmentHistorial extends DialogFragment {
     private void bindcomponents(View view){
         tvInfo = view.findViewById(R.id.tv_info_historial);
         btnOk = view.findViewById(R.id.btn_ok_historial);
-        btnOk.setOnClickListener(view1 -> dismiss());
     }
 
     private void setItUp(){
@@ -55,6 +57,11 @@ public class DialogFragmentHistorial extends DialogFragment {
             info = "TE"+reserva.getNoTE()+"\n\n"+reserva.getHistorial();
         }
         tvInfo.setText(info);
+        tvInfo.setOnLongClickListener(view -> {
+            Util.copyToClipBoard(Objects.requireNonNull(getContext()),tvInfo.getText().toString());
+            return true;
+        });
+        btnOk.setOnClickListener(view1 -> dismiss());
     }
 
     interface MyCallBack{

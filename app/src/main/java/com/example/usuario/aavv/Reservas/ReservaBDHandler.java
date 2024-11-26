@@ -43,8 +43,7 @@ public class ReservaBDHandler {
     final static String CAMPO_IMPORTE_DEVUELTO = "importeDevuelto";
     final static String CAMPO_HISTORIAL = "historial";
     final static String CAMPO_INCLUIR_REP_VENTA = "incluirRepVenta";
-    private final static String CAMPO_OBSERVACIONES = "observaciones";
-    //static String CAMPO_OBS_DEVOLUCION = "obsDevolucion";
+    final static String CAMPO_OBSERVACIONES = "observaciones";
 
 
     public static ContentValues getContentValues(Reserva reserva){

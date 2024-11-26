@@ -3,7 +3,6 @@ package com.example.usuario.aavv.Reservas;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,12 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -220,10 +217,8 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     private void setUpEditarMoode() {
         if (getArguments() != null) {
             idSelectedReserva = getArguments().getString("id");
-            //reservaSelected = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
         }
         showInfoReserva(ReservaBDHandler.getReservaFromDB(getContext(), idSelectedReserva));
-//        layoutRepVenta.setVisibility(View.VISIBLE);
         etNumeroTE.setEnabled(false);
         btn.setText("Actualizar");
     }
@@ -239,7 +234,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void actualizar() {
-        if (!isvalid()) {
+        if (!isValid()) {
             return;
         }
         Reserva reserva = getNuevaReserva();
@@ -259,7 +254,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     private void registrar() {
-        if (!isvalid()) {
+        if (!isValid()) {
             return;
         }
         Reserva nuevaReserva = getNuevaReserva();
@@ -339,8 +334,11 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         }
     }
 
-    private void showEstado() {
-        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
+    private void showEstado(){
+        showEstado(ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva));
+    }
+
+    private void showEstado(Reserva reserva) {
         switch (reserva.getEstado()) {
             case Reserva.ESTADO_ACTIVO:
                 tvEstado.setText("");
@@ -560,7 +558,7 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         return reserva;
     }
 
-    private boolean isvalid() {
+    private boolean isValid() {
         String falta = "Faltó:";
         boolean makeToastAtEnd = false;
 
@@ -685,8 +683,12 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
     }
 
     @Override
-    public void udInfoEstado() {
-        showEstado();
+    public void onDevuelto() {
+        Reserva reserva = ReservaBDHandler.getReservaFromDB(getContext(),idSelectedReserva);
+        showEstado(reserva);
+        if(reserva.getObservaciones() != null) {
+            etObservaciones.setText(reserva.getObservaciones());
+        }
     }
 
     private void confirmarEliminar() {
@@ -703,20 +705,18 @@ public class FragmentReservar extends Fragment implements DialogFragmentDevolver
         SQLiteDatabase db = admin.getWritableDatabase();
         db.delete(ReservaBDHandler.TABLE_NAME, ReservaBDHandler.CAMPO_NUMERO_TE+"=?", new String[]{idSelectedReserva});
         Toast.makeText(getContext(), "Eliminado correctamente", Toast.LENGTH_SHORT).show();
-        getActivity().onBackPressed();
+        Objects.requireNonNull(getActivity()).onBackPressed();
     }
 
     private void showDialogDevolver(){
         DialogFragmentDevolver dialog = new DialogFragmentDevolver();
         dialog.setTargetFragment(this,0);
-        //dialog.show(getChildFragmentManager(),DialogFragmentDevolver.TAG);
         dialog.show(getFragmentManager(),DialogFragmentDevolver.TAG);
     }
 
     private void showHistorial(){
         DialogFragmentHistorial dialog = new DialogFragmentHistorial();
         dialog.setTargetFragment(this,0);
-        //dialog.show(getChildFragmentManager(),DialogFragmentHistorial.TAG);
         dialog.show(getFragmentManager(),DialogFragmentHistorial.TAG);
     }
 
